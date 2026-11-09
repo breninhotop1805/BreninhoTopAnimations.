@@ -1,0 +1,8 @@
+node_modules/
+out/part*
+out/log*
+out/list.txt
+out/render.log
+out/test.mp4
+out/video_noaudio.mp4
+out/sfx.wav
