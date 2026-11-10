@@ -179,7 +179,6 @@ for t in for_t: add(knock(), t, 0.55)
 add(whoosh(0.4, True), 16.62, 0.3); add(thud(90, 0.12), 16.7, 0.35)
 mbox([784, 988, 1175, 988, 784, 659], 17.65, 0.14, 0, 0.18)
 for t in np.arange(18.5, 20.1, 0.29): add(click(), t, 0.15)                        # hall light flicker
-add(alarm(0.12, 220), 20.33, 0.5); add(thud(60, 0.1), 20.33, 0.35)                 # X buzzer
 for t in [21.45, 21.75]: add(footstep(80), t, 0.25)
 mbox([1047, 1175, 1319, 1047, 784, 880, 988, 784, 659, 587], 23.0, 0.13, 0.12, 0.22)  # music box winding down
 add(whoosh(0.3, True), 24.5, 0.35); add(static(0.15), 24.48, 0.35); add(pop_sfx(), 24.55, 0.2)

@@ -231,7 +231,7 @@ at(14.06, 'guard_reflex', x => {
 at(15.56, 'door_slam', x => {
   const s = x.S.office1; x.out.scene = s; const L = x.L; const k = ei(seg(L, 0.2, 0.4));
   x.S.doorL.position.y = mix(3.75, 1.25, k); x.S.btnDoorL.material.emissiveIntensity = L > 0.2 ? 2.5 : 0.6;
-  const c = put(x, 'foxy', s, -4.2, 0, 0, Math.PI / 2); walkTo(c, [-5.6, 0, 0], [-3.0, 0, 0], ei(seg(L, 0, 0.55)), 1.0); c.root.rotation.y = Math.PI / 2; c.jaw.rotation.x = 0.4;
+  const c = put(x, 'foxy', s, -4.2, 0, 0, Math.PI / 2); walkTo(c, [-5.6, 0, 0], [-3.55, 0, 0], ei(seg(L, 0, 0.55)), 1.0); c.root.rotation.y = Math.PI / 2; c.jaw.rotation.x = 0.4;
   cam(x, [-0.8, 1.55, 1.5], [-2.6, 1.3, 0], 50); hand(x);
   for (const hit of [0.55, 0.78]) if (L > hit && L < hit + 0.12) shake(x, 0.5);
   x.S.westDoorLight.intensity = 2;
@@ -254,7 +254,6 @@ at(18.46, 'wfoxy_hall', x => {
 at(20.20, 'wfoxy_x', x => {
   const s = x.S.office; x.out.scene = s; const L = x.L; const c = put(x, 'wfoxy', s, 0.1, 0, -5.7, 0); c.idle(x.t, 0.5); c.jaw.rotation.x = 0.2;
   cam(x, [0, 1.6, -3.2], [0, 1.55, -5.7], 40); hand(x, 0.6); x.S.doorLight.intensity = 6; x.S.officeLamp.intensity = 3;
-  pop(x, x.FX.xmark, s, [0.1, 1.6, -5.2], 0.15, 0.55, false); if (L > 0.15 && L < 0.3) shake(x, 0.3);
 });
 at(21.36, 'no_run', x => {
   const s = x.S.hall; x.out.scene = s; const L = x.L; const step = Math.min(3, Math.floor(L / 0.42));
