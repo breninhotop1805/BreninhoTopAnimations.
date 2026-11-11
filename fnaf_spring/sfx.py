@@ -192,32 +192,38 @@ def typing(dur=1.0):
     for t in np.arange(0, dur - 0.05, 0.09 + 0.0): add_at = int((t + rng.random() * 0.03) * SR); c = click() * 0.5; out[add_at:add_at + len(c)] += c[: len(out) - add_at]
     return out
 
+def load_wav(p):
+    with wave.open(p) as w: a = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(float) / 32768
+    return a / np.abs(a).max()
+BB = [load_wav(f'assets/bb/bb{i}.wav') for i in range(5)]   # 0 'hi', 1 'hello', 2-4 laughs (Balloon Boy's real voice clips)
+def bb(i, at, gain=0.42): add(BB[i], at, gain)
+
 # ---------- SFX timeline (matches shots.js beats) ----------
 # hook
 for t in np.arange(0.15, 1.5, 0.55): add(mstep(), t, 0.35)
 add(static(0.2), 0.0, 0.3); add(whir(0.5, 70, 110), 0.8, 0.12)
 add(sting(0.9), 1.55, 0.18); add(creak(0.5, 150), 1.9, 0.18)
 for t in np.arange(2.8, 3.8, 0.55): add(mstep(), t, 0.3)
-add(laugh(3, 560), 2.95, 0.22)
-add(laugh(5, 600), 3.9, 0.45); add(glitch(0.12), 4.25, 0.2)
+bb(2, 2.95)
+add(glitch(0.12), 4.25, 0.15)
 add(whoosh(0.4, True), 4.6, 0.3); add(thud(90, 0.12), 4.7, 0.35)
 # theory
 add(static(1.6), 5.75, 0.05); add(typing(0.9), 5.9, 0.4); add(whoosh(0.3, True), 6.6, 0.15)
 add(creak(1.2, 120), 7.6, 0.2); add(breath(1.0, False), 8.0, 0.3)
 add(glitch(0.2), 9.14, 0.3); add(sting(1.2), 9.2, 0.25); add(static(0.15), 10.1, 0.4); add(static(0.1), 10.65, 0.35); add(heartbeat(), 9.6, 0.3)
 for t in np.arange(11.05, 13.1, 0.42): add(mstep(), t, 0.32)
-add(laugh(3, 560), 11.5, 0.18); add(laugh(3, 580), 12.4, 0.15)
+bb(1, 11.5, 0.32)
 add(boom(0.4, 1.0), 13.18, 0.3); add(static(0.15), 13.18, 0.35); add(pop_sfx(), 13.55, 0.3)
 # Afton knows
 add(whoosh(0.35, True), 15.15, 0.2); add(crackle(1.4), 15.3, 0.5)
 for t in [15.5, 15.9, 16.3, 16.75]: add(click(), t, 0.25)
 add(chatter(1.6, 0.25), 17.4, 1); add(whoosh(0.5, True), 17.35, 0.2)
 add(sting(0.6), 19.3, 0.12)
-add(click(), 20.6, 0.5); add(laugh(4, 600), 20.9, 0.3)
+add(click(), 20.6, 0.5); bb(3, 20.85, 0.36)
 # question
 add(heartbeat(), 22.9, 0.35); add(heartbeat(), 23.55, 0.35); add(whir(0.5, 60, 90), 24.2, 0.12)
-add(laugh(5, 620), 25.0, 0.45); add(static(0.2), 25.0, 0.15); add(creak(0.4, 170), 25.9, 0.2)
-add(laugh(2, 560), 26.7, 0.15); add(click(), 26.9, 0.3); add(click(), 27.4, 0.3); add(laugh(2, 560), 27.6, 0.15)
+bb(4, 25.0); add(static(0.2), 25.0, 0.1); add(creak(0.4, 170), 25.9, 0.2)
+add(click(), 26.75, 0.3); bb(0, 26.95, 0.32); add(click(), 27.7, 0.3)
 for t in [28.15, 28.45]: add(mstep(), t, 0.3)
 add(scream(0.9), 28.68, 0.3); add(boom(0.45, 1.2), 28.68, 0.4); add(static(0.2), 28.65, 0.3)
 # real answer
@@ -232,20 +238,20 @@ add(chatter(3.4, 0.35), 45.6, 1); add(bell(1568, 0.5, 0.3, 0.12), 46.2, 1)
 # still active
 add(whoosh(0.5, False), 49.05, 0.3); add(thud(60, 0.2, 0.6), 49.55, 0.45); add(click(), 49.55, 0.3)
 add(whir(1.8, 100, 140), 50.5, 0.3); add(alarm(0.1, 1200), 50.6, 0.12); add(alarm(0.1, 1200), 51.1, 0.12)
-add(click(), 52.95, 0.7); add(laugh(4, 600), 53.0, 0.35)
-add(laugh(3, 580), 54.0, 0.2); add(breath(0.6, True), 53.7, 0.4); add(whir(0.8, 80, 150), 54.3, 0.25)
+add(click(), 52.95, 0.7); bb(2, 53.05, 0.36)
+add(breath(0.6, True), 53.7, 0.4); add(whir(0.8, 80, 150), 54.3, 0.25)
 add(thud(70, 0.2), 55.6, 0.4); add(whir(2.0, 90, 200), 55.6, 0.4)
 for t in np.arange(55.7, 57.7, 0.4): add(mstep(), t, 0.3)
 for t in np.arange(57.8, 59.5, 0.38): add(mstep(), t, 0.4); add(whir(0.25, 140, 170), t, 0.15)
-add(breath(0.8, True), 58.0, 0.45); add(laugh(3, 560), 58.6, 0.18)
+add(breath(0.8, True), 58.0, 0.45); bb(1, 58.3, 0.3)
 add(crackle(1.8), 59.6, 0.6); add(breath(0.7, False), 59.7, 0.45); add(whir(1.8, 120, 90), 59.6, 0.3)
 for t in [60.0, 60.5, 61.0]: add(snap(), t, 0.12)
 # prisoner
 add(sting(1.8), 61.5, 0.18); add(creak(1.2, 110), 62.0, 0.2)
 add(snap(), 63.82, 0.45); add(boom(0.5, 1.3), 63.82, 0.35); add(scream(0.5), 63.85, 0.12)
 # outro
-add(laugh(6, 620), 64.95, 0.45); add(pop_sfx(), 65.23, 0.3)
-add(whoosh(0.4, False), 66.3, 0.2); add(laugh(3, 600), 67.0, 0.2); add(bell(220, 1.4, 0.8, 0.1), 67.4, 1)
+bb(3, 64.95); add(pop_sfx(), 65.23, 0.25)
+add(whoosh(0.4, False), 66.3, 0.2); bb(0, 67.25, 0.3); add(bell(220, 1.4, 0.8, 0.1), 67.4, 1)
 
 t_all = np.arange(N) / SR
 hum = 0.3 * np.sin(2 * np.pi * 50 * t_all) + 0.15 * np.sin(2 * np.pi * 100 * t_all)

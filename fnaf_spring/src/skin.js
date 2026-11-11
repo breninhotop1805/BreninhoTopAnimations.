@@ -627,6 +627,8 @@ export function buildYenndo(canvas) {
 export function buildSpring(canvas, name, opts = {}) {
   const A = imgCopy(canvas);
   eraseRect(A, 40, 0, 8, 8); eraseRect(A, 48, 0, 8, 8);           // hat top/bottom (painted ears / junk)
+  // painted flat/droopy ears on the hat layer: whole back face, upper part of both sides, top strip of the front
+  eraseRect(A, 56, 8, 8, 8); eraseRect(A, 32, 8, 8, 5.5); eraseRect(A, 48, 8, 8, 5.5); eraseRect(A, 40, 8, 8, 2.5);
   if (opts.clearJunk) { eraseRect(A, 24, 0, 8, 8); eraseRect(A, 32, 0, 8, 8); eraseRect(A, 56, 0, 8, 8); }
   const ch = new Character(name, A, { prop: opts.prop || { limbW: 0.95 } });
   const fur = opts.fur || avgColor(A, 8, 8, 8, 2), furD = shadeHex(fur, 0.68), furL = shadeHex(fur, 1.18), inner = opts.inner || shadeHex(fur, 1.3);
@@ -729,6 +731,7 @@ export function buildBB(canvas, opts = {}) {
 
 // X-ray rig for Springtrap / Spring Bonnie: hidden endoskeleton + motors, revealed by making the suit see-through.
 export function addEndo(ch) {
+  ch.headMat = ch.mat.clone(); ch.headMatO = ch.matO.clone(); ch.headMesh.material = ch.headMat; ch.hat.material = ch.headMatO;
   const g = new THREE.Group(); g.visible = false; ch.endo = g; ch.motors = [];
   const metal = new THREE.MeshStandardMaterial({ color: '#9aa0aa', roughness: 0.3, metalness: 0.8 });
   const motorM = () => new THREE.MeshStandardMaterial({ color: '#30343a', roughness: 0.3, metalness: 0.7, emissive: '#000000', emissiveIntensity: 2.5, toneMapped: false });

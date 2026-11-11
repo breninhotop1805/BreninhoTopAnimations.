@@ -278,7 +278,7 @@ at(29.34, 'agonizing', x => {
 // "O segredo não está na mente do Afton,"
 at(31.44, 'not_mind', x => {
   const s = x.S.void; x.out.scene = s; const c = put(x, 'spring', s, 0, 0, 0, 0); c.idle(x.t, 1);
-  const k = sm(seg(x.L, 0.3, 0.9)); x.setXray(c, k * 0.7, 0); c.endoParts.forEach(o => o.visible = o.parent === c.head && k > 0.01);
+  const k = sm(seg(x.L, 0.3, 0.9)); c.head.rotation.x = -0.1 * k; c.head.rotation.z = 0.05 * Math.sin(x.t * 9) * k;
   camMove(x, [0.3, 1.85, 1.3], [0, 1.78, 0], [0.15, 1.82, 0.95], [0, 1.78, 0], eo, 40); hand(x);
   x.S.voidSpot.intensity = 26; x.S.voidRim.intensity = 10; x.S.voidRim.color.set('#ff4060'); x.post.vig.value = 0.95;
   if (x.L > 1.6) { x.post.tint.value.set(1.0, 0.7, 0.7); }
