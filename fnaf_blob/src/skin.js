@@ -774,6 +774,7 @@ export function buildGregory(canvas) {
   for (let i = 0; i < 5; i++) vbox(1.7, 1.2 + (i % 2) * 0.8, 1.0, i % 2 ? hd : hair, -3.4 + i * 1.7, 7.4 - (i % 2) * 0.4, 4.45, g, 0.9);
   for (const sx of [-1, 1]) for (let k = 0; k < 3; k++) vbox(1.0, 1.6 + (k % 2) * 0.7, 2.2, k % 2 ? hd : hair, sx * 4.45, 7.0, 2 - k * 2.4, g, 0.9);
   for (let k = 0; k < 4; k++) vbox(2.0, 2.2 + (k % 2) * 0.8, 1.0, k % 2 ? hd : hair, -3 + k * 2, 6.6, -4.45, g, 0.9);
+  ch.baseScale = 0.88;
   ch.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   return ch;
 }
@@ -793,6 +794,7 @@ export function buildGFreddy(canvas) {
   const P = { o: fur, k: '#1a1a22', t: '#2ab8b0' };
   const ear = () => voxelArt(['.kkkk.', 'koooOk'.replace('O', 'o'), 'kottok', 'kottok', 'kooook', '.kkkk.'], P, 0.55 * U, 1.2 * U);
   const eL = ear(), eR = ear(); eL.position.set(3.6 * U, 9.0 * U, -0.6 * U); eR.position.set(-3.6 * U, 9.0 * U, -0.6 * U); eL.rotation.z = -0.3; eR.rotation.z = 0.3; ch.head.add(eL, eR);
+  ch.baseScale = 1.32;
   ch.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   return ch;
 }
@@ -812,6 +814,7 @@ export function buildFFoxy(canvas) {
   const ear = () => voxelArt(['.w.', 'wpw', 'wpw', 'wpw', 'wpw', 'www'], { w: W, p: pink }, 0.9 * U, 1.0 * U);
   const eL = ear(), eR = ear(); eL.position.set(2.7 * U, 10.5 * U, -0.6 * U); eR.position.set(-2.7 * U, 10.5 * U, -0.6 * U); eL.rotation.z = -0.25; eR.rotation.z = 0.25; ch.head.add(eL, eR);
   vbox(1.4, 1.2, 1.4, W, 0, 8.6, 1.5, ch.head, 0.6); vbox(1.0, 0.9, 1.0, W, 0.5, 9.4, 1.2, ch.head, 0.6); // head tuft
+  ch.baseScale = 1.28;
   ch.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   return ch;
 }
@@ -822,7 +825,10 @@ export function buildBaby(canvas, opts = {}) {
   eraseRect(A, 32, 8, 8, 8); eraseRect(A, 48, 8, 8, 8);
   const isEye = (r, g, b) => g > r + 15 && g > b;
   if (opts.dead) recolorWhere(A, 8, 8, 8, 8, isEye, '#26282a');
-  const ch = new Character(opts.name || 'baby', A);
+  const ch = new Character(opts.name || 'baby', A, { prop: { limbW: 1.15, legW: 1.2, torso: 1.05 } });
+  for (const m of [ch.body, ch.bodyO]) { m.scale.x = 1.28; m.scale.z = 1.45; }
+  { const aw = ch.slim ? 3 : 4; ch.armR.piv.position.x = -(4 * 1.28 + aw * 1.15 / 2) * U; ch.armL.piv.position.x = (4 * 1.28 + aw * 1.15 / 2) * U; for (const L of [ch.legR, ch.legL]) L.piv.position.x *= 1.25; }
+  ch.baseScale = 1.34;
   const hair = '#e2622a', hd = '#b8481c', hl = '#f2884a';
   for (const sx of [-1, 1]) {
     const g = new THREE.Group(); g.position.set(sx * 4.3 * U, 6.0 * U, -0.6 * U); ch.head.add(g);

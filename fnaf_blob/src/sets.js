@@ -909,7 +909,7 @@ export function buildBlobSets(S, sbLogo) {
     const wall = plane(30, 14, std({ color: '#0c0a16', roughness: 0.8 }), g); wall.position.set(0, 7, -10);
     T.neonText = (txt, col, w, h) => canvas(w, h, c2 => { c2.font = `bold ${h * 0.7}px "DejaVu Sans", sans-serif`; c2.textAlign = 'center'; c2.textBaseline = 'middle'; c2.fillStyle = col; c2.fillText(txt, w / 2, h / 2); });
     const neon = (txt, col, x, y, z, w, h, cw = 512, chh = 96) => { const t = new THREE.CanvasTexture(T.neonText(txt, col, cw, chh)); t.colorSpace = THREE.SRGBColorSpace; const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, transparent: true, toneMapped: false, color: '#ffffff' })); m.position.set(x, y, z); g.add(m); return m; };
-    S.plexSign = neon('PIZZAPLEX', '#ff5ad0', 0, 6.4, -9.9, 9, 1.7); neon('FAZBEAR\'S MEGA', '#5ae0ff', 0, 7.6, -9.9, 6, 0.7);
+    S.plexSign = neon('PIZZAPLEX', '#ff5ad0', 0, 6.4, -9.9, 9, 1.7);
     for (let i = 0; i < 9; i++) { const c = ['#ff3aa0', '#3ad8ff', '#ffd23a', '#8a4aff'][i % 4]; box(0.12, 2.6 + (i % 3) * 0.6, 0.12, new THREE.MeshBasicMaterial({ color: c, toneMapped: false }), -4 + i, 2.8, -9.8, g); }
     box(9, 0.3, 0.3, new THREE.MeshBasicMaterial({ color: '#ffd23a', toneMapped: false }), 0, 1.5, -9.8, g);
     for (const x of [-7, -3.5, 3.5, 7]) for (const z of [-6, 0]) { box(0.7, 9, 0.7, '#181424', x, 4.5, z, g); box(0.74, 0.12, 0.74, new THREE.MeshBasicMaterial({ color: ['#ff3aa0', '#3ad8ff'][(x > 0) | 0], toneMapped: false }), x, 3.2, z, g); box(0.74, 0.12, 0.74, new THREE.MeshBasicMaterial({ color: '#8a4aff', toneMapped: false }), x, 6.2, z, g); }

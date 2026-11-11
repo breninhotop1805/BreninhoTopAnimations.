@@ -157,7 +157,7 @@ at(0.00, 'blob_reveal', x => {
   if (x.L < 0.12) shake(x, 0.5);
 });
 // "de FNAF Security Breach"
-at(1.88, 'logo_sb', x => { const s = x.S.plex; x.out.scene = s; cam(x, [0, 2.4, 6 - 0.5 * x.u], [0, 3.4, -9], 50); logoCard(x, 0); });
+at(1.88, 'plex_sign', x => { const s = x.S.plex; x.out.scene = s; const k = eio(x.u); cam(x, [mix(-2.5, 1.5, k), mix(2.0, 3.2, k), mix(4.5, 3.0, k)], [0, mix(5.6, 6.3, k), -9.9], 52); x.post.vig.value = 0.8; staticIn(x, 0.12); });
 // "esse tempo todo."
 at(3.24, 'greg_fooled', x => {
   const s = ugBase(x); const g = put(x, 'gregory', s, 0.3, 0, 2.6, Math.PI + 0.2); g.idle(x.t, 1); g.head.rotation.x = -0.35; g.head.rotation.y = 0.5 * eo(seg(x.L, 0.3, 0.7));
@@ -189,7 +189,7 @@ at(10.44, 'm_puppet', x => { ugBase(x, 0.5); maskCam(x, 'puppet', 1.7, 1.3, -0.1
 at(11.34, 'think', x => {
   const s = ugBase(x); const g = put(x, 'gregory', s, 0.2, 0, 3.0, 0.3); g.idle(x.t, 1); aim(g, 'R', rootPt(g, -0.2, 1.95, 0.25), eo(seg(x.L, 0.1, 0.4))); g.head.rotation.z = 0.15;
   const f = freddyBy(x, s, [-0.85, 0, 3.2], 0.5); f.head.rotation.y = 0.5;
-  camMove(x, [0.4, 1.5, 5.4], [-0.2, 1.4, 3.0], [0.3, 1.5, 4.8], [-0.2, 1.5, 3.0], eo, 44); hand(x); pop(x, x.FX.q1, s, headTop(g, 0.75), 0.3, 0.4);
+  camMove(x, [0.5, 1.9, 6.6], [-0.3, 1.55, 3.0], [0.4, 1.9, 6.0], [-0.3, 1.6, 3.0], eo, 44); hand(x); pop(x, x.FX.q1, s, headTop(g, 0.75), 0.3, 0.4);
 });
 // "é que as almas originais se juntaram"
 at(12.94, 'souls_join', x => {
@@ -228,8 +228,8 @@ at(21.28, 'baby_side', x => {
 // "Os olhos delas estão totalmente apagados."
 at(22.04, 'eyes_compare', x => {
   const L = x.L;
-  if (L < 1.0) { const s = x.S.void; x.out.scene = s; const c = put(x, 'baby', s, 0, 0, 0, 0); c.idle(x.t, 0.5); cam(x, [0, 1.78, 1.2], [0, 1.72, 0], 40); x.S.voidSpot.intensity = 16;
-    lensOn(x, [rootPt(c, -0.11, 1.78, 0.27), rootPt(c, 0.11, 1.78, 0.27)], 0.16, eo(seg(L, 0.1, 0.35)), L > 0.4 ? 'ok' : null); }
+  if (L < 1.0) { const s = x.S.void; x.out.scene = s; const c = put(x, 'baby', s, 0, 0, 0, 0); c.idle(x.t, 0.5); c.head.updateMatrixWorld(true); const hp = c.head.localToWorld(new V3(0, 4 / 16, 0)); cam(x, [hp.x, hp.y + 0.02, hp.z + 1.45], [hp.x, hp.y, hp.z], 40); x.S.voidSpot.intensity = 16;
+    lensOn(x, [c.head.localToWorld(new V3(-1.75 / 16, 4.4 / 16, 4.3 / 16)), c.head.localToWorld(new V3(1.75 / 16, 4.4 / 16, 4.3 / 16))], 0.16, eo(seg(L, 0.1, 0.35)), L > 0.4 ? 'ok' : null); }
   else { ugBase(x, 0.3); const p = maskPt(x, 'baby'); cam(x, [p.x + 0.05, p.y, p.z + 1.15], [p.x, p.y - 0.02, p.z], 40); torch(x, x.S.ug, new V3(p.x + 0.2, p.y + 0.3, p.z + 1.3), p, 3);
     x.C.babyB.head.updateMatrixWorld(true); lensOn(x, [x.C.babyB.head.localToWorld(new V3(-1.75 / 16, 4.4 / 16, 4.3 / 16)), x.C.babyB.head.localToWorld(new V3(1.75 / 16, 4.4 / 16, 4.3 / 16))], 0.16, eo(seg(L, 1.05, 1.3)), L > 1.4 ? 'no' : null); x.post.stat.value = L < 1.06 ? 0.5 : 0; }
 });
@@ -266,7 +266,7 @@ at(30.54, 'charlotte', x => {
 // "Sabe o que isso significa?"
 at(33.74, 'means', x => {
   const s = ugBase(x, 0.5); const L = x.L; const g = put(x, 'gregory', s, 0.35, 0, 3.0, -1.0); g.idle(x.t, 1); const f = freddyBy(x, s, [-0.55, 0, 3.0], 1.0); f.head.rotation.x = 0.25;
-  if (L < 0.7) cam(x, [0.9, 1.55, 4.6], [0.1, 1.55, 3.0], 42); else cam(x, [-1.3, 1.4, 4.2], [0.35, 1.45, 3.0], 42); hand(x); fillOn(x, g, 2, 1.8);
+  if (L < 0.7) cam(x, [1.2, 1.8, 5.8], [-0.1, 1.7, 3.0], 42); else cam(x, [1.9, 1.5, 4.6], [-0.2, 1.75, 3.0], 44); hand(x); fillOn(x, g, 2, 1.8);
 });
 // "Que as crianças originais não estão mais lá."
 at(35.14, 'not_there', x => {
@@ -319,13 +319,13 @@ at(49.16, 'crawl', x => {
 // "Bizarro, né?"
 at(50.54, 'bizarro', x => {
   const s = x.S.plex; x.out.scene = s; const g = put(x, 'gregory', s, 0.3, 0, 0, -0.15); g.idle(x.t, 1); lookAtCam(x, g, 1); const f = freddyBy(x, s, [-0.6, 0, -0.3], 0.25); shrug(f, eo(seg(x.L, 0.1, 0.4)));
-  cam(x, [0, 1.6, 2.8], [-0.1, 1.5, 0], 44); hand(x);
+  cam(x, [0.1, 1.85, 4.0], [-0.15, 1.65, 0], 44); hand(x);
 });
 // "Comenta o que você acha e me segue para mais mistérios."
 at(51.28, 'outro', x => {
   const s = x.S.plex; x.out.scene = s; const L = x.L;
   [['ffoxy', -1.45, 0.2], ['gfreddy', -0.5, 0.08], ['gregory', 0.45, -0.05], ['baby', 1.4, -0.2]].forEach(([n, px, ry], i) => { const c = put(x, n, s, px, 0, -0.25 * Math.abs(px), ry); c.idle(x.t, 1, i); if (n === 'gfreddy') { aim(c, 'R', rootPt(c, -0.5, 2.1, 0.4), eo(seg(L, 0.3, 0.6))); c.armR.piv.rotation.z += 0.25 * Math.sin(x.t * 9) * seg(L, 0.6, 0.8); } });
-  camMove(x, [0, 1.35, 7.2], [0, 1.2, 0], [0, 1.4, 6.4], [0, 1.25, 0], eo, 42); hand(x); x.post.fade.value = seg(L, x.d - 0.35, x.d);
+  camMove(x, [0, 1.6, 8.0], [0, 1.4, 0], [0, 1.6, 7.2], [0, 1.45, 0], eo, 42); hand(x); x.post.fade.value = seg(L, x.d - 0.35, x.d);
 });
 
 export const SHOTS = shots;

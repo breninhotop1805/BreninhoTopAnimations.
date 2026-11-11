@@ -21,7 +21,7 @@ const camera = new THREE.PerspectiveCamera(42, W / H, 0.03, 80);
 const sk = {};
 for (const n of ['gregory', 'gfreddy', 'ffoxy', 'baby', 'chica_classic', 'puppet', 'charlotte', 'child']) sk[n] = imgToCanvas(await loadImage(`/skins/${n}.png`));
 const LOGOS = []; for (const n of ['sb']) LOGOS.push(await loadImage(`/assets/${n}_logo.png`));
-const S = buildSets(); buildBlobSets(S, imgToCanvas(LOGOS[0]));
+const S = buildSets(); buildBlobSets(S, null);
 S.blob = buildBlob(); S.blob.position.set(0, 0, -3.2); S.ug.add(S.blob);
 
 const KIDPAL = [{ shirt: '#d83a3a', accent: '#f2c230', pants: '#2a4a8a', hair: '#5a3a1a' }, { shirt: '#3a7ae8', accent: '#ffffff', pants: '#3a3a3a', hair: '#2a1a0a' },
