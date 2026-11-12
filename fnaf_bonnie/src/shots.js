@@ -158,8 +158,8 @@ at(0.00, 'hook', x => {
 });
 // "está escondido dentro do"
 at(1.16, 'hidden', x => {
-  const s = atrium(x, true); const L = x.L; const b = put(x, 'gbonnie', s, -3.0, 0, 7.7, 0.5); b.idle(x.t, 0.6); b.torso.rotation.z = -0.22 * eo(seg(L, 0.1, 0.6)); b.head.rotation.y = 0.3; b.head.rotation.z = -0.2 * eo(seg(L, 0.2, 0.7));
-  cam(x, [0.4, 1.9, 13.2], [-2.2, 2.0, 7.7], 42); hand(x); x.S.atKey.intensity = 3; x.S.atHemi.intensity = 0.5;
+  const s = atrium(x, true); const L = x.L; const b = put(x, 'gbonnie', s, -2.25, 0, 9.0, 0.55); b.idle(x.t, 0.6); b.torso.rotation.z = -0.15 * eo(seg(L, 0.1, 0.6)); b.head.rotation.y = 0.35; b.head.rotation.z = -0.2 * eo(seg(L, 0.2, 0.7));
+  cam(x, [-0.6, 2.2, 12.6], [-2.1, 2.1, 9.0], 42); fillOn(x, b, 5, 2.2); hand(x); x.S.atKey.intensity = 3; x.S.atHemi.intensity = 0.5;
 });
 // "Pizza Plex até hoje?"
 at(2.56, 'plex', x => {
@@ -176,7 +176,7 @@ at(3.90, 'base_game', x => {
 at(5.30, 'logo_sb', x => { const s = atrium(x); cam(x, [0, 1.6, 9.8 - 0.4 * x.u], [0, 3.6, -10], 56); logoCard(x, 0); });
 // "a desculpa oficial da empresa é que"
 at(6.12, 'excuse', x => {
-  const s = stage(x); const L = x.L; x.S.stageScreen.material.map = x.S.stageTexOOO; put(x, 'gfreddy', s, 0, 1.0, -3.4, 0).idle(x.t, 1);
+  const s = stage(x); const L = x.L; put(x, 'gfreddy', s, 0, 1.0, -3.4, 0).idle(x.t, 1);
   put(x, 'roxy', s, -2.6, 1.0, -3.4, 0.15).idle(x.t, 1, 2); put(x, 'gchica', s, 2.6, 1.0, -3.4, -0.15).idle(x.t, 1, 4);
   camMove(x, [0, 2.6, 9.5], [0, 3.6, -5], [0, 3.2, 6.5], [0, 4.0, -6], eo, 52); x.S.stageSpots.forEach(l => l.intensity = 18);
 });
@@ -242,16 +242,16 @@ at(21.24, 'bowl_walk', x => {
 });
 // "e desativar uma parede secreta,"
 at(23.48, 'panel', x => {
-  const s = bowl(x, true); const L = x.L; const c = put(x, 'cassie', s, 4.4, 0.1, -15.6, Math.PI / 2 + 0.5); c.idle(x.t, 0.5);
-  const press = eo(seg(L, 0.2, 0.55)) * (1 - seg(L, 0.75, 1.0)); aim(c, 'L', new V3(5.25, 1.6, -16.0), press);
+  const s = bowl(x, true); const L = x.L; const c = put(x, 'cassie', s, 4.45, 0.1, -15.05, Math.PI / 2 + 0.55); c.idle(x.t, 0.5);
+  const press = eo(seg(L, 0.2, 0.55)) * (1 - seg(L, 0.75, 1.0)); aim(c, 'L', new V3(5.25, 1.5, -15.95), press);
   const on = L > 0.6; x.S.panelLed.material.color.set(on ? '#2aff5a' : '#ff2a2a'); x.S.panelPL.color.set(on ? '#2aff5a' : '#ff2a2a'); const op = eo(seg(L, 0.85, 1.6)); x.S.secretPanel.position.z = -16.6 - 1.55 * op;
   flashlight(x, c, s, new V3(5.3, 1.3, -16.6), 30); if (L > 0.85 && L < 1.4) shake(x, 0.15);
-  camMove(x, [3.6, 1.8, -12.2], [5.1, 1.3, -16.4], [3.8, 1.7, -12.7], [5.1, 1.3, -16.5], eo, 52); fillOn(x, c, 4, 1.8);
+  camMove(x, [1.0, 1.9, -13.4], [4.9, 1.35, -16.0], [1.3, 1.85, -13.7], [4.9, 1.35, -16.1], eo, 54); fillOn(x, c, 4, 1.8);
 });
 // "vai acessar uma área que ninguém deveria ver."
 at(25.20, 'enter', x => {
   const s = secret(x); const L = x.L; const on = L > 0.7 ? (Math.sin(x.t * 31) > -0.5 || L > 1.3 ? 1 : 0.1) : 0;
-  x.S.bunnySign.material.opacity = on; x.S.signLight.intensity = 3 * on; x.S.starMat.color.set(L > 1.1 ? '#e8f2ff' : '#151515'); x.S.starLight.intensity = L > 1.1 ? 4 : 0; x.S.secretHemi.intensity = 0.15;
+  x.S.setBunny(on); x.S.signLight.intensity = 3 * on; x.S.starMat.color.set(L > 1.1 ? '#e8f2ff' : '#151515'); x.S.starLight.intensity = L > 1.1 ? 4 : 0; x.S.secretHemi.intensity = 0.15;
   camMove(x, [2.6, 1.55, 2.8], [-0.6, 1.6, -2.5], [1.6, 1.5, 1.9], [-0.8, 1.7, -2.5], eo, 54); hand(x, 1.2);
 });
 // "É exatamente lá que o corpo oficial do Glamrock Bonnie está largado,"

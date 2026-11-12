@@ -970,6 +970,20 @@ function glowText(g, txt, x, y, size, col, font = 'bold') { g.font = `${font} ${
   for (const [blur, a] of [[22, 0.5], [10, 0.8]]) { g.save(); g.shadowColor = col; g.shadowBlur = blur; g.globalAlpha = a; g.fillStyle = col; g.fillText(txt, x, y); g.restore(); }
   g.fillStyle = col; g.fillText(txt, x, y); g.save(); g.globalAlpha = 0.65; g.fillStyle = '#ffffff'; g.font = `${font} ${size * 0.92}px "DejaVu Sans", sans-serif`; g.fillText(txt, x, y); g.restore(); }
 function signPlane(cv, w, h, parent, o = 1) { const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, transparent: true, toneMapped: false, depthWrite: false, opacity: o })); if (parent) parent.add(m); return m; }
+// ---- real 3D neon: polylines -> thin emissive tubes; voxel letters; stars ----
+function tubes(parent, lines, mat, th = 0.06) { const g = new THREE.Group(); if (parent) parent.add(g);
+  for (const P of lines) for (let i = 0; i < P.length - 1; i++) { const [x0, y0] = P[i], [x1, y1] = P[i + 1]; const len = Math.hypot(x1 - x0, y1 - y0); if (len < 1e-4) continue;
+    const b = new THREE.Mesh(new THREE.BoxGeometry(len + th * 0.9, th, th), mat); b.position.set((x0 + x1) / 2, (y0 + y1) / 2, 0); b.rotation.z = Math.atan2(y1 - y0, x1 - x0); g.add(b); }
+  return g; }
+const arcPts = (cx, cy, r, a0, a1, n = 18) => Array.from({ length: n + 1 }, (_, i) => { const a = a0 + (a1 - a0) * i / n; return [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; });
+const ellPts = (cx, cy, rx, ry, n = 28) => Array.from({ length: n + 1 }, (_, i) => { const a = i / n * Math.PI * 2; return [cx + Math.cos(a) * rx, cy + Math.sin(a) * ry]; });
+const starPts = (cx, cy, R, r) => Array.from({ length: 11 }, (_, i) => { const a = Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r : R; return [cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]; });
+const bezPts = (p0, p1, p2, p3, n = 14) => Array.from({ length: n + 1 }, (_, i) => { const t = i / n, u = 1 - t; return [0, 1].map(k => u * u * u * p0[k] + 3 * u * u * t * p1[k] + 3 * u * t * t * p2[k] + t * t * t * p3[k]); });
+function voxelText(parent, txt, mat, px, size = 11) { const c = document.createElement('canvas'); let g2 = c.getContext('2d'); const font = `bold ${size}px "DejaVu Sans", sans-serif`; g2.font = font;
+  const w = Math.ceil(g2.measureText(txt).width) + 2, h = Math.ceil(size * 1.25); c.width = w; c.height = h; g2 = c.getContext('2d'); g2.font = font; g2.textBaseline = 'middle'; g2.fillStyle = '#fff'; g2.fillText(txt, 1, h / 2 + 1);
+  const d = g2.getImageData(0, 0, w, h).data; const pts = []; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 120) pts.push([x, y]);
+  const im = new THREE.InstancedMesh(new THREE.BoxGeometry(px * 0.94, px * 0.94, px * 0.7), mat, pts.length); const m4 = new THREE.Matrix4();
+  pts.forEach(([x, y], i) => { m4.makeTranslation((x - w / 2) * px, (h / 2 - y) * px, 0); im.setMatrixAt(i, m4); }); const grp = new THREE.Group(); grp.add(im); if (parent) parent.add(grp); return grp; }
 function palm(parent, x, z, h = 3.2, leaf = '#b8d23a') { const g = new THREE.Group(); g.position.set(x, 0, z); parent.add(g); const r = rng((x * 13 + z * 7) | 0);
   for (let i = 0; i < 7; i++) box(0.28 - i * 0.015, h / 7 + 0.02, 0.28 - i * 0.015, i % 2 ? '#6a4a2a' : '#5a3a1e', Math.sin(i * 0.5) * 0.06, h / 14 + i * h / 7, 0, g);
   for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4 + r() * 0.3; const lf = new THREE.Group(); lf.position.set(0, h, 0); lf.rotation.y = a; g.add(lf);
@@ -996,14 +1010,18 @@ export function buildBonnieSets(S) {
       const pl = new THREE.PointLight(sx < 0 ? '#ff3ac8' : '#8a5aff', 22, 13, 1.4); pl.position.set(sx * 2.2, 4.5, 4); s.add(pl);
     }
     // neon signs on the block fronts
-    { const cv = neonCanvas(512, 256, (c2, w, h) => { glowStroke(c2, '#ff6ad8', 6, p => { p.arc(256, 150, 110, Math.PI * 1.05, Math.PI * 1.95); }); glowText(c2, "FREDDY FAZBEAR'S", 256, 78, 40, '#ff8ae0'); glowText(c2, 'MEGA PIZZAPLEX', 256, 168, 58, '#ffffff');
-        glowStroke(c2, '#ffd23a', 7, p => { p.moveTo(20, 140); p.lineTo(70, 120); p.lineTo(60, 160); p.lineTo(110, 140); }); glowStroke(c2, '#ffd23a', 7, p => { p.moveTo(492, 140); p.lineTo(442, 120); p.lineTo(452, 160); p.lineTo(402, 140); }); });
-      for (const sx of [-1, 1]) { const m = signPlane(cv, 4.4, 2.2, g); m.position.set(sx * 5.4, 6.2, 8.12); } }
+    for (const sx of [-1, 1]) { const sg = new THREE.Group(); sg.position.set(sx * 5.4, 6.2, 8.2); g.add(sg);
+      box(4.5, 2.3, 0.12, '#1a0414', 0, 0, -0.08, sg);
+      tubes(sg, [arcPts(0, -0.55, 1.75, Math.PI * 0.12, Math.PI * 0.88, 22)], nm('#ff6ad8'), 0.07);
+      const t1 = voxelText(sg, "FREDDY FAZBEAR'S", nm('#ff8ae0'), 0.026, 11); t1.position.set(0, 0.62, 0.02);
+      const t2 = voxelText(sg, 'MEGA PIZZAPLEX', nm('#ffffff'), 0.031, 11); t2.position.set(0, -0.1, 0.02);
+      tubes(sg, [[[-0.65, -0.45], [0.65, -0.45]]], nm('#3ae8ff'), 0.05);
+      for (const bx of [-1, 1]) tubes(sg, [[[bx * 2.15, 0.05], [bx * 1.85, 0.25], [bx * 1.95, -0.05], [bx * 1.6, 0.15]]], nm('#ffd23a'), 0.07); }
     // back wall + big video screens
     const back = plane(36, 14, std({ color: '#140818', roughness: 0.7 }), g); back.position.set(0, 7, -18);
-    S.atScreenCv = canvas(256, 48, c2 => { const gr = c2.createLinearGradient(0, 0, 256, 0); gr.addColorStop(0, '#5a2aa8'); gr.addColorStop(0.5, '#e83aa8'); gr.addColorStop(1, '#2a8ae8'); c2.fillStyle = gr; c2.fillRect(0, 0, 256, 48);
-      for (const [x, c] of [[40, '#d86a2a'], [100, '#e8e8f0'], [160, '#7a5ad8'], [220, '#3ab84a']]) { c2.fillStyle = c; c2.beginPath(); c2.arc(x, 26, 15, 0, 7); c2.fill(); c2.fillStyle = '#111'; c2.fillRect(x - 7, 22, 4, 4); c2.fillRect(x + 3, 22, 4, 4); } });
-    const scr = signPlane(S.atScreenCv, 14, 2.6, g); scr.position.set(0, 5.6, -17.9);
+    box(14, 2.8, 0.2, '#0c0610', 0, 5.6, -17.95, g);
+    { const cols = ['#ff3ac8', '#a05aff', '#3ae8ff', '#ff6ad8']; for (let i = 0; i < 36; i++) { const x = -6.7 + i * 0.383; const h = 0.6 + 1.6 * Math.abs(Math.sin(i * 0.7) * Math.cos(i * 0.23)); box(0.22, h, 0.05, nm(cols[i % 4]), x, 5.6, -17.82, g); }
+      box(14, 0.06, 0.06, nm('#ffffff'), 0, 7.0, -17.8, g); box(14, 0.06, 0.06, nm('#ffffff'), 0, 4.2, -17.8, g); }
     // escalators to the upper floor
     for (const sx of [-1, 1]) { const e = new THREE.Group(); e.position.set(sx * 3.3, 0, -13.5); g.add(e); const len = 6.2; const a = Math.atan2(4, 5);
       const ramp = box(1.3, 0.3, len, std({ color: '#2a2a30', metalness: 0.6, roughness: 0.3 }), 0, 2, 0, e); ramp.rotation.x = a;
@@ -1018,8 +1036,7 @@ export function buildBonnieSets(S) {
     S.statuePos = new THREE.Vector3(0, 0.7, -10);
     for (const [x, z] of [[-3.0, -9.2], [3.0, -9.2], [-3.4, -11.6], [3.4, -11.6]]) palm(g, x, z, 3.4);
     // hanging banners
-    const banner = (col, face) => canvas(32, 96, c2 => { for (let y = 0; y < 96; y += 8) for (let x = 0; x < 32; x += 8) { c2.fillStyle = ((x + y) / 8) % 2 ? '#e83a7a' : '#a8104a'; c2.fillRect(x, y, 8, 8); }
-      c2.fillStyle = col; c2.fillRect(6, 30, 20, 20); c2.fillRect(9, 50, 14, 30); c2.fillStyle = face; c2.fillRect(10, 38, 4, 4); c2.fillRect(18, 38, 4, 4); c2.fillStyle = '#ffd23a'; c2.beginPath(); c2.arc(16, 14, 8, 0, 7); c2.fill(); });
+    const banner = (col, face) => canvas(32, 96, c2 => { for (let y = 0; y < 96; y += 8) for (let x = 0; x < 32; x += 8) { c2.fillStyle = ((x + y) / 8) % 2 ? '#e83a7a' : '#a8104a'; c2.fillRect(x, y, 8, 8); } });
     [[-2.6, '#e8e8f0', '#6a2ad8'], [2.6, '#9aa0b8', '#ffd23a']].forEach(([x, c, f]) => { const p = plane(1.0, 3.0, std({ map: tex(banner(c, f)), side: THREE.DoubleSide, emissive: '#ffffff', emissiveMap: tex(banner(c, f)), emissiveIntensity: 0.35 }), g); p.position.set(x * 0.75, 7.6, -7.5); });
     // ceiling with ring of round lights
     const ceil = plane(36, 50, std({ color: '#050307' }), g); ceil.rotation.x = Math.PI / 2; ceil.position.set(0, 10, -6);
@@ -1053,17 +1070,13 @@ export function buildBonnieSets(S) {
     box(16, 1.0, 6, st, 0, 0.5, -4, g); box(16.2, 0.12, 0.12, nm('#ff5ad8'), 0, 1.0, -1.0, g); box(16.2, 0.12, 0.12, nm('#3ae8ff'), 0, 0.15, -0.98, g);
     for (let i = 0; i < 3; i++) box(3, 0.33, 0.6, st, 0, 0.17 + i * 0.33 - 0.33 * i * 0 , -0.7 + i * -0.0, g);
     // back LED wall
-    S.stageScreenCv = canvas(256, 96, c2 => { const gr = c2.createRadialGradient(128, 48, 5, 128, 48, 140); gr.addColorStop(0, '#ffffff'); gr.addColorStop(0.15, '#ffd23a'); gr.addColorStop(0.45, '#e83aa8'); gr.addColorStop(1, '#2a0a5a'); c2.fillStyle = gr; c2.fillRect(0, 0, 256, 96);
-      c2.strokeStyle = 'rgba(255,255,255,0.35)'; c2.lineWidth = 2; for (let i = 0; i < 16; i++) { c2.beginPath(); c2.moveTo(128, 48); c2.lineTo(128 + Math.cos(i * 0.39) * 200, 48 + Math.sin(i * 0.39) * 200); c2.stroke(); }
-      glowText(c2, 'GLAMROCK', 128, 50, 30, '#ffffff'); });
-    const scr = signPlane(S.stageScreenCv, 14, 5.2, g); scr.position.set(0, 4.2, -6.95); S.stageScreen = scr; S.stageTexMain = scr.material.map;
-    { const cv = canvas(256, 96, c2 => { c2.fillStyle = '#0a0a2a'; c2.fillRect(0, 0, 256, 96); c2.fillStyle = '#3a6ad8'; c2.fillRect(98, 22, 60, 52); c2.fillRect(104, 2, 12, 26); c2.fillRect(140, 2, 12, 26); c2.fillStyle = '#ff3a5a'; c2.fillRect(112, 38, 8, 8); c2.fillRect(136, 38, 8, 8);
-        c2.strokeStyle = '#ff2a2a'; c2.lineWidth = 6; c2.beginPath(); c2.arc(128, 48, 44, 0, 7); c2.moveTo(97, 17); c2.lineTo(159, 79); c2.stroke(); glowText(c2, 'OUT OF ORDER', 128, 88, 13, '#ffd23a'); });
-      const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; S.stageTexOOO = t; }
-    box(14.6, 5.8, 0.2, '#0a0a0e', 0, 4.2, -7.1, g);
+    box(15, 6.4, 0.2, '#0a0610', 0, 4.2, -7.1, g);
+    { const bg = new THREE.Group(); bg.position.set(0, 1.0, -6.95); g.add(bg); S.stageNeon = bg;
+      [['#ff3ac8', 5.2], ['#a05aff', 4.4], ['#3ae8ff', 3.6], ['#ffd23a', 2.8]].forEach(([c, r]) => tubes(bg, [arcPts(0, 0.1, r, 0.08, Math.PI - 0.08, 30)], nm(c), 0.09));
+      for (let i = 0; i < 12; i++) { const a = 0.2 + i * (Math.PI - 0.4) / 11; tubes(bg, [[[Math.cos(a) * 1.2, 0.1 + Math.sin(a) * 1.2], [Math.cos(a) * 2.4, 0.1 + Math.sin(a) * 2.4]]], nm(i % 2 ? '#ffffff' : '#ff9ae8'), 0.05); }
+      for (const sx of [-1, 1]) for (let k = 0; k < 4; k++) box(0.12, 5.6, 0.08, nm(['#ff3ac8', '#3ae8ff'][k % 2]), sx * (5.9 + k * 0.32), 2.8, 0, bg); }
     // star logo + truss + speakers
-    { const cv = neonCanvas(256, 256, (c2) => { glowStroke(c2, '#ffd23a', 8, p => { for (let i = 0; i <= 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? 50 : 115; const x = 128 + Math.cos(a) * rr, y = 132 + Math.sin(a) * rr; i ? p.lineTo(x, y) : p.moveTo(x, y); } }); });
-      const m = signPlane(cv, 3, 3, g); m.position.set(0, 8.2, -6.9); }
+    { const sg = tubes(g, [starPts(0, 0, 1.25, 0.5)], nm('#ffd23a'), 0.1); sg.position.set(0, 8.3, -6.85); }
     box(17, 0.3, 0.3, '#3a3a44', 0, 9.2, -2.5, g); box(17, 0.3, 0.3, '#3a3a44', 0, 9.2, -5.5, g);
     for (const sx of [-1, 1]) { box(0.3, 9.2, 0.3, '#3a3a44', sx * 8.3, 4.6, -2.5, g); for (let k = 0; k < 3; k++) { box(1.3, 1.3, 1.1, '#141418', sx * 7.1, 1.65 + k * 1.32, -5.2, g); const cone = new THREE.Mesh(new THREE.CircleGeometry(0.42, 16), std({ color: '#2a2a30' })); cone.position.set(sx * 7.1, 1.65 + k * 1.32, -4.64); g.add(cone); } }
     S.stageSpots = []; const cols = ['#ff3ac8', '#3ae8ff', '#ffd23a', '#8a5aff', '#5aff7a'];
@@ -1098,12 +1111,12 @@ export function buildBonnieSets(S) {
       for (let k = 0; k < 9; k++) { const z = 2 - k * 2.2, c = ['#7aff9a', '#ff9af0', '#f4f4ff'][k % 3]; const b = box(0.09, 2.6, 0.09, nm(c), sx * 5.3, 1.6, z, g); b.rotation.x = (k % 2 ? 0.35 : -0.3); b.rotation.z = sx * 0.15; } }
     const backW = plane(12, 6, wallM, g); backW.position.set(0, 3, -19.5);
     // scoreboards
-    for (let i = 0; i < N; i += 2) { const cv = canvas(64, 24, c2 => { c2.fillStyle = '#0a0a2a'; c2.fillRect(0, 0, 64, 24); c2.fillStyle = ['#ffd23a', '#3ae8ff', '#ff5ad8'][i / 2]; c2.font = 'bold 10px "DejaVu Sans Mono", monospace'; c2.fillText('BONNIE', 6, 10); c2.fillText('BOWL ' + (i + 1), 6, 21); });
-      const m = signPlane(cv, 2.4, 0.9, g); m.position.set((S.lanesX[i] + S.lanesX[i + 1]) / 2, 3.0, -15.5); }
+    for (let i = 0; i < N; i += 2) { const x = (S.lanesX[i] + S.lanesX[i + 1]) / 2; box(2.4, 0.95, 0.12, '#141420', x, 3.0, -15.55, g);
+      for (let r = 0; r < 3; r++) box(1.9 - r * 0.4, 0.1, 0.03, nm(['#3ae8ff', '#ff5ad8', '#ffd23a'][(i / 2 + r) % 3]), x - r * 0.2, 3.25 - r * 0.25, -15.47, g); }
+    { const tg = new THREE.Group(); tg.position.set(0, 4.5, -19.4); g.add(tg); const t = voxelText(tg, 'BONNIE BOWL', nm('#7ab8ff'), 0.075, 11); tubes(tg, [arcPts(0, -0.2, 3.6, 0.15, Math.PI - 0.15, 24)], nm('#ff7ae0'), 0.07); }
     box(11, 1.1, 0.4, '#0a0a10', 0, 1.6, -15.7, g); // masking unit over the pins
     // ceiling neon stars
-    const starCv = c => neonCanvas(128, 128, c2 => glowStroke(c2, c, 6, p => { for (let i = 0; i <= 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? 22 : 54; const x = 64 + Math.cos(a) * rr, y = 66 + Math.sin(a) * rr; i ? p.lineTo(x, y) : p.moveTo(x, y); } }));
-    S.bowlStars = []; [['#ff5ad8', -3, -3], ['#ffd23a', 2.5, -5], ['#a07aff', -1, -9], ['#7aff9a', 3, -11], ['#ffffff', -3.5, -13], ['#ff9a3a', 0.5, -15]].forEach(([c, x, z]) => { const m = signPlane(starCv(c), 1.8, 1.8, g); m.position.set(x, 5.6, z); m.rotation.x = Math.PI / 2 - 0.25; S.bowlStars.push(m); });
+    S.bowlStars = []; [['#ff5ad8', -3, -3], ['#ffd23a', 2.5, -5], ['#a07aff', -1, -9], ['#7aff9a', 3, -11], ['#ffffff', -3.5, -13], ['#ff9a3a', 0.5, -15]].forEach(([c, x, z]) => { const m = tubes(g, [starPts(0, 0, 0.8, 0.33)], nm(c), 0.07); m.position.set(x, 5.6, z); m.rotation.x = Math.PI / 2 - 0.25; S.bowlStars.push(m); });
     const ceil = plane(12, 26, std({ color: '#06050a' }), g); ceil.rotation.x = Math.PI / 2; ceil.position.set(0, 6, -7);
     // big Bonnie head at the end of the centre lane
     { const h = new THREE.Group(); h.position.set(S.lanesX[2] + 0.7, 0, -18.4); g.add(h); S.bigHead = h; const bl = '#8aa8d8', bd = '#5a78b0';
@@ -1126,6 +1139,7 @@ export function buildBonnieSets(S) {
     for (let i = 0; i < 40; i++) { const b = box(0.2 + r() * 0.7, 0.1 + r() * 0.4, 0.2 + r() * 0.7, ['#2a2228', '#3a3a40', '#4a4038'][i % 3], (r() - 0.5) * 10, 0.12, -17 + r() * 20, ru); b.rotation.set(r(), r() * 3, r()); }
     for (let i = 0; i < 5; i++) { const b = box(3 + r() * 3, 0.2, 1.2, '#1a1a20', (r() - 0.5) * 6, 1.5 + r() * 3, -14 + r() * 12, ru); b.rotation.set(r() - 0.5, r() * 3, r() * 1.2 - 0.6); }
     for (let i = 0; i < 6; i++) { const w = box(0.03, 3, 0.03, '#2a2a2a', (r() - 0.5) * 8, 4.5, -15 + r() * 14, ru); w.rotation.z = r() - 0.5; }
+    ru.children.slice().forEach(o => { if (o.position.x > 2.6 && o.position.z < -12) ru.remove(o); }); // keep the secret-wall corner clear
     S.bowl = s;
   }
   // ---------------- MONTY GOLF ----------------
@@ -1153,12 +1167,10 @@ export function buildBonnieSets(S) {
       box(2.2, 0.5, 2.6, gd, 0, 0.35, 1.9, h); for (let k = 0; k < 5; k++) for (const sx of [-1, 1]) box(0.18, 0.3, 0.18, '#ffffff', sx * 0.95, 0.75, 1.0 + k * 0.45, h); box(1.6, 0.06, 2.0, std({ color: '#c81a2a', roughness: 0.6 }), 0, 0.62, 1.8, h);
       S.gatorHead = h; }
     // neon fish skeleton + hole sign 13 + gator neon
-    { const cv = neonCanvas(256, 96, c2 => { glowStroke(c2, '#f4fff0', 6, p => { p.moveTo(30, 48); p.lineTo(200, 48); }); for (let i = 0; i < 8; i++) glowStroke(c2, '#f4fff0', 4, p => { p.moveTo(60 + i * 18, 20); p.lineTo(60 + i * 18, 76); }); glowStroke(c2, '#f4fff0', 5, p => { p.moveTo(200, 48); p.lineTo(240, 18); p.moveTo(200, 48); p.lineTo(240, 78); }); glowStroke(c2, '#f4fff0', 5, p => { p.arc(30, 48, 18, 0, 7); }); });
-      const m = signPlane(cv, 3.6, 1.35, g); m.position.set(-5.44, 4.2, -7); m.rotation.y = Math.PI / 2; }
-    { const cv = neonCanvas(96, 128, c2 => { glowStroke(c2, '#3ae8c8', 5, p => { p.moveTo(10, 120); p.lineTo(10, 50); p.arc(48, 50, 38, Math.PI, 0); p.lineTo(86, 120); }); glowText(c2, '13', 48, 78, 34, '#7aff7a'); });
-      const m = signPlane(cv, 1.2, 1.6, g); m.position.set(-1.9, 1.0, -6.2); m.rotation.y = 0.5; box(0.9, 0.9, 0.5, '#4a3018', -1.9, 0.45, -6.4, g); }
-    { const cv = neonCanvas(128, 256, c2 => { glowStroke(c2, '#7aff3a', 6, p => { p.moveTo(64, 20); p.lineTo(30, 120); p.lineTo(64, 236); p.lineTo(98, 120); p.closePath(); }); glowStroke(c2, '#ffd23a', 5, p => { p.moveTo(48, 70); p.lineTo(64, 50); p.lineTo(80, 70); }); glowStroke(c2, '#ff5ad8', 4, p => { p.moveTo(54, 130); p.lineTo(74, 110); p.lineTo(60, 150); p.lineTo(80, 130); }); });
-      const m = signPlane(cv, 1.4, 2.8, g); m.position.set(-5.44, 3.0, -1.5); m.rotation.y = Math.PI / 2; }
+    { const fg = new THREE.Group(); fg.position.set(-5.42, 4.2, -7); fg.rotation.y = Math.PI / 2; g.add(fg); const m = nm('#f0fff0');
+      const lines = [[[-1.4, 0], [1.1, 0]], ellPts(-1.6, 0, 0.25, 0.22, 16), [[1.1, 0], [1.6, 0.45]], [[1.1, 0], [1.6, -0.45]]]; for (let i = 0; i < 8; i++) { const x = -1.0 + i * 0.28, hh = 0.55 - Math.abs(i - 3.5) * 0.06; lines.push([[x, hh], [x + 0.08, 0], [x, -hh]]); } tubes(fg, lines, m, 0.06); }
+    { const hg = new THREE.Group(); hg.position.set(-1.9, 1.0, -6.2); hg.rotation.y = 0.5; g.add(hg); tubes(hg, [[[-0.5, -0.75], [-0.5, 0.15], ...arcPts(0, 0.15, 0.5, Math.PI, 0, 14).slice(1), [0.5, -0.75]]], nm('#3ae8c8'), 0.06); box(0.9, 1.5, 0.08, '#2a1a10', 0, -0.05, -0.06, hg); const t = voxelText(hg, '13', nm('#7aff7a'), 0.05, 11); t.position.set(0, -0.15, 0.04); box(0.9, 0.9, 0.5, '#4a3018', -1.9, 0.45, -6.4, g); }
+    { const gg = new THREE.Group(); gg.position.set(-5.42, 3.0, -1.5); gg.rotation.y = Math.PI / 2; g.add(gg); tubes(gg, [[[0, 1.25], [-0.4, 0.1], [0, -1.25], [0.4, 0.1], [0, 1.25]]], nm('#7aff3a'), 0.07); tubes(gg, [starPts(0, 0.65, 0.22, 0.09)], nm('#ffd23a'), 0.05); tubes(gg, [[[-0.12, -0.05], [0.1, 0.15], [-0.05, -0.3], [0.15, -0.1]]], nm('#ff5ad8'), 0.05); }
     S.golfLights = [['#3aff5a', 0, 5, -4], ['#3aff5a', 0, 5, -12], ['#ff5ad8', -3, 3, -1], ['#3ae8c8', 3, 3, -8]].map(([c, x, y, z]) => { const l = new THREE.PointLight(c, 9, 10, 1.4); l.position.set(x, y, z); s.add(l); return l; });
     s.add(new THREE.HemisphereLight('#4a8a6a', '#0a0a08', 0.7));
     S.golf = s;
@@ -1178,13 +1190,13 @@ export function buildBonnieSets(S) {
     const ceil = plane(6, 6, std({ map: tex(flT, 4, 1), color: '#6a5a4a' }), g); ceil.rotation.x = Math.PI / 2; ceil.position.set(0, 3.2, 0.5);
     for (const z of [-1.5, 0.5, 2.5]) box(6, 0.2, 0.25, '#3a2a1a', 0, 3.05, z, g);
     // Bonnie neon sign (outline head + star glasses)
-    { const cv = neonCanvas(256, 320, c2 => { const c = '#9af8e8'; glowStroke(c2, c, 6, p => { p.moveTo(98, 150); p.bezierCurveTo(70, 20, 110, 10, 112, 140); }); glowStroke(c2, c, 6, p => { p.moveTo(158, 140); p.bezierCurveTo(160, 10, 196, 20, 168, 150); });
-        glowStroke(c2, c, 6, p => { p.ellipse(132, 212, 70, 70, 0, 0, 7); }); glowStroke(c2, '#ff6aa0', 6, p => { p.rect(92, 52, 16, 9); });
-        const star = (cx, cy) => p => { for (let i = 0; i <= 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? 9 : 22; const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr; i ? p.lineTo(x, y) : p.moveTo(x, y); } };
-        glowStroke(c2, '#ffb43a', 5, star(108, 196)); glowStroke(c2, '#ffb43a', 5, star(156, 196)); glowStroke(c2, '#ffb43a', 4, p => { p.moveTo(128, 194); p.lineTo(136, 194); });
-        glowStroke(c2, '#9ab8ff', 4, p => { p.moveTo(70, 226); p.lineTo(104, 230); p.moveTo(72, 240); p.lineTo(104, 236); p.moveTo(194, 226); p.lineTo(160, 230); p.moveTo(192, 240); p.lineTo(160, 236); });
-        glowStroke(c2, c, 5, p => { p.moveTo(110, 250); p.quadraticCurveTo(132, 270, 154, 250); }); glowStroke(c2, '#9ab8ff', 4, p => { p.rect(126, 252, 12, 14); }); glowStroke(c2, c, 5, p => { p.moveTo(122, 132); p.lineTo(128, 118); p.lineTo(134, 134); p.lineTo(140, 120); }); });
-      const m = signPlane(cv, 1.5, 1.88, g); m.position.set(-1.1, 1.9, -2.47); S.bunnySign = m; }
+    { const bs = new THREE.Group(); bs.position.set(-1.1, 1.85, -2.45); g.add(bs); S.bunnySign = bs; const mk = c => { const m = NM(c); m.userData.on = new THREE.Color(c); return m; };
+      const cy = mk('#9af8e8'), or = mk('#ffb43a'), pk = mk('#ff6aa0'), wb = mk('#9ab8ff'); S.bunnyMats = [cy, or, pk, wb];
+      tubes(bs, [bezPts([-0.2, 0.2], [-0.45, 1.05], [-0.1, 1.1], [-0.08, 0.27]), bezPts([0.08, 0.27], [0.1, 1.1], [0.45, 1.05], [0.2, 0.2]), ellPts(0, -0.25, 0.48, 0.46, 30), arcPts(0, -0.45, 0.16, Math.PI * 1.15, Math.PI * 1.85, 8)], cy, 0.04);
+      tubes(bs, [[[-0.27, 0.72], [-0.15, 0.72], [-0.15, 0.66], [-0.27, 0.66], [-0.27, 0.72]]], pk, 0.035);
+      tubes(bs, [starPts(-0.17, -0.15, 0.15, 0.06), starPts(0.17, -0.15, 0.15, 0.06), [[-0.03, -0.14], [0.03, -0.14]]], or, 0.032);
+      tubes(bs, [[[-0.62, -0.32], [-0.33, -0.36]], [[-0.6, -0.44], [-0.33, -0.42]], [[0.62, -0.32], [0.33, -0.36]], [[0.6, -0.44], [0.33, -0.42]], [[-0.05, -0.47], [0.05, -0.47], [0.05, -0.58], [-0.05, -0.58], [-0.05, -0.47]]], wb, 0.03);
+      tubes(bs, [[[-0.1, 0.2], [-0.04, 0.32], [0.02, 0.18], [0.08, 0.3]]], cy, 0.03); }
     // neon star with bulbs
     { const st = new THREE.Group(); st.position.set(1.4, 1.95, -2.4); g.add(st); S.neonStar = st; const pts = []; for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? 0.32 : 0.78; pts.push([Math.cos(a) * rr, -Math.sin(a) * rr]); }
       const sm = NM('#e8f2ff'); S.starMat = sm; for (let i = 0; i < 10; i++) { const [x0, y0] = pts[i], [x1, y1] = pts[(i + 1) % 10]; const len = Math.hypot(x1 - x0, y1 - y0); const b = new THREE.Mesh(new THREE.BoxGeometry(len, 0.09, 0.08), sm); b.position.set((x0 + x1) / 2, (y0 + y1) / 2, 0); b.rotation.z = Math.atan2(y1 - y0, x1 - x0); st.add(b);
@@ -1204,9 +1216,10 @@ export function buildBonnieSets(S) {
     S.secret = s;
   }
   S.neonMats = neonMats;
+  S.setBunny = k => { for (const m of S.bunnyMats) m.color.copy(m.userData.on).multiplyScalar(Math.max(0.04, k)); };
   S.resetBonnie = () => { for (const [m, c] of neonMats) m.color.copy(c); S.atRuinG.visible = false; S.bowlRuinG.visible = false; S.secretPanel.position.set(5.32, 0, -16.6); S.panelLed.material.color.set('#ff2a2a'); S.panelPL.color.set('#ff2a2a');
     S.atKey.intensity = 18; S.atCyan.intensity = 3; S.atHemi.intensity = 1.4; S.atStatueSpot.intensity = 60; S.bowlKey.intensity = 9; S.bowlHemi.intensity = 0.8; S.bowlLights.forEach(l => l.intensity = 8);
-    S.starLight.intensity = 4; S.signLight.intensity = 3; S.starMat.color.set('#e8f2ff'); S.bunnySign.material.opacity = 1; S.stageSpots.forEach(l => l.intensity = 40); S.stageKey.intensity = 70; S.stageScreen.material.map = S.stageTexMain; S.stageFloorLight.intensity = 12; S.headLight.intensity = 7; };
+    S.starLight.intensity = 4; S.signLight.intensity = 3; S.starMat.color.set('#e8f2ff'); S.setBunny(1); S.stageSpots.forEach(l => l.intensity = 40); S.stageKey.intensity = 70; S.stageFloorLight.intensity = 12; S.headLight.intensity = 7; };
   S.ruinMode = (scene, t) => { // darken neon/lights, flicker
     const f = (Math.sin(t * 37) + Math.sin(t * 23.3) > 1.5) ? 0.2 : 1;
     for (const [m, c] of neonMats) m.color.copy(c).multiplyScalar(0.12 * f);
