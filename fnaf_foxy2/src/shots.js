@@ -352,7 +352,6 @@ at(52.32, 'outro', x => {
   aim(f, 'R', rootPt(f, -0.45, 2.0 + 0.12 * Math.sin(x.t * 9), 0.35), eo(seg(L, 0, 0.3))); f.jaw.rotation.x = 0.2 + 0.15 * Math.sin(x.t * 8);
   x.S.officeLamp2.intensity = 14.0; torch(x, s, [0.3, 1.5, 0.2], [0, 1.6, -2.6], 8);
   camMove(x, [0.35, 1.85, 1.5], [0, 1.85, -2.6], [0.2, 1.85, 1.2], [0, 1.85, -2.6], eo, 50);
-  pop(x, x.FX.like, s, [-0.5, 2.4, -2.2], 0.25, 0.55); pop(x, x.FX.bell, s, [0.5, 2.4, -2.2], 0.55, 0.55);
 });
 
 export const SHOTS = shots;
