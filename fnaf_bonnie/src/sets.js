@@ -1190,13 +1190,24 @@ export function buildBonnieSets(S) {
     const ceil = plane(6, 6, std({ map: tex(flT, 4, 1), color: '#6a5a4a' }), g); ceil.rotation.x = Math.PI / 2; ceil.position.set(0, 3.2, 0.5);
     for (const z of [-1.5, 0.5, 2.5]) box(6, 0.2, 0.25, '#3a2a1a', 0, 3.05, z, g);
     // Bonnie neon sign (outline head + star glasses)
-    { const bs = new THREE.Group(); bs.position.set(-1.1, 1.85, -2.45); g.add(bs); S.bunnySign = bs; const mk = c => { const m = NM(c); m.userData.on = new THREE.Color(c); return m; };
-      const cy = mk('#9af8e8'), or = mk('#ffb43a'), pk = mk('#ff6aa0'), wb = mk('#9ab8ff'); S.bunnyMats = [cy, or, pk, wb];
-      tubes(bs, [bezPts([-0.2, 0.2], [-0.45, 1.05], [-0.1, 1.1], [-0.08, 0.27]), bezPts([0.08, 0.27], [0.1, 1.1], [0.45, 1.05], [0.2, 0.2]), ellPts(0, -0.25, 0.48, 0.46, 30), arcPts(0, -0.45, 0.16, Math.PI * 1.15, Math.PI * 1.85, 8)], cy, 0.04);
-      tubes(bs, [[[-0.27, 0.72], [-0.15, 0.72], [-0.15, 0.66], [-0.27, 0.66], [-0.27, 0.72]]], pk, 0.035);
-      tubes(bs, [starPts(-0.17, -0.15, 0.15, 0.06), starPts(0.17, -0.15, 0.15, 0.06), [[-0.03, -0.14], [0.03, -0.14]]], or, 0.032);
-      tubes(bs, [[[-0.62, -0.32], [-0.33, -0.36]], [[-0.6, -0.44], [-0.33, -0.42]], [[0.62, -0.32], [0.33, -0.36]], [[0.6, -0.44], [0.33, -0.42]], [[-0.05, -0.47], [0.05, -0.47], [0.05, -0.58], [-0.05, -0.58], [-0.05, -0.47]]], wb, 0.03);
-      tubes(bs, [[[-0.1, 0.2], [-0.04, 0.32], [0.02, 0.18], [0.08, 0.3]]], cy, 0.03); }
+    { const bs = new THREE.Group(); bs.position.set(-1.1, 1.8, -2.42); g.add(bs); S.bunnySign = bs; S.bunnyMats = [];
+      const mk = (c, o = 1) => { const m = new THREE.MeshBasicMaterial({ color: c, toneMapped: false, transparent: o < 1, opacity: o, depthWrite: o >= 1, blending: o < 1 ? THREE.AdditiveBlending : THREE.NormalBlending }); m.userData.on = new THREE.Color(c); S.bunnyMats.push(m); return m; };
+      // smooth round neon tube (+ soft additive glow sleeve) along a curve through 2D points
+      const tube = (pts, c, r = 0.017, closed = false, smooth = true) => { const v = pts.map(p => new THREE.Vector3(p[0], p[1], 0));
+        let curve; if (smooth) curve = new THREE.CatmullRomCurve3(v, closed, 'centripetal'); else { curve = new THREE.CurvePath(); const vv = closed ? [...v, v[0]] : v; for (let i = 0; i < vv.length - 1; i++) curve.add(new THREE.LineCurve3(vv[i], vv[i + 1])); }
+        const n = Math.max(24, pts.length * 10); const m1 = new THREE.Mesh(new THREE.TubeGeometry(curve, n, r, 8, closed && smooth), mk(c)); const m2 = new THREE.Mesh(new THREE.TubeGeometry(curve, n, r * 2.8, 8, closed && smooth), mk(c, 0.22)); bs.add(m1, m2);
+        if (!closed) for (const e of [v[0], v[v.length - 1]]) { const cap = new THREE.Mesh(new THREE.SphereGeometry(r * 1.05, 8, 6), m1.material); cap.position.copy(e); bs.add(cap); } };
+      const mint = '#9af8e2', orange = '#ffb03a', pink = '#ff6aa0', lblue = '#a8c8ff';
+      const earL = [[-0.13, 0.30], [-0.15, 0.62], [-0.16, 0.95], [-0.22, 1.16], [-0.31, 1.18], [-0.38, 1.02], [-0.37, 0.68], [-0.31, 0.38], [-0.28, 0.30]];
+      tube(earL, mint); tube(earL.map(([x, y]) => [-x, y]), mint);
+      tube([[-0.14, 0.33], [-0.07, 0.47], [-0.02, 0.36], [0.04, 0.5], [0.08, 0.36], [0.15, 0.44], [0.16, 0.33]], mint, 0.015);
+      tube([[-0.36, 0.98], [-0.2, 0.98], [-0.2, 0.92], [-0.36, 0.92]], pink, 0.013, true, false);
+      tube(Array.from({ length: 30 }, (_, i) => { const a = i / 30 * Math.PI * 2; const r = 0.5 + 0.035 * Math.cos(2 * a); return [Math.cos(a) * r * 1.02, -0.13 + Math.sin(a) * r * 0.9]; }), mint, 0.018, true);
+      const star = (cx, cy) => starPts(cx, cy, 0.15, 0.065).slice(0, 10); tube(star(-0.17, -0.06), orange, 0.014, true, false); tube(star(0.17, -0.06), orange, 0.014, true, false); tube([[-0.03, -0.05], [0.03, -0.05]], orange, 0.012);
+      for (const sx of [-1, 1]) { tube([[sx * 0.34, -0.27], [sx * 0.52, -0.25], [sx * 0.68, -0.2]], lblue, 0.011); tube([[sx * 0.34, -0.33], [sx * 0.52, -0.34], [sx * 0.7, -0.35]], lblue, 0.011); tube([[sx * 0.34, -0.39], [sx * 0.5, -0.44], [sx * 0.65, -0.5]], lblue, 0.011); }
+      tube([[-0.27, -0.33], [-0.21, -0.46], [-0.1, -0.5], [0, -0.42], [0.1, -0.5], [0.21, -0.46], [0.27, -0.33]], mint, 0.016);
+      tube([[-0.05, -0.46], [0.05, -0.46], [0.05, -0.59], [-0.05, -0.59]], lblue, 0.011, true, false);
+      tube(Array.from({ length: 12 }, (_, i) => { const a = i / 12 * Math.PI * 2; return [Math.cos(a) * 0.045, -0.33 + Math.sin(a) * 0.03]; }), lblue, 0.011, true); }
     // neon star with bulbs
     { const st = new THREE.Group(); st.position.set(1.4, 1.95, -2.4); g.add(st); S.neonStar = st; const pts = []; for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? 0.32 : 0.78; pts.push([Math.cos(a) * rr, -Math.sin(a) * rr]); }
       const sm = NM('#e8f2ff'); S.starMat = sm; for (let i = 0; i < 10; i++) { const [x0, y0] = pts[i], [x1, y1] = pts[(i + 1) % 10]; const len = Math.hypot(x1 - x0, y1 - y0); const b = new THREE.Mesh(new THREE.BoxGeometry(len, 0.09, 0.08), sm); b.position.set((x0 + x1) / 2, (y0 + y1) / 2, 0); b.rotation.z = Math.atan2(y1 - y0, x1 - x0); st.add(b);
