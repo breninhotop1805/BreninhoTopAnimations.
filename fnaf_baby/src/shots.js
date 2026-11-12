@@ -154,9 +154,8 @@ at(2.14, 'fooled', x => {
 });
 // "Se você jogar o minigame secreto"
 at(4.08, 'arcade', x => {
-  const s = x.S.screenroom; x.out.scene = s; const L = x.L; x.out.screen = 'mg'; x.out.mg = { cx: 140, cy: 150, z: 1.1, baby: { x: 140 + L * 20, y: 196, walk: 1 }, kids: KIDS, counter: 0 };
-  x.S.screenLamp.intensity = 1.2; x.S.arcLight.intensity = 4; x.S.neonLight.intensity = 0; x.S.neonMat.opacity = 0;
-  const p = x.S.arcScreenPos; const k = eio(seg(L, 0, 1.56)); cam(x, [p.x + mix(-1.5, 0, k), p.y + mix(0.25, 0.0, k), p.z + mix(3.0, 0.62, k)], [p.x, p.y, p.z], 50);
+  const s = x.S.arcade; x.out.scene = s; const L = x.L; x.out.screen = 'mg'; x.out.mg = { cx: 180, cy: 120, z: 0.5, baby: { x: 120 + L * 25, y: 196, walk: 1 }, kids: KIDS, counter: 0 };
+  const p = x.S.cabScreenPos; const k = eio(seg(L, 0, 1.56)); cam(x, [p.x + mix(0.9, 0, k), p.y + mix(0.1, 0.0, k), p.z + mix(4.2, 1.85, k)], [p.x, p.y - 0.05 * (1 - k), p.z], 46);
   x.post.flash.value = L > 1.42 ? (L - 1.42) / 0.14 * 0.8 : 0;
 });
 at(5.64, 'logo_sl', x => { const s = gallery(x); babyOn(x, s, GREEN); cam(x, [0, 2.2, 6.5 - 0.4 * x.u], [0, 2.6, -3.4], 50); logoCard(x, 0); });
@@ -199,7 +198,7 @@ at(20.34, 'cruel', x => {
 // ===== THE CLAW =====
 // "O Afton não construiu a Baby só para cantar e fazer balões."
 at(23.00, 'sing', x => {
-  const s = gallery(x); const L = x.L; const b = babyOn(x, s, BLUE); aim(b, 'L', tp(b, 'head', [2, 2, 8]), eo(seg(L, 0, 0.4))); b.head.rotation.z = 0.1 * Math.sin(x.t * 4);
+  const s = gallery(x); const L = x.L; const b = babyOn(x, s, BLUE); b.armL.piv.rotation.x = -1.15 * eo(seg(L, 0, 0.4)); b.armL.piv.rotation.z = -0.25 * eo(seg(L, 0, 0.4)); b.head.rotation.z = 0.1 * Math.sin(x.t * 4);
   const bl = x.FX.balloon; if (L > 2.2) { s.add(bl); const k = eo(seg(L, 2.2, 2.9)); bl.position.copy(tp(b, 'armR', [0, -11, 0])).add(new V3(0, 0.6 * k, 0)); bl.scale.setScalar(0.4 + 0.6 * k); aim(b, 'R', tp(b, 'torso', [-8, 10, 6]), k); }
   camMove(x, [0.9, 2.0, 3.6], [0, 2.5, -3.4], [0.5, 2.1, 2.6], [0, 2.5, -3.4], eo, 48); sparkles(x, s, [0, 3.6, -3.0], 1.0, 6, 0.6);
 });
@@ -225,7 +224,6 @@ at(32.20, 'william_no', x => {
 at(33.50, 'approach', x => {
   const s = x.S.party; x.out.scene = s; const L = x.L; const b = put(x, 'baby', s, 0, 0, -3.0, 0); b.setEyes(BLUE); b.idle(x.t, 0.5); b.head.rotation.x = 0.3 * eo(seg(L, 0.8, 1.6));
   const e = put(x, 'elizabeth', s, 0, 0, 0, Math.PI); walkTo(e, [0.35, 0, 1.6], [0.1, 0, -1.9], eo(seg(L, 0, 2.2)), 0.6); e.root.rotation.y = Math.PI; e.head.rotation.x = -0.4;
-  const ic = x.FX.icecream; s.add(ic); ic.position.copy(tp(e, 'armR', [0, -11, 0])); aim(e, 'R', rootPt(e, -0.3, 0.9, 0.4), 0.6);
   camMove(x, [1.2, 1.3, 2.8], [0, 1.4, -2.2], [0.9, 1.25, 2.0], [0, 1.4, -2.4], eo, 50); hand(x);
 });
 // "A garotinha que foi capturada"
@@ -233,14 +231,13 @@ at(35.94, 'grab', x => {
   const s = x.S.party; x.out.scene = s; const L = x.L; const b = put(x, 'baby', s, 0, 0, -3.0, 0); b.setEyes(BLUE); b.head.rotation.x = 0.3;
   b.setClaw(eo(seg(L, 0, 0.12)), eo(seg(L, 0.1, 0.3)), sm(seg(L, 0.28, 0.36)));
   const gone = L > 0.38; const e = put(x, 'elizabeth', s, 0.1, 0, -1.9, Math.PI); e.head.rotation.x = -0.4; e.root.visible = !gone;
-  if (!gone) { const ic = x.FX.icecream; s.add(ic); ic.position.copy(tp(e, 'armR', [0, -11, 0])); }
   cam(x, [1.4, 1.5, 0.6], [0, 1.4, -2.5], 52); if (L > 0.2 && L < 0.7) shake(x, 0.9 * (1 - seg(L, 0.2, 0.7)));
   x.post.flash.value = L > 0.34 && L < 0.42 ? 0.5 : 0; if (L > 0.36) { x.post.tint.value.set(1.4, 0.7, 0.7); x.post.stat.value = L < 0.5 ? 0.5 : 0; }
 });
 // "...capturada" — the ice cream on the floor
-at(36.62, 'icecream', x => {
-  const s = x.S.party; x.out.scene = s; const L = x.L; const ic = x.FX.icecream; s.add(ic); ic.position.set(0.1, 0.07, -1.8); ic.rotation.set(0, 0.4, 1.35);
-  cam(x, [0.55, 0.45, -1.1], [0.1, 0.06, -1.8], 46); hand(x); x.post.tint.value.set(1.15, 0.8, 0.8); x.post.vig.value = 1.1; x.S.partyRed.intensity = 4;
+at(36.62, 'bow_floor', x => {
+  const s = x.S.party; x.out.scene = s; const L = x.L; const bw = x.FX.bow; s.add(bw); bw.position.set(0.1, 0.05, -1.8); bw.rotation.set(-Math.PI / 2 + 0.15, 0, 0.5);
+  cam(x, [0.5, 0.5, -1.05], [0.1, 0.05, -1.8], 46); hand(x); x.post.tint.value.set(1.15, 0.8, 0.8); x.post.vig.value = 1.1; x.S.partyRed.intensity = 4;
 });
 // "se chamava Elizabeth."
 at(38.40, 'elizabeth', x => {
@@ -251,8 +248,8 @@ at(38.40, 'elizabeth', x => {
 // "E adivinha a cor dos olhos dela? Exatamente, verde."
 at(39.34, 'liz_eyes', x => {
   const s = x.S.void; x.out.scene = s; const L = x.L; const e = put(x, 'elizabeth', s, 0, 0, 0, 0); e.idle(x.t, 0.4); x.S.voidSpot.intensity = 40; x.S.voidFill.intensity = 8;
-  const hp = tp(e, 'head', [0, 4, 4]); camMove(x, [hp.x + 0.1, hp.y + 0.05, hp.z + 1.4], hp.toArray(), [hp.x + 0.05, hp.y + 0.03, hp.z + 0.95], hp.toArray(), eio, 42);
-  if (L > 0.9) lensOn(x, [tp(e, 'head', [-2, 4.5, 4.2]), tp(e, 'head', [2, 4.5, 4.2])], 0.08, sm(seg(L, 0.9, 1.2)), L > 1.75 ? 'ok' : null, '#5aff6a');
+  const hp = tp(e, 'head', [0, 3.2, 4]); camMove(x, [hp.x + 0.1, hp.y + 0.05, hp.z + 1.4], hp.toArray(), [hp.x + 0.05, hp.y + 0.03, hp.z + 0.95], hp.toArray(), eio, 42);
+  if (L > 0.9) lensOn(x, [tp(e, 'head', [-1.6, 2.4, 4.2]), tp(e, 'head', [1.6, 2.4, 4.2])], 0.07, sm(seg(L, 0.9, 1.2)), L > 1.75 ? 'ok' : null, '#5aff6a');
 });
 // "O momento em que os olhos da robô mudam de cor"
 at(42.64, 'change', x => {

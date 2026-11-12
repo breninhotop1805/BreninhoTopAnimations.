@@ -38,6 +38,8 @@ C.lizghost.baseScale = 0.8;
 
 // fx objects
 const FX = {
+  bow: (() => { const g = new THREE.Group(); const m = new THREE.MeshStandardMaterial({ color: '#e8141e', roughness: 0.6 }), md = new THREE.MeshStandardMaterial({ color: '#a80c12', roughness: 0.6 });
+    for (const sx of [-1, 1]) { const w = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.12, 0.05), m); w.position.x = sx * 0.08; w.rotation.z = sx * 0.25; g.add(w); } g.add(new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.07, 0.06), md)); return g; })(),
   icecream: (() => { const g = new THREE.Group(); const c = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.18, 10), new THREE.MeshStandardMaterial({ color: '#d8a050', roughness: 0.8 })); c.rotation.x = Math.PI; c.position.y = -0.09; g.add(c);
     const sc = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 10), new THREE.MeshStandardMaterial({ color: '#f6e8f0', roughness: 0.6 })); sc.position.y = 0.03; g.add(sc); const s2 = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), new THREE.MeshStandardMaterial({ color: '#f08ab8', roughness: 0.6 })); s2.position.y = 0.1; g.add(s2); return g; })(),
   balloon: (() => { const g = new THREE.Group(); const b = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 12), new THREE.MeshStandardMaterial({ color: '#8a3ae8', roughness: 0.25, metalness: 0.1 })); b.scale.y = 1.15; b.position.y = 0.6; g.add(b);
@@ -209,7 +211,7 @@ function resetWorld() {
   C.baby.setClaw(0, 0, 0); C.baby.setEyes('#4aa8ff'); C.lizghost.ghostMat.opacity = 0.55; S.resetBaby();
   for (const k of ['q1', 'ex1']) { FX[k].removeFromParent(); FX[k].visible = true; FX[k].scale.setScalar(1); FX[k].rotation.set(0, 0, 0); }
   for (const s of FX.sparkles) s.removeFromParent(); for (const w of FX.waves) w.removeFromParent(); for (const o of FX.orbs) { o.removeFromParent(); o.scale.setScalar(1); }
-  FX.sparks.removeFromParent(); FX.icecream.removeFromParent(); FX.balloon.removeFromParent(); FX.cage.removeFromParent(); FX.agony.removeFromParent(); FX.xmark.removeFromParent(); FX.torch.removeFromParent(); FX.torch.target.removeFromParent(); FX.torch.intensity = 0; for (const l of S.hallLamps) { l.intensity = 9; l.color.set('#ffe9c4'); } S.stageSpot.intensity = 40; FX.jsLight.removeFromParent(); FX.jsLight.intensity = 0; FX.fill.removeFromParent(); FX.fill.intensity = 0; FX.like.removeFromParent(); FX.bell.removeFromParent(); FX.tablet.removeFromParent();
+  FX.sparks.removeFromParent(); FX.icecream.removeFromParent(); FX.bow.removeFromParent(); FX.balloon.removeFromParent(); FX.cage.removeFromParent(); FX.agony.removeFromParent(); FX.xmark.removeFromParent(); FX.torch.removeFromParent(); FX.torch.target.removeFromParent(); FX.torch.intensity = 0; for (const l of S.hallLamps) { l.intensity = 9; l.color.set('#ffe9c4'); } S.stageSpot.intensity = 40; FX.jsLight.removeFromParent(); FX.jsLight.intensity = 0; FX.fill.removeFromParent(); FX.fill.intensity = 0; FX.like.removeFromParent(); FX.bell.removeFromParent(); FX.tablet.removeFromParent();
   S.voidRim.intensity = 0; S.voidSpot.intensity = 42; S.voidSpot.color.set('#fff4e0'); S.voidFill.intensity = 2.5; S.voidFill.color.set('#7f8cff');
   
   S.partyRed.intensity = 0; animateFire(S, 0, false);

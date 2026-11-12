@@ -875,7 +875,7 @@ export function buildBabySL(canvas, name = 'babysl') {
   for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; const p = new THREE.Group(); p.rotation.y = a; sk.add(p);
     const b = vbox(2.6, 3.0, 0.7, i % 2 ? '#d8262a' : '#b81c22', 0, -1.0, 0, p, 0.7); b.position.z = 5.6 * U; b.rotation.x = 0.55; b.scale.x = 1.15; }
   // microphone in her left hand
-  { const m = new THREE.Group(); m.position.set(0, -1.0 * U, 0.6 * U); ch.handL.add(m); vbox(0.9, 3.2, 0.9, '#2a2a30', 0, -0.6, 1.2, m, 0.4).rotation.x = -0.9; const head = new THREE.Mesh(new THREE.SphereGeometry(1.0 * U, 10, 8), new THREE.MeshStandardMaterial({ color: '#bfc3cc', metalness: 0.7, roughness: 0.3 })); head.position.set(0, 0.2 * U, 2.6 * U); m.add(head); ch.mic = m; }
+  { const m = new THREE.Group(); m.position.set(0, -0.6 * U, 0.4 * U); m.rotation.x = 0.75; ch.handL.add(m); vbox(0.9, 3.4, 0.9, '#2a2a30', 0, 1.2, 0, m, 0.4); const head = new THREE.Mesh(new THREE.SphereGeometry(1.05 * U, 12, 10), new THREE.MeshStandardMaterial({ color: '#bfc3cc', metalness: 0.7, roughness: 0.3 })); head.position.set(0, 3.4 * U, 0); m.add(head); ch.mic = m; }
   // belly plate (two doors) + claw mechanism inside the torso
   const plate = new THREE.Group(); plate.position.set(0, 5.0 * U, 2.95 * U); ch.torso.add(plate); ch.plate = plate;
   ch.doors = [];

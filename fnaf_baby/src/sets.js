@@ -1145,5 +1145,27 @@ export function buildBabySets(S) {
     s.add(new THREE.HemisphereLight('#8aa0d8', '#141418', 0.6));
     S.control = s;
   }
+  // ---------------- ARCADE (real cabinet with a recessed 4:3 screen) ----------------
+  {
+    const s = mkScene('#04030a', '#05040c', 8, 20); const g = new THREE.Group(); s.add(g);
+    const fl = plane(12, 12, std({ map: tex(T.checker, 12, 12), roughness: 0.3, color: '#8a8a96' }), g); fl.rotation.x = -Math.PI / 2;
+    const wall = plane(12, 6, std({ map: tex(T.stars('#2a1c5e', 12), 4, 2) }), g); wall.position.set(0, 3, -1.2);
+    const cab = new THREE.Group(); cab.position.set(0, 0, 0); g.add(cab); S.cab = cab; const body = std({ color: '#3a1a6a', roughness: 0.5 }), side = std({ color: '#2a1050', roughness: 0.5 });
+    box(1.1, 2.3, 0.85, body, 0, 1.15, -0.3, cab); for (const sx of [-1, 1]) { box(0.06, 2.4, 0.95, side, sx * 0.58, 1.2, -0.28, cab); box(0.065, 1.9, 0.08, NM(sx < 0 ? '#ff5ad8' : '#4ac8ff'), sx * 0.615, 1.25, 0.05, cab); }
+    // screen bezel + recessed screen (4:3) + glass
+    box(1.0, 0.86, 0.12, '#0a0a0e', 0, 1.62, 0.14, cab); S.cabScreenMat = new THREE.MeshBasicMaterial({ map: S.screenTex, toneMapped: false }); const scr = plane(0.84, 0.63, S.cabScreenMat, cab); scr.position.set(0, 1.62, 0.205);
+    const glass = plane(0.84, 0.63, new THREE.MeshStandardMaterial({ color: '#ffffff', transparent: true, opacity: 0.06, roughness: 0.05, metalness: 0.2 }), cab); glass.position.set(0, 1.62, 0.215);
+    S.cabScreenPos = new THREE.Vector3(0, 1.62, 0.21);
+    // marquee with 3D neon letters
+    box(1.1, 0.32, 0.3, '#14081e', 0, 2.25, 0.02, cab); { const t = voxelText(cab, 'CIRCUS BABY', NM('#ff5a7a'), 0.0145, 11); t.position.set(0, 2.25, 0.18); }
+    // control panel: joystick + buttons, coin door
+    const cp = box(1.1, 0.1, 0.42, '#24123e', 0, 1.08, 0.3, cab); cp.rotation.x = 0.25;
+    box(0.04, 0.16, 0.04, '#222', -0.25, 1.18, 0.32, cab); const ball = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 8), std({ color: '#e82a2a', roughness: 0.3 })); ball.position.set(-0.25, 1.27, 0.32); cab.add(ball);
+    for (const [x, c] of [[0.08, '#ffd23a'], [0.22, '#3ad8ff'], [0.36, '#5aff6a']]) { const b = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.04, 14), NM(c)); b.position.set(x, 1.13, 0.3); g.add(b); }
+    box(0.36, 0.5, 0.04, '#1a0c2a', 0, 0.55, 0.13, cab); box(0.06, 0.12, 0.05, NM('#ff8a2a'), -0.08, 0.6, 0.15, cab); box(0.06, 0.12, 0.05, NM('#ff8a2a'), 0.08, 0.6, 0.15, cab);
+    S.cabLight = new THREE.PointLight('#8ab8ff', 3, 3, 1.6); S.cabLight.position.set(0, 1.6, 0.8); s.add(S.cabLight);
+    const k = new THREE.PointLight('#c08cff', 5, 7, 1.4); k.position.set(1.5, 2.8, 2.0); s.add(k); s.add(new THREE.HemisphereLight('#6a5ad8', '#100818', 0.6));
+    S.arcade = s;
+  }
   S.resetBaby = () => { S.galRed.intensity = 0; S.galWash.intensity = 14; S.galSpot.intensity = 45; S.galKey.intensity = 8; S.ctrlBehindLight.intensity = 0; S.ctrlKey.intensity = 7; S.bulbs.forEach(b => b.visible = true); };
 }
