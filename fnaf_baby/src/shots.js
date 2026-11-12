@@ -158,7 +158,7 @@ at(4.08, 'arcade', x => {
   const p = x.S.cabScreenPos; const k = eio(seg(L, 0, 1.56)); cam(x, [p.x + mix(0.9, 0, k), p.y + mix(0.1, 0.0, k), p.z + mix(4.2, 1.85, k)], [p.x, p.y - 0.05 * (1 - k), p.z], 46);
   x.post.flash.value = L > 1.42 ? (L - 1.42) / 0.14 * 0.8 : 0;
 });
-at(5.64, 'logo_sl', x => { const s = gallery(x); babyOn(x, s, GREEN); cam(x, [0, 2.2, 6.5 - 0.4 * x.u], [0, 2.6, -3.4], 50); logoCard(x, 0); });
+at(5.64, 'logo_sl', x => { const s = gallery(x); babyOn(x, s, GREEN); cam(x, [0, 2.2, 6.5 - 0.4 * x.u], [0, 2.6, -3.4], 50); logoCard(x, 0); x.post.blur.value = 1; x.post.vig.value = 1.0; });
 
 // ===== MINIGAME =====
 // "vai notar um detalhe que muda toda a história."
@@ -229,15 +229,10 @@ at(33.50, 'approach', x => {
 // "A garotinha que foi capturada"
 at(35.94, 'grab', x => {
   const s = x.S.party; x.out.scene = s; const L = x.L; const b = put(x, 'baby', s, 0, 0, -3.0, 0); b.setEyes(BLUE); b.head.rotation.x = 0.3;
-  b.setClaw(eo(seg(L, 0, 0.12)), eo(seg(L, 0.1, 0.3)), sm(seg(L, 0.28, 0.36)));
+  const back = sm(seg(L, 1.0, 1.9)); b.setClaw(eo(seg(L, 0, 0.12)) * (1 - sm(seg(L, 1.8, 2.3))), eo(seg(L, 0.1, 0.3)) * (1 - back), sm(seg(L, 0.28, 0.36))); if (L > 0.9) b.head.rotation.x = 0.3 - 0.3 * sm(seg(L, 0.9, 1.6));
   const gone = L > 0.38; const e = put(x, 'elizabeth', s, 0.1, 0, -1.9, Math.PI); e.head.rotation.x = -0.4; e.root.visible = !gone;
-  cam(x, [1.4, 1.5, 0.6], [0, 1.4, -2.5], 52); if (L > 0.2 && L < 0.7) shake(x, 0.9 * (1 - seg(L, 0.2, 0.7)));
+  camMove(x, [1.4, 1.5, 0.6], [0, 1.4, -2.5], [1.0, 1.7, 0.2], [0, 1.9, -2.8], (k) => sm(seg(k * 2.46, 0.9, 2.4)), 52); if (L > 0.2 && L < 0.7) shake(x, 0.9 * (1 - seg(L, 0.2, 0.7))); if (L > 0.9) x.S.partyRed.intensity = 4;
   x.post.flash.value = L > 0.34 && L < 0.42 ? 0.5 : 0; if (L > 0.36) { x.post.tint.value.set(1.4, 0.7, 0.7); x.post.stat.value = L < 0.5 ? 0.5 : 0; }
-});
-// "...capturada" — the ice cream on the floor
-at(36.62, 'bow_floor', x => {
-  const s = x.S.party; x.out.scene = s; const L = x.L; const bw = x.FX.bow; s.add(bw); bw.position.set(0.1, 0.05, -1.8); bw.rotation.set(-Math.PI / 2 + 0.15, 0, 0.5);
-  cam(x, [0.5, 0.5, -1.05], [0.1, 0.05, -1.8], 46); hand(x); x.post.tint.value.set(1.15, 0.8, 0.8); x.post.vig.value = 1.1; x.S.partyRed.intensity = 4;
 });
 // "se chamava Elizabeth."
 at(38.40, 'elizabeth', x => {
@@ -249,7 +244,7 @@ at(38.40, 'elizabeth', x => {
 at(39.34, 'liz_eyes', x => {
   const s = x.S.void; x.out.scene = s; const L = x.L; const e = put(x, 'elizabeth', s, 0, 0, 0, 0); e.idle(x.t, 0.4); x.S.voidSpot.intensity = 40; x.S.voidFill.intensity = 8;
   const hp = tp(e, 'head', [0, 3.2, 4]); camMove(x, [hp.x + 0.1, hp.y + 0.05, hp.z + 1.4], hp.toArray(), [hp.x + 0.05, hp.y + 0.03, hp.z + 0.95], hp.toArray(), eio, 42);
-  if (L > 0.9) lensOn(x, [tp(e, 'head', [-1.6, 2.4, 4.2]), tp(e, 'head', [1.6, 2.4, 4.2])], 0.07, sm(seg(L, 0.9, 1.2)), L > 1.75 ? 'ok' : null, '#5aff6a');
+  if (L > 0.9) lensOn(x, [tp(e, 'head', [-1.6, 1.85, 4.2]), tp(e, 'head', [1.6, 1.85, 4.2])], 0.07, sm(seg(L, 0.9, 1.2)), L > 1.75 ? 'ok' : null, '#5aff6a');
 });
 // "O momento em que os olhos da robô mudam de cor"
 at(42.64, 'change', x => {

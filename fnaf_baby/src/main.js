@@ -71,10 +71,10 @@ const uiCanvas = document.createElement('canvas'); uiCanvas.width = W; uiCanvas.
 const uiTex = new THREE.CanvasTexture(uiCanvas); uiTex.colorSpace = THREE.SRGBColorSpace;
 const post = new ShaderPass({
   uniforms: { tDiffuse: { value: null }, tUI: { value: uiTex }, time: { value: 0 }, vig: { value: 0.55 }, grain: { value: 0.035 }, stat: { value: 0 }, cctv: { value: 0 },
-    flash: { value: 0 }, fade: { value: 0 }, chroma: { value: 0 }, uiOn: { value: 0 }, pix: { value: 0 }, tint: { value: new THREE.Vector3(1, 1, 1) }, res: { value: new THREE.Vector2(W, H) } },
+    flash: { value: 0 }, fade: { value: 0 }, chroma: { value: 0 }, uiOn: { value: 0 }, pix: { value: 0 }, blur: { value: 0 }, tint: { value: new THREE.Vector3(1, 1, 1) }, res: { value: new THREE.Vector2(W, H) } },
   vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
   fragmentShader: `
-    uniform sampler2D tDiffuse, tUI; uniform float time, vig, grain, stat, cctv, flash, fade, chroma, uiOn, pix; uniform vec3 tint; uniform vec2 res; varying vec2 vUv;
+    uniform sampler2D tDiffuse, tUI; uniform float time, vig, grain, stat, cctv, flash, fade, chroma, uiOn, pix, blur; uniform vec3 tint; uniform vec2 res; varying vec2 vUv;
     float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233)))*43758.5453); }
     void main(){
       vec2 uv=vUv; float fr=floor(time*30.0);
@@ -83,6 +83,9 @@ const post = new ShaderPass({
       uv.x += (hash(vec2(line, fr))-0.5)*0.035*stat*step(0.55, hash(vec2(line*0.37, fr+3.0)));
       float ca = chroma*0.006 + stat*0.006;
       vec3 col = vec3(texture2D(tDiffuse, uv+vec2(ca,0.)).r, texture2D(tDiffuse, uv).g, texture2D(tDiffuse, uv-vec2(ca,0.)).b);
+      if (blur > 0.0) { vec3 acc = vec3(0.0); float wsum = 0.0; vec2 px = blur * 4.0 / res;
+        for (int i = -3; i <= 3; i++) for (int j = -3; j <= 3; j++) { float w = exp(-float(i * i + j * j) / 8.0); acc += texture2D(tDiffuse, uv + vec2(float(i), float(j)) * px).rgb * w; wsum += w; }
+        col = mix(col, acc / wsum * 0.92, clamp(blur, 0.0, 1.0)); }
       if (pix > 0.5) col = floor(col * 6.0 + 0.5) / 6.0;
       float l = dot(col, vec3(0.3,0.59,0.11));
       col = mix(col, l*vec3(0.85,1.0,0.92)*1.05, 0.5*cctv);
@@ -120,7 +123,7 @@ function drawUI(spec, t) {
   } else if (spec.type === 'logo') { // game logo card
     const img = LOGOS[spec.i]; const k = spec.k; const w = W * 0.86 * k, h = w * img.height / img.width;
     const g = ui.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, W * 0.9); g.addColorStop(0, `rgba(0,0,0,${0.55 * spec.a})`); g.addColorStop(1, `rgba(0,0,0,${0.15 * spec.a})`);
-    ui.fillStyle = g; ui.fillRect(0, 0, W, H); ui.globalAlpha = spec.a; ui.drawImage(img, (W - w) / 2, H * 0.42 - h / 2, w, h); ui.globalAlpha = 1;
+    ui.fillStyle = g; ui.fillRect(0, 0, W, H); ui.globalAlpha = spec.a; ui.save(); ui.shadowColor = 'rgba(0,0,0,0.95)'; ui.shadowBlur = 28 * s; ui.shadowOffsetX = 6 * s; ui.shadowOffsetY = 10 * s; ui.drawImage(img, (W - w) / 2, H * 0.42 - h / 2, w, h); ui.restore(); ui.drawImage(img, (W - w) / 2, H * 0.42 - h / 2, w, h); ui.globalAlpha = 1;
   } else if (spec.type === 'cammap') { // FNAF3 camera map + PLAY AUDIO button
     const x0 = W * 0.08, y0 = H * 0.6, mw = W * 0.84, mh = H * 0.3; const k = spec.a ?? 1; ui.globalAlpha = k;
     ui.fillStyle = 'rgba(0,10,0,0.55)'; ui.fillRect(x0 - 16 * s, y0 - 16 * s, mw + 32 * s, mh + 32 * s);
@@ -216,7 +219,7 @@ function resetWorld() {
   
   S.partyRed.intensity = 0; animateFire(S, 0, false);
   camera.fov = 42; camera.up.set(0, 1, 0);
-  const P = post.uniforms; P.vig.value = 0.55; P.grain.value = 0.035; P.stat.value = 0; P.cctv.value = 0; P.flash.value = 0; P.fade.value = 0; P.chroma.value = 0; P.uiOn.value = 0; P.pix.value = 0; P.tint.value.set(1, 1, 1);
+  const P = post.uniforms; P.vig.value = 0.55; P.grain.value = 0.035; P.stat.value = 0; P.cctv.value = 0; P.flash.value = 0; P.fade.value = 0; P.chroma.value = 0; P.uiOn.value = 0; P.pix.value = 0; P.blur.value = 0; P.tint.value.set(1, 1, 1);
   bloom.strength = 0.35;
 }
 
