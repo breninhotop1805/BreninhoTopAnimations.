@@ -872,6 +872,8 @@ export function buildBlob() {
     m4.compose(p, q, sc); im.setMatrixAt(i, m4); im.setColorAt(i, cols[(r() * cols.length) | 0]);
   }
   g.add(im);
+  // cable 'neck' holding Funtime Freddy's head on the very top (below the head, never in front of the face)
+  { const nk = new THREE.InstancedMesh(geo, mat, 46); for (let i = 0; i < 46; i++) { p.set((r() - 0.5) * 0.8, 2.95 + r() * 0.38, -0.25 + r() * 0.6); e.set(r() * Math.PI, r() * Math.PI, r() * Math.PI); q.setFromEuler(e); const th = 0.05 + r() * 0.06; sc.set(th, th, 0.3 + r() * 0.45); m4.compose(p, q, sc); nk.setMatrixAt(i, m4); nk.setColorAt(i, cols[(r() * cols.length) | 0]); } nk.castShadow = true; g.add(nk); }
   // inner dark core (hides gaps)
   const core = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), new THREE.MeshStandardMaterial({ color: '#0e0806', roughness: 1 }));
   core.scale.set(RX * 0.8, RY * 0.8, RZ * 0.8); g.add(core);
@@ -890,7 +892,7 @@ export function buildBlob() {
   }
   g.userData.tents = tents;
   // mask anchors (front, z+) — local coords
-  g.userData.anchors = { chica: new THREE.Vector3(-1.05, 2.25, 1.55), baby: new THREE.Vector3(0.95, 2.75, 1.35), puppet: new THREE.Vector3(0.05, 1.45, 2.0), ffreddy: new THREE.Vector3(0.0, 3.2, 0.55) };
+  g.userData.anchors = { chica: new THREE.Vector3(-1.05, 2.25, 1.55), baby: new THREE.Vector3(0.95, 2.75, 1.35), puppet: new THREE.Vector3(0.05, 1.45, 2.0), ffreddy: new THREE.Vector3(0.0, 3.68, 0.3) };
   return g;
 }
 export function animateBlob(blob, t, amt = 1, reach = 0) {
