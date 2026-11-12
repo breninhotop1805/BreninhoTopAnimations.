@@ -4,7 +4,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { loadImage, imgToCanvas, Character, buildGregory, buildGFreddy, buildFFoxy, buildBaby, puppetTears, buildPuppet, buildClassicChica, recolorChild, makeGhost, U } from './skin.js';
+import { loadImage, imgToCanvas, Character, buildGregory, buildGFreddy, buildFFreddy, buildBaby, puppetTears, buildPuppet, buildClassicChica, recolorChild, makeGhost, U } from './skin.js';
 import { buildSets, buildBlobSets, buildBlob, animateBlob, animateFire, bubble, sparkle, rng, drawScreen, soulOrb, redX, likeIcon, bellIcon } from './sets.js';
 import { SHOTS, DURATION } from './shots.js';
 
@@ -19,7 +19,7 @@ const camera = new THREE.PerspectiveCamera(42, W / H, 0.03, 80);
 
 // ---------- assets ----------
 const sk = {};
-for (const n of ['gregory', 'gfreddy', 'ffoxy', 'baby', 'chica_classic', 'puppet', 'charlotte', 'child']) sk[n] = imgToCanvas(await loadImage(`/skins/${n}.png`));
+for (const n of ['gregory', 'gfreddy', 'ffreddy', 'baby', 'chica_classic', 'puppet', 'charlotte', 'child']) sk[n] = imgToCanvas(await loadImage(`/skins/${n}.png`));
 const LOGOS = []; for (const n of ['sb']) LOGOS.push(await loadImage(`/assets/${n}_logo.png`));
 const S = buildSets(); buildBlobSets(S, null);
 S.blob = buildBlob(); S.blob.position.set(0, 0, -3.2); S.ug.add(S.blob);
@@ -29,7 +29,7 @@ const KIDPAL = [{ shirt: '#d83a3a', accent: '#f2c230', pants: '#2a4a8a', hair: '
 const C = {
   gregory: buildGregory(sk.gregory),
   gfreddy: buildGFreddy(sk.gfreddy),
-  ffoxy: buildFFoxy(sk.ffoxy),
+  ffreddy: buildFFreddy(sk.ffreddy),
   baby: buildBaby(sk.baby),
   puppet: buildPuppet(puppetTears(sk.puppet, true)),
   chica: buildClassicChica(sk.chica_classic, 'chica'),
@@ -38,7 +38,7 @@ const C = {
   babyB: buildBaby(sk.baby, { dead: true, name: 'babyB' }),
   puppetB: buildPuppet(puppetTears(sk.puppet, false)),
   chicaB: buildClassicChica(sk.chica_classic, 'chicaB'),
-  ffoxyB: buildFFoxy(sk.ffoxy),
+  ffreddyB: buildFFreddy(sk.ffreddy),
 };
 for (let i = 0; i < 4; i++) C['kid' + i] = new Character('kid' + i, recolorChild(sk.child, KIDPAL[i]));
 C.charlotte.ghostMat.opacity = 0.55;
@@ -207,12 +207,12 @@ function resetWorld() {
     c.reset(); c.root.visible = true; c.root.scale.setScalar(c.baseScale || 1); c.root.position.set(0, 0, 0); c.root.rotation.set(0, 0, 0);
     c.root.removeFromParent(); c.torso.visible = true; c.body.visible = true; c.bodyO.visible = true; for (const L of [c.armR, c.armL, c.legR, c.legL]) L.piv.visible = true;
   }
-  for (const c of [C.ffoxy, C.ffoxyB]) c.jaw.rotation.x = 0;
+  for (const c of [C.ffreddy, C.ffreddyB]) c.jaw.rotation.x = 0;
   for (const k of ['q1', 'ex1']) { FX[k].removeFromParent(); FX[k].visible = true; FX[k].scale.setScalar(1); FX[k].rotation.set(0, 0, 0); }
   for (const s of FX.sparkles) s.removeFromParent(); for (const w of FX.waves) w.removeFromParent(); for (const o of FX.orbs) { o.removeFromParent(); o.scale.setScalar(1); }
   FX.sparks.removeFromParent(); FX.cage.removeFromParent(); FX.agony.removeFromParent(); FX.xmark.removeFromParent(); FX.torch.removeFromParent(); FX.torch.target.removeFromParent(); FX.torch.intensity = 0; C.charlotte.ghostMat.opacity = 0.55; for (const l of S.hallLamps) { l.intensity = 9; l.color.set('#ffe9c4'); } S.stageSpot.intensity = 40; FX.jsLight.removeFromParent(); FX.jsLight.intensity = 0; FX.fill.removeFromParent(); FX.fill.intensity = 0; FX.like.removeFromParent(); FX.bell.removeFromParent(); FX.tablet.removeFromParent();
   S.voidRim.intensity = 0; S.voidSpot.intensity = 42; S.voidSpot.color.set('#fff4e0'); S.voidFill.intensity = 2.5; S.voidFill.color.set('#7f8cff');
-  S.ugRed.forEach(l => l.intensity = 14); S.ugKey.intensity = 45; S.ugFill.intensity = 10; S.plexKey.intensity = 30; S.blob.position.set(0, 0, -3.2); S.blob.rotation.set(0, 0, 0); S.blob.scale.setScalar(1);
+  S.ugRed.forEach(l => l.intensity = 14); S.ugKey.intensity = 45; S.ugFill.intensity = 10; S.plexKey.intensity = 30; S.plexSign.visible = true; S.blob.position.set(0, 0, -3.2); S.blob.rotation.set(0, 0, 0); S.blob.scale.setScalar(1);
   S.partyRed.intensity = 0; animateFire(S, 0, false);
   camera.fov = 42; camera.up.set(0, 1, 0);
   const P = post.uniforms; P.vig.value = 0.55; P.grain.value = 0.035; P.stat.value = 0; P.cctv.value = 0; P.flash.value = 0; P.fade.value = 0; P.chroma.value = 0; P.uiOn.value = 0; P.pix.value = 0; P.tint.value.set(1, 1, 1);

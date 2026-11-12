@@ -866,7 +866,7 @@ export function buildBlob() {
   for (let i = 0; i < N; i++) {
     const u = r() * Math.PI * 2, v = Math.acos(1 - r() * 1.05); const layer = 0.78 + 0.22 * Math.sqrt(r());
     p.set(Math.sin(v) * Math.cos(u) * RX * layer, Math.cos(v) * RY * layer, Math.sin(v) * Math.sin(u) * RZ * layer);
-    p.y += (r() - 0.5) * 0.15; if (p.y < 0.03) p.y = 0.03 + r() * 0.1;
+    p.y += (r() - 0.5) * 0.15; if (p.y < 0.03) p.y = 0.03 + r() * 0.1; if (Math.abs(p.x) < 1.3 && p.y > 2.2 && p.z > 0.05) p.z = -p.z; // keep Funtime Freddy's face (top) clear
     e.set(r() * Math.PI, r() * Math.PI, r() * Math.PI); q.setFromEuler(e);
     const th = 0.05 + r() * 0.07; sc.set(th, th, 0.35 + r() * 1.0);
     m4.compose(p, q, sc); im.setMatrixAt(i, m4); im.setColorAt(i, cols[(r() * cols.length) | 0]);
@@ -890,7 +890,7 @@ export function buildBlob() {
   }
   g.userData.tents = tents;
   // mask anchors (front, z+) — local coords
-  g.userData.anchors = { chica: new THREE.Vector3(-1.05, 2.25, 1.55), baby: new THREE.Vector3(0.95, 2.75, 1.35), puppet: new THREE.Vector3(0.05, 1.45, 2.0), ffoxy: new THREE.Vector3(1.75, 1.25, 1.45) };
+  g.userData.anchors = { chica: new THREE.Vector3(-1.05, 2.25, 1.55), baby: new THREE.Vector3(0.95, 2.75, 1.35), puppet: new THREE.Vector3(0.05, 1.45, 2.0), ffreddy: new THREE.Vector3(0.0, 3.2, 0.55) };
   return g;
 }
 export function animateBlob(blob, t, amt = 1, reach = 0) {

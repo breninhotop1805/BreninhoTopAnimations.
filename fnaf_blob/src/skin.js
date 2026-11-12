@@ -764,16 +764,13 @@ const isDarkOrTeal = (r, g, b) => (r < 60 && g < 60 && b < 70) || (b > r + 20);
 // Gregory: voxel messy hair on top of the head + fringe.
 export function buildGregory(canvas) {
   const ch = new Character('gregory', imgCopy(canvas));
-  const hair = avgColor(ch.canvas, 8, 0, 8, 8), hd = shadeHex(hair, 0.75), hl = shadeHex(hair, 1.2);
+  const hair = avgColor(ch.canvas, 8, 0, 8, 8), hd = shadeHex(hair, 0.8);
   const g = new THREE.Group(); ch.head.add(g); ch.hair = g;
-  const r = (() => { let s = 7; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); })();
-  vbox(8.9, 1.3, 8.9, hair, 0, 8.55, 0, g, 0.9);
-  for (let i = 0; i < 16; i++) { const x = -3.6 + (i % 4) * 2.4 + (r() - 0.5), z = -3.6 + Math.floor(i / 4) * 2.4 + (r() - 0.5); const h = 0.8 + r() * 1.4;
-    const b = vbox(1.8 + r() * 0.8, h, 1.8 + r() * 0.8, i % 3 ? hair : (i % 2 ? hd : hl), x, 9.1 + h / 2, z, g, 0.9); b.rotation.set((r() - 0.5) * 0.5, r() * 1.5, (r() - 0.5) * 0.5); }
-  // fringe over the forehead + side/back locks
-  for (let i = 0; i < 5; i++) vbox(1.7, 1.2 + (i % 2) * 0.8, 1.0, i % 2 ? hd : hair, -3.4 + i * 1.7, 7.4 - (i % 2) * 0.4, 4.45, g, 0.9);
-  for (const sx of [-1, 1]) for (let k = 0; k < 3; k++) vbox(1.0, 1.6 + (k % 2) * 0.7, 2.2, k % 2 ? hd : hair, sx * 4.45, 7.0, 2 - k * 2.4, g, 0.9);
-  for (let k = 0; k < 4; k++) vbox(2.0, 2.2 + (k % 2) * 0.8, 1.0, k % 2 ? hd : hair, -3 + k * 2, 6.6, -4.45, g, 0.9);
+  // low, close-fitting hair: thin cap, a few shallow tufts, short fringe
+  vbox(8.7, 0.7, 8.7, hair, 0, 8.3, 0, g, 0.9);
+  [[-2.2, -1.5, 2.6], [1.6, -0.6, 2.4], [-0.6, 1.8, 2.2], [2.4, 2.0, 2.0], [-2.6, 2.4, 1.8]].forEach(([x, z, w], i) => vbox(w, 0.35 + (i % 2) * 0.15, w, i % 2 ? hd : hair, x, 8.75, z, g, 0.9));
+  vbox(8.7, 0.8, 0.5, hair, 0, 7.6, 4.3, g, 0.9);
+  for (let i = 0; i < 4; i++) vbox(1.4, 0.5, 0.5, i % 2 ? hd : hair, -2.6 + i * 1.8, 7.0, 4.3, g, 0.9);
   ch.baseScale = 0.88;
   ch.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   return ch;
@@ -799,22 +796,23 @@ export function buildGFreddy(canvas) {
   return ch;
 }
 
-// Funtime Foxy: 3D white muzzle with pink nose + opening jaw, tall white/pink ears.
-export function buildFFoxy(canvas) {
+// Funtime Freddy: painted hat layer (flat ears/muzzle) removed; 3D white muzzle with magenta cheeks + opening jaw, round black/pink ears.
+export function buildFFreddy(canvas) {
   const A = imgCopy(canvas);
-  eraseRect(A, 40, 0, 8, 8); eraseRect(A, 32, 0, 8, 8); eraseRect(A, 40, 8, 8, 8); eraseRect(A, 32, 8, 8, 3); eraseRect(A, 48, 8, 8, 3); eraseRect(A, 56, 8, 8, 3);
-  const ch = new Character('ffoxy', A, { prop: { limbW: 0.9, legW: 0.75 } });
-  const W = '#f2eef2', Wd = '#d8d0dc', pink = '#e85a9a', tooth = '#ffffff';
-  const sn = new THREE.Group(); sn.position.set(0, 2.4 * U, 4 * U); ch.head.add(sn); ch.snout = sn;
-  vbox(4.8, 2.2, 4.2, W, 0, 0, 2.1, sn, 0.5); vbox(4.0, 0.5, 3.8, '#ffffff', 0, 1.2, 1.9, sn, 0.5);
-  vbox(2.0, 1.2, 1.0, pink, 0, 0.7, 4.3, sn, 0.35); vbox(4.9, 0.4, 0.4, pink, 0, -0.9, 4.05, sn, 0.4);
-  for (let i = -2; i <= 2; i++) vbox(0.5, 0.7, 0.5, tooth, i * 0.9, -1.4, 3.85, sn, 0.3);
-  const jaw = new THREE.Group(); jaw.position.set(0, -1.2 * U, 0.2 * U); sn.add(jaw); ch.jaw = jaw;
-  vbox(4.4, 1.0, 3.8, Wd, 0, -0.5, 1.9, jaw, 0.5); for (let i = -2; i <= 2; i++) vbox(0.45, 0.6, 0.45, tooth, i * 0.85, 0.25, 3.5, jaw, 0.3);
-  const ear = () => voxelArt(['.w.', 'wpw', 'wpw', 'wpw', 'wpw', 'www'], { w: W, p: pink }, 0.9 * U, 1.0 * U);
-  const eL = ear(), eR = ear(); eL.position.set(2.7 * U, 10.5 * U, -0.6 * U); eR.position.set(-2.7 * U, 10.5 * U, -0.6 * U); eL.rotation.z = -0.25; eR.rotation.z = 0.25; ch.head.add(eL, eR);
-  vbox(1.4, 1.2, 1.4, W, 0, 8.6, 1.5, ch.head, 0.6); vbox(1.0, 0.9, 1.0, W, 0.5, 9.4, 1.2, ch.head, 0.6); // head tuft
-  ch.baseScale = 1.28;
+  eraseRect(A, 32, 0, 32, 16);
+  const ch = new Character('ffreddy', A, { prop: { limbW: 1.05, legW: 1.0, torso: 1.0 } });
+  const W = '#f4eef6', Wd = '#ddd2e2', mag = '#e0309a', pk = '#ff7ac8', blk = '#18141c', tooth = '#ffffff';
+  const sn = new THREE.Group(); sn.position.set(0, 2.3 * U, 4 * U); ch.head.add(sn); ch.snout = sn;
+  vbox(5.0, 2.0, 1.6, W, 0, 0.1, 0.8, sn, 0.5);
+  vbox(1.6, 1.3, 1.4, mag, -2.0, 0.2, 1.0, sn, 0.4); vbox(1.6, 1.3, 1.4, mag, 2.0, 0.2, 1.0, sn, 0.4);
+  vbox(1.8, 0.9, 0.6, blk, 0, 0.8, 1.75, sn, 0.3); vbox(1.0, 0.4, 0.3, pk, 0, 1.0, 2.05, sn, 0.3);
+  vbox(4.6, 0.3, 0.3, blk, 0, -0.85, 1.55, sn, 0.4);
+  for (let i = -2; i <= 2; i++) vbox(0.55, 0.55, 0.4, tooth, i * 0.85, -0.55, 1.55, sn, 0.3);
+  const jaw = new THREE.Group(); jaw.position.set(0, -1.0 * U, 0.2 * U); sn.add(jaw); ch.jaw = jaw;
+  vbox(4.6, 0.9, 1.4, Wd, 0, -0.45, 0.6, jaw, 0.5); for (let i = -2; i <= 2; i++) vbox(0.5, 0.5, 0.35, tooth, i * 0.85, 0.2, 1.1, jaw, 0.3);
+  const ear = () => voxelArt(['.kkkk.', 'kkkkkk', 'kkppkk', 'kppppk', 'kkppkk', '.kkkk.'], { k: blk, p: mag }, 0.6 * U, 1.0 * U);
+  const eL = ear(), eR = ear(); eL.position.set(3.3 * U, 9.4 * U, -0.4 * U); eR.position.set(-3.3 * U, 9.4 * U, -0.4 * U); eL.rotation.z = -0.25; eR.rotation.z = 0.25; ch.head.add(eL, eR);
+  ch.baseScale = 1.32;
   ch.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   return ch;
 }

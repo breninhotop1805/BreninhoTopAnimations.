@@ -132,9 +132,9 @@ const shots = [];
 const at = (t, name, fn) => shots.push({ t, name, fn });
 // ---------- helpers for the Blob video ----------
 function headOnly(c) { c.body.visible = false; c.bodyO.visible = false; for (const L of [c.armR, c.armL, c.legR, c.legL]) L.piv.visible = false; }
-const MASKS = [['chicaB', 'chica', 0.25, 0.1], ['babyB', 'baby', -0.2, -0.15], ['puppetB', 'puppet', 0.05, 0.08], ['ffoxyB', 'ffoxy', -0.5, 0.2]];
+const MASKS = [['chicaB', 'chica', 0.25, 0.1], ['babyB', 'baby', -0.2, -0.15], ['puppetB', 'puppet', 0.05, 0.08], ['ffreddyB', 'ffreddy', 0.0, 0.0, 1.5]];
 function blobMasks(x, tilt = 1) { const B = x.S.blob, A = B.userData.anchors; B.updateMatrixWorld(true);
-  return MASKS.map(([n, an, ry, rz], i) => { const a = A[an]; const c = x.C[n]; B.add(c.root); headOnly(c); c.root.position.set(0, 0, 0); c.root.rotation.set(0, ry, 0); c.root.scale.setScalar(1); c.root.updateMatrixWorld(true);
+  return MASKS.map(([n, an, ry, rz, sc = 1], i) => { const a = A[an]; const c = x.C[n]; B.add(c.root); headOnly(c); c.root.position.set(0, 0, 0); c.root.rotation.set(0, ry, 0); c.root.scale.setScalar(sc); c.root.updateMatrixWorld(true);
     const hp = c.head.localToWorld(new V3(0, 4 / 16, 0)); const lp = B.worldToLocal(hp); c.root.position.set(a.x - lp.x, a.y - lp.y, a.z - lp.z - 0.12);
     c.head.rotation.z = rz * tilt; c.head.rotation.x = 0.08 * Math.sin(x.t * 1.3 + i) * tilt; return c; }); }
 function maskPt(x, an) { x.S.blob.updateMatrixWorld(true); return x.S.blob.localToWorld(x.S.blob.userData.anchors[an].clone()); }
@@ -157,7 +157,7 @@ at(0.00, 'blob_reveal', x => {
   if (x.L < 0.12) shake(x, 0.5);
 });
 // "de FNAF Security Breach"
-at(1.88, 'plex_sign', x => { const s = x.S.plex; x.out.scene = s; const k = eio(x.u); cam(x, [mix(-2.5, 1.5, k), mix(2.0, 3.2, k), mix(4.5, 3.0, k)], [0, mix(5.6, 6.3, k), -9.9], 52); x.post.vig.value = 0.8; staticIn(x, 0.12); });
+at(1.88, 'logo_sb', x => { const s = x.S.plex; x.out.scene = s; x.S.plexSign.visible = false; cam(x, [-0.6 + 0.8 * x.u, 1.2, 2.0], [4, 1.6, -9], 54); logoCard(x, 0); staticIn(x, 0.12); });
 // "esse tempo todo."
 at(3.24, 'greg_fooled', x => {
   const s = ugBase(x); const g = put(x, 'gregory', s, 0.3, 0, 2.6, Math.PI + 0.2); g.idle(x.t, 1); g.head.rotation.x = -0.35; g.head.rotation.y = 0.5 * eo(seg(x.L, 0.3, 0.7));
@@ -193,7 +193,7 @@ at(11.34, 'think', x => {
 });
 // "é que as almas originais se juntaram"
 at(12.94, 'souls_join', x => {
-  const s = ugBase(x, 0.8); const k = eio(seg(x.L, 0, 1.3)); const tg = ['chica', 'baby', 'puppet', 'ffoxy'].map(n => maskPt(x, n));
+  const s = ugBase(x, 0.8); const k = eio(seg(x.L, 0, 1.3)); const tg = ['chica', 'baby', 'puppet', 'ffreddy'].map(n => maskPt(x, n));
   orbsAt(x, s, tg.map((p, i) => new V3(mix(-3 + i * 2, p.x, k), mix(4.5 - (i % 2), p.y, k) + 0.3 * Math.sin(x.t * 3 + i) * (1 - k), mix(2.5, p.z + 0.3, k))), 1 - 0.5 * seg(x.L, 1.3, 1.56));
   cam(x, [0, 2.2, 4.6], [0, 2.1, -2], 50); hand(x); sparkles(x, s, [0, 2.4, -1.4], 1.6, 6, 1.2);
 });
@@ -257,11 +257,12 @@ at(27.84, 'tears_compare', x => {
 });
 // "Ela sempre foi uma grande marca de que a alma de Charlotte estava ali."
 at(30.54, 'charlotte', x => {
-  const s = x.S.void; x.out.scene = s; const L = x.L; const p = put(x, 'puppet', s, 0, 0, 0, 0); p.idle(x.t, 0.6);
-  const ch = put(x, 'charlotte', s, 0, 0, 0.05, 0, 0.62); ch.idle(x.t, 1); ch.root.position.y = 0.5 + 0.6 * eo(seg(L, 0.3, 1.6)); x.C.charlotte.ghostMat.opacity = 0.5 * sm(seg(L, 0.2, 0.8));
-  orbsAt(x, s, [new V3(0, 1.75 + 0.1 * Math.sin(x.t * 2), 0.4)], 1.2 * sm(seg(L, 1.2, 1.8)));
-  camMove(x, [1.4, 1.6, 3.6], [0, 1.6, 0], [0.4, 1.9, 2.6], [0, 1.8, 0], eio, 46); x.S.voidSpot.intensity = 22; x.S.voidRim.intensity = 12; x.S.voidRim.color.set('#b070ff'); x.post.vig.value = 0.95;
-  sparkles(x, s, [0, 1.8, 0.2], 0.8, 6, 0.8);
+  const s = x.S.void; x.out.scene = s; const L = x.L; const p = put(x, 'puppet', s, -0.5, 0, 0, 0.3); p.idle(x.t, 0.6);
+  const ch = put(x, 'charlotte', s, 0.55, 0, 0.15, -0.35, 0.62); ch.idle(x.t, 1); ch.root.position.y = 0.15 + 0.12 * Math.sin(x.t * 2) + 0.25 * eo(seg(L, 0.2, 1.4)); x.C.charlotte.ghostMat.opacity = 0.6 * sm(seg(L, 0.15, 0.7));
+  aim(ch, 'R', rootPt(ch, -0.9, 1.2, 0.3), eo(seg(L, 1.2, 1.8)));
+  orbsAt(x, s, [new V3(0.55, 1.05 + 0.25 * eo(seg(L, 0.2, 1.4)) + 0.1 * Math.sin(x.t * 2), 0.4)], 0.8 * sm(seg(L, 1.2, 1.8)));
+  camMove(x, [0.6, 1.5, 4.4], [0, 1.25, 0], [0.2, 1.6, 3.6], [0, 1.35, 0], eio, 46); x.S.voidSpot.intensity = 22; x.S.voidRim.intensity = 12; x.S.voidRim.color.set('#b070ff'); x.post.vig.value = 0.95;
+  sparkles(x, s, [0.55, 1.2, 0.2], 0.6, 6, 0.8);
 });
 // "Sabe o que isso significa?"
 at(33.74, 'means', x => {
@@ -305,7 +306,7 @@ at(43.50, 'bad_energy', x => {
 // "que ganhou vida própria e roubou essas carcaças vazias"
 at(46.76, 'stole_shells', x => {
   const s = x.S.void; x.out.scene = s; const L = x.L; const up = eo(seg(L, 1.0, 1.6));
-  const list = [['babyB', -1.0, 0.2], ['chicaB', 0, 0], ['ffoxyB', 1.0, -0.2]].map(([n, px, ry], i) => { const c = put(x, n, s, px, 0, -0.2 * Math.abs(px), ry); droop(c, 1.6 * (1 - up)); c.armR.piv.rotation.z = -0.2; c.armL.piv.rotation.z = 0.2; if (up > 0) { c.head.rotation.z = 0.15 * Math.sin(x.t * 23 + i) * up; } return c; });
+  const list = [['babyB', -1.0, 0.2], ['chicaB', 0, 0], ['ffreddyB', 1.0, -0.2]].map(([n, px, ry], i) => { const c = put(x, n, s, px, 0, -0.2 * Math.abs(px), ry); droop(c, 1.6 * (1 - up)); c.armR.piv.rotation.z = -0.2; c.armL.piv.rotation.z = 0.2; if (up > 0) { c.head.rotation.z = 0.15 * Math.sin(x.t * 23 + i) * up; } return c; });
   agonyAt(x, s, new V3(0, 0.3, 0), 1.6, 1); camMove(x, [0, 1.6, 4.6], [0, 1.3, 0], [0, 1.5, 3.6], [0, 1.4, 0], eo, 46); hand(x);
   x.S.voidSpot.intensity = 24; x.S.voidSpot.color.set('#ffb0a0'); x.S.voidRim.intensity = 12; x.S.voidRim.color.set('#ff2020'); x.post.tint.value.set(1.1, 0.85, 0.85); if (L > 1.0 && L < 1.08) x.post.flash.value = 0.3;
 });
@@ -324,7 +325,7 @@ at(50.54, 'bizarro', x => {
 // "Comenta o que você acha e me segue para mais mistérios."
 at(51.28, 'outro', x => {
   const s = x.S.plex; x.out.scene = s; const L = x.L;
-  [['ffoxy', -1.45, 0.2], ['gfreddy', -0.5, 0.08], ['gregory', 0.45, -0.05], ['baby', 1.4, -0.2]].forEach(([n, px, ry], i) => { const c = put(x, n, s, px, 0, -0.25 * Math.abs(px), ry); c.idle(x.t, 1, i); if (n === 'gfreddy') { aim(c, 'R', rootPt(c, -0.5, 2.1, 0.4), eo(seg(L, 0.3, 0.6))); c.armR.piv.rotation.z += 0.25 * Math.sin(x.t * 9) * seg(L, 0.6, 0.8); } });
+  [['ffreddy', -1.45, 0.2], ['gfreddy', -0.5, 0.08], ['gregory', 0.45, -0.05], ['baby', 1.4, -0.2]].forEach(([n, px, ry], i) => { const c = put(x, n, s, px, 0, -0.25 * Math.abs(px), ry); c.idle(x.t, 1, i); if (n === 'gfreddy') { aim(c, 'R', rootPt(c, -0.5, 2.1, 0.4), eo(seg(L, 0.3, 0.6))); c.armR.piv.rotation.z += 0.25 * Math.sin(x.t * 9) * seg(L, 0.6, 0.8); } });
   camMove(x, [0, 1.6, 8.0], [0, 1.4, 0], [0, 1.6, 7.2], [0, 1.45, 0], eo, 42); hand(x); x.post.fade.value = seg(L, x.d - 0.35, x.d);
 });
 
