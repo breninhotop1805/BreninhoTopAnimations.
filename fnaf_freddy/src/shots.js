@@ -153,7 +153,10 @@ const tp = (c, part, v) => { c.root.updateMatrixWorld(true); return c[part].loca
 function pp(x) { const s = x.S.pizzaplace; x.out.scene = s; x.post.vig.value = 0.85; x.S.ppBulbs.forEach((b, i) => b.visible = Math.sin(x.t * 3 + i * 1.3) > -0.7); x.S.ppNeon.color.set('#ff2a4a').multiplyScalar(flicker(x.t, 3) > 0.5 ? 1 : 0.3); return s; }
 function voidMood(x, rim = '#8a5aff', spot = 34) { const s = x.S.void; x.out.scene = s; x.S.voidSpot.intensity = spot; x.S.voidFill.intensity = 5; x.S.voidRim.intensity = 14; x.S.voidRim.color.set(rim); x.post.vig.value = 1.0; return s; }
 function glitchIn(x, c, amt = 1) { const j = Math.floor(x.t * 24); const r = rng(j * 7 + 3); if (r() < 0.45 * amt) { c.root.position.x += (r() - 0.5) * 0.18 * amt; c.root.position.y += (r() - 0.5) * 0.06 * amt; } x.post.chroma.value = Math.max(x.post.chroma.value, 0.7 * amt); if (r() < 0.25 * amt) x.post.stat.value = Math.max(x.post.stat.value, 0.3 * amt); }
-function holdHands(x, f, g) { aim(f, 'L', g.handR.getWorldPosition(new V3()).add(new V3(0, 0.08, 0)), 0.85); aim(g, 'R', f.handL.getWorldPosition(new V3()).add(new V3(0, -0.05, 0)), 0.5); }
+function holdHands(x, f, g) { f.root.updateMatrixWorld(true); g.root.updateMatrixWorld(true);
+  const gp = g.root.position, fp = f.root.position; const dL = f.armL.piv.getWorldPosition(new V3()).distanceTo(gp), dR = f.armR.piv.getWorldPosition(new V3()).distanceTo(gp);
+  const fs = dL < dR ? 'L' : 'R'; const gL = g.armL.piv.getWorldPosition(new V3()).distanceTo(fp) < g.armR.piv.getWorldPosition(new V3()).distanceTo(fp); const gs = gL ? 'L' : 'R';
+  aim(f, fs, (gs === 'L' ? g.handL : g.handR).getWorldPosition(new V3()).add(new V3(0, 0.08, 0)), 0.85); aim(g, gs, (fs === 'L' ? f.handL : f.handR).getWorldPosition(new V3()).add(new V3(0, -0.05, 0)), 0.5); }
 function shieldRings(x, s, p, col = '#5ad8ff', sc = 1) { x.FX.waves.forEach((w, i) => { const k = (x.t * 0.9 + i / 4) % 1; s.add(w); w.position.copy(p); w.scale.setScalar((0.4 + 2.2 * k) * sc); w.material.opacity = 0.7 * (1 - k); w.material.color.set(col); w.quaternion.copy(x.camera.quaternion); }); }
 
 // ===== HOOK =====
