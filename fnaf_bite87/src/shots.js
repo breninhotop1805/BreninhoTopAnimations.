@@ -262,13 +262,12 @@ at(50.42, 'office_ceiling', x => {
 at(53.14, 'jaw', x => {
   const s = office(x); const L = x.L; const m = mangleCeil(x, s, 0.0, 3.15, -0.3, Math.PI / 2); m.idle(x.t, 0.5); m.setJaw(eo(seg(L, 0.9, 1.9)));
   const hp = mangleHead(m); cam(x, [hp.x + 1.0, hp.y - 0.9, hp.z + 1.25], [hp.x, hp.y - 0.15, hp.z], 46); hand(x, 0.6); x.S.officeLamp2.intensity = 5;
-  if (L > 2.2) { m.root.updateMatrixWorld(true); lensOn(x, m.jaw.localToWorld(new V3(0, -0.5 * x_U, 3 * x_U)), 0.16, sm(seg(L, 2.2, 2.5)), null, '#ff5050'); }
 });
 // "caindo de cima para baixo, exatamente no alto da sua cabeça."
 at(56.06, 'drop', x => {
-  const s = office(x); const L = x.L; cam(x, [0, 1.45, 0.75], [0, 3.0, -0.5], 62); x.S.officeLamp2.intensity = 4 * flicker(x.t, 6);
+  const s = office(x); const L = x.L; x.S.officeLamp2.intensity = 4 * flicker(x.t, 6);
   const m = mangleCeil(x, s, 0.0, 3.15, -0.3, Math.PI / 2); m.idle(x.t, 0.4); const k = eo(seg(L, 0.5, 0.9)); m.neck.rotation.x += 0.9 * k; m.setJaw(0.4 + 0.6 * k);
-  m.root.position.y = 3.15 - 0.55 * k; if (L > 0.85 && L < 1.6) shake(x, 1.2 * (1 - seg(L, 0.85, 1.6)));
+  m.root.position.y = 3.15 - 0.55 * k; const hp0 = mangleHead(m); cam(x, [hp0.x + 0.35, 1.45, hp0.z + 1.6 - 0.5 * k], [hp0.x, hp0.y - 0.1, hp0.z], 60); if (L > 0.85 && L < 1.6) shake(x, 1.2 * (1 - seg(L, 0.85, 1.6)));
   x.post.flash.value = L > 0.86 && L < 0.92 ? 0.35 : 0; x.post.stat.value = L > 1.0 && L < 1.3 ? 0.5 : (L > 2.2 ? 0.4 : 0); x.post.tint.value.set(1.2, 0.85, 0.85);
 });
 // "Você ainda confundia as duas tragédias?"
@@ -283,7 +282,7 @@ at(61.02, 'outro', x => {
   const s = office(x); const L = x.L; const j = put(x, 'jeremy', s, 0, 0, -1.4, 0.15); j.idle(x.t, 1); lookAtCam(x, j, 0.8);
   aim(j, 'R', rootPt(j, -0.5, 2.0 + 0.1 * Math.sin(x.t * 9), 0.4), eo(seg(L, 0, 0.3)));
   const m = mangleCeil(x, s, 0.6, 3.15, -2.4, Math.PI / 2); m.idle(x.t, 1);
-  camMove(x, [0.3, 1.7, 1.6], [0, 1.75, -1.4], [0.2, 1.7, 1.1], [0, 1.8, -1.4], eo, 52); fillOn(x, j, 1.6, 1.8);
+  camMove(x, [0.3, 1.7, 1.6], [0, 1.75, -1.4], [0.2, 1.7, 1.1], [0, 1.8, -1.4], eo, 52); fillOn(x, j, 0.7, 1.8); x.S.officeLamp2.intensity = 6;
 });
 
 export const SHOTS = shots;
