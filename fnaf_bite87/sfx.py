@@ -264,7 +264,11 @@ def mask_breath(dur=1.2):  # FNAF 2 mask breathing: filtered noise, in-out
     e = np.sin(np.pi * t / dur) ** 2; return x * e * 2.2
 
 # ---- TIMELINE ----
-add(static(0.2), 0.0, 0.12); add(growl(1.6, 46), 0.1, 0.15); add(heartbeat(), 1.2, 0.2)
+add(static(0.25), 0.0, 0.18); add(click(), 0.02, 0.6); add(thud(120, 0.06, 0.2), 0.05, 0.35); add(buzz(1.6, 120), 0.08, 0.1)
+for t in [0.12, 0.22, 0.30]: add(click(), t, 0.35)
+add(whoosh(1.2, True), 0.2, 0.35); add(chatter(2.3, 1.0), 0.25, 0.4)
+for t in np.arange(0.3, 2.4, 0.26): add(footstep(170), t, 0.18)
+add(chime(1.6), 1.5, 0.3); add(growl(1.4, 46), 1.0, 0.2); add(heartbeat(), 1.9, 0.3)
 add(wrong(), 2.98, 0.18); add(sting(0.8), 3.4, 0.07)
 for t in np.arange(4.6, 7.2, 0.5): add(footstep(150), t, 0.08)
 add(chime(1.2), 4.6, 0.08)

@@ -5,8 +5,12 @@ headless), sincronizada com a narração do usuário. Cada projeto é uma pasta 
 
 ## Entrega (sempre)
 - 1080×1920, 30fps, cortes rápidos (~1 por segundo), animação fluida.
-- **Sem legendas** (ele coloca no CapCut). **Sem música** — só efeitos sonoros, e **efeitos baixos**
-  (mix do sfx em ~0.6; jumpscare/estática/glitch/estrondos bem mais baixos que o resto).
+- **Sem legendas** (ele coloca no CapCut). **Sem música** — só efeitos sonoros.
+- **Volume dos efeitos**: bem audíveis, mas sem cobrir a narração. Usar o `mux.sh` (fnaf_bite87): o bus de sfx
+  passa por volume 2.8 + compressor + limitador em 0.45 (picos ~7 dB abaixo da voz). NÃO deixar baixo demais.
+  Jumpscare/estática/glitch/estrondos com ganho menor no timeline do sfx.py, mas ainda presentes.
+- **Começo do vídeo sempre com efeitos marcantes** (sem exagero): ex. clique de luz, zumbido, whoosh, passos,
+  vozes de crianças, chime/heartbeat — o começo é o mais importante.
 - Duas versões: `NOME.mp4` (narração + efeitos) e `NOME_SO_NARRACAO.mp4`.
 - Sem ícones de like/sino no final. Commit + push no branch da sessão.
 - Transcrever a narração (faster-whisper) e cortar as cenas nas palavras-chave.
