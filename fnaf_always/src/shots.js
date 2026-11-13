@@ -272,9 +272,9 @@ at(41.16, 'monster', x => {
 // "E quando o corpo físico finalmente não aguentou mais,"
 at(43.60, 'collapse', x => {
   const s = maze(x); const L = x.L; const c = put(x, 'scrap', s, 0, 0, -4.4, 0); const k = eo(seg(L, 0.6, 1.8));
-  c.root.position.y = -0.28 * k; c.torso.rotation.x = 0.7 * k; c.legR.piv.rotation.x = -1.4 * k; c.legL.piv.rotation.x = -1.5 * k; c.head.rotation.x = 0.6 * k; c.armR.piv.rotation.z = -0.3 * k; c.armL.piv.rotation.z = 0.3 * k; twitch(c, x.t, 1 - k);
+  c.root.position.y = -0.62 * k; c.torso.rotation.x = -0.35 * k; c.legR.piv.rotation.x = -1.5 * k; c.legL.piv.rotation.x = -1.45 * k; c.head.rotation.x = -0.25 * k; c.head.rotation.z = 0.35 * k; c.armR.piv.rotation.z = -0.5 * k; c.armL.piv.rotation.z = 0.5 * k; twitch(c, x.t, 1 - k);
   fireAt(x, s, -1.2, -4.6, 0.6, 6, 3.0, 16); x.FX.fire.userData.fl.forEach((m, i) => { if (i % 2) m.position.x += 2.4; });
-  camMove(x, [0.4, 1.7, -0.4], [0, 1.6, -4.4], [0.25, 1.5, -1.6], [0, 1.2, -4.4], eio, 50); fillOn(x, c, 4, 1.8); if (L > 1.6 && L < 1.9) shake(x, 0.5);
+  camMove(x, [0.4, 1.7, -0.4], [0, 1.6, -4.4], [0.25, 1.3, -1.9], [0, 1.0, -4.4], eio, 50); fillOn(x, c, 1.5, 1.4); if (L > 1.6 && L < 1.9) shake(x, 0.5);
 });
 // "ele transferiu a própria mente para um vírus de computador,"
 at(46.26, 'virus', x => {
