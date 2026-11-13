@@ -40,9 +40,9 @@ headless), sincronizada com a narração do usuário. Cada projeto é uma pasta 
 - Câmera nunca dentro/atrás de objetos; nada grande tapando o quadro em primeiro plano.
 - Personagens importantes perto da câmera e bem iluminados (fill light **depois** de posicionar a câmera).
 
-### Marcações (lupas/círculos)
-- Círculos de destaque **centralizados exatamente** no detalhe (ex.: nos olhos — conferir a linha real do olho
-  na textura da skin, que costuma ser mais baixa que o meio da cabeça). Sempre validar num frame.
+### Marcações (lupas/círculos) — NÃO USAR
+- Ele pediu pra **descartar totalmente** as bolinhas/lupas com ✗ vermelho e ✓ verde. Não usar mais.
+  Destacar detalhes com câmera (close, push-in), luz, tint e animação.
 
 ### Telas dentro do 3D (fliperama, monitor)
 - Tela proporcional (4:3) e **completa**, embutida numa moldura de verdade (não um plano colado no gabinete);
@@ -55,6 +55,15 @@ headless), sincronizada com a narração do usuário. Cada projeto é uma pasta 
 ### Logos
 - Logo só quando ele pedir, e na fala certa. PNG com fundo removido de forma limpa (sem borrão/caixa),
   com sombra; quando pedido, fundo da cena desfocado (uniform `blur` do post) pra destacar a logo.
+
+### Movimento (o mais importante)
+- Toda cena precisa de movimento de verdade: personagem andando/gesticulando/pulando/virando a cabeça +
+  câmera se movendo (push-in, órbita, travelling). Nada de cena parada ou "travada". Intro sempre forte e animada.
+- Animatrônicos principais **centralizados e de frente** pra câmera (ex.: Mangle no teto simétrica, rosto pra
+  câmera — nunca de lado/torta).
+- Cuidado com exposição: personagens brancos (Mangle, rostos) estouram fácil com lâmpada/fill/lanterna perto.
+- Checar oclusão: câmera não pode ficar atrás de cadeira/mesa/parede no começo do movimento.
+- Props apoiados em algo (ex.: bolo em cima de uma mesa, nunca flutuando).
 
 ## Processo de qualidade
 1. Testar modelos (lineup claro, frente e lado) antes das cenas.
