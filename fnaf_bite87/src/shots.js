@@ -265,19 +265,25 @@ at(50.42, 'above_guard', x => {
   const j = put(x, 'jeremy', s, 0, -0.02, 0.75, Math.PI); j.legR.piv.rotation.x = -1.5; j.legL.piv.rotation.x = -1.5; j.armR.piv.rotation.x = -0.9; j.armL.piv.rotation.x = -0.9; j.idle(x.t, 0.5);
   camMove(x, [0.3, 1.55, -3.6], [0, 1.85, 0.6], [0.1, 1.6, -2.9], [0, 1.9, 0.6], eo, 52); x.S.officeLamp2.intensity = 4; x.S.officeLamp2.intensity = 3 * flicker(x.t, 8); x.S.officeFill2.intensity = 2;
 });
-// "pendurado no teto, com aquela mandíbula gigante" — face to face, jaw opening wide
+// "pendurado no teto, com aquela mandíbula gigante" — side view: Mangle hangs in front of the seated guard, face to face, jaw opening
+function mangleAt(x, s, hz) { const m = mangleCeil(x, s, 0, 3.15, 0, 0); m.root.updateMatrixWorld(true); const hp = mangleHead(m); m.root.position.z += hz - hp.z; m.root.position.x -= hp.x; return m; }
+function guardChair(x, s, flinch = 0) { const j = put(x, 'jeremy', s, 0, -0.02, 0.75, Math.PI); j.legR.piv.rotation.x = -1.5; j.legL.piv.rotation.x = -1.5;
+  j.armR.piv.rotation.x = -0.9 - 1.7 * flinch; j.armL.piv.rotation.x = -0.9 - 1.7 * flinch; j.armR.piv.rotation.z = -0.35 * flinch; j.armL.piv.rotation.z = 0.35 * flinch; j.head.rotation.x = -0.35 * flinch; j.torso.rotation.x = -0.25 * flinch; j.idle(x.t, 0.5 * (1 - flinch)); return j; }
 at(53.14, 'jaw', x => {
-  const s = office(x); const L = x.L; const m = mangleCeil(x, s, 0, 3.15, -1.6); m.idle(x.t, 0.5); m.setJaw(eo(seg(L, 0.7, 1.9))); m.neck.rotation.x += 0.08 * Math.sin(x.t * 3);
-  const hp = mangleHead(m); hp.y -= 0.3; camMove(x, [0, hp.y - 0.1, hp.z + 1.62], hp.toArray(), [0, hp.y - 0.05, hp.z + 1.25], hp.toArray(), eio, 50); x.S.officeLamp2.intensity = 1.6; x.S.officeFill2.intensity = 2;
-  const l = x.FX.torch; s.add(l, l.target); l.position.set(0.25, hp.y + 0.2, hp.z + 2.0); l.target.position.copy(hp); l.intensity = 4; l.angle = 0.4;
+  const s = office(x); const L = x.L; const m = mangleAt(x, s, -0.55 + 0.05 * Math.sin(x.t * 2)); m.idle(x.t, 0.4); m.setJaw(eo(seg(L, 0.6, 1.9)));
+  guardChair(x, s, 0.15 * sm(seg(L, 1.2, 2.0)));
+  camMove(x, [1.25, 2.5, 2.6], [-0.05, 1.45, -0.45], [1.05, 2.4, 2.15], [-0.05, 1.45, -0.45], eio, 48); hand(x, 0.6);
+  x.S.officeLamp2.intensity = 3 * flicker(x.t, 8); x.S.officeFill2.intensity = 2;
 });
-// "caindo de cima para baixo, exatamente no alto da sua cabeça." — the drop (guard's POV)
+// "caindo de cima para baixo, exatamente no alto da sua cabeça." — she lunges onto the guard
 at(56.06, 'drop', x => {
-  const s = office(x); const L = x.L; x.S.officeLamp2.intensity = 1.5 * flicker(x.t, 6); x.S.officeFill2.intensity = 1.2;
-  const m = mangleCeil(x, s, 0.0, 3.15, -1.2); m.idle(x.t, 0.4); const k = eo(seg(L, 0.5, 0.9)); m.setJaw(0.4 + 0.6 * k); m.root.position.y = 3.15 - 0.7 * k; m.root.position.z = -1.2 + 0.6 * k;
-  const hp0 = mangleHead(m); cam(x, [0, 1.45, hp0.z + mix(2.0, 1.0, k)], [hp0.x, hp0.y - 0.05, hp0.z], 60);
-  if (L > 0.85 && L < 1.6) shake(x, 1.2 * (1 - seg(L, 0.85, 1.6)));
-  x.post.flash.value = L > 0.86 && L < 0.92 ? 0.35 : 0; x.post.stat.value = L > 1.0 && L < 1.3 ? 0.5 : (L > 2.2 ? 0.4 : 0); x.post.tint.value.set(1.2, 0.85, 0.85);
+  const s = office(x); const L = x.L; const k = ei(seg(L, 0.3, 0.6)); const m = mangleAt(x, s, mix(-0.55, 0.3, k)); m.idle(x.t, 0.3 * (1 - k)); m.setJaw(1 - 0.8 * sm(seg(L, 0.6, 0.72)));
+  m.root.position.y += 0.25 * (1 - k); guardChair(x, s, eo(seg(L, 0.25, 0.55)));
+  cam(x, [1.1, 2.45, 2.25], [-0.05, 1.45, -0.05], 50); hand(x, 0.8);
+  x.S.officeLamp2.intensity = (L > 0.6 ? 1.5 : 3) * flicker(x.t, 6); x.S.officeFill2.intensity = 2;
+  if (L > 0.6 && L < 1.4) shake(x, 1.0 * (1 - seg(L, 0.6, 1.4)));
+  x.post.flash.value = L > 0.6 && L < 0.66 ? 0.3 : 0; x.post.stat.value = L > 0.7 && L < 0.95 ? 0.35 : (L > 2.3 ? 0.3 : 0); x.post.tint.value.set(1.2, 0.85, 0.85);
+  x.post.fade.value = 0.75 * seg(L, 1.6, 2.6);
 });
 // "Você ainda confundia as duas tragédias?" — Fredbear on the left, Mangle hanging on the right
 at(58.70, 'confused', x => {
