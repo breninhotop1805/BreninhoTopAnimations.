@@ -208,8 +208,8 @@ at(15.38, 'care', x => {
 at(20.12, 'shield', x => {
   const s = atrium(x, true); const L = x.L;
   const g = put(x, 'gregory', s, 0.65, 0, 2.7, Math.PI + 0.2); g.idle(x.t, 1); g.armR.piv.rotation.x = -0.5; g.torso.rotation.x = -0.08;
-  const m = put(x, 'monty', s, 0, 0, 0, 0); walkTo(m, [1.15, 0, -3.6], [1.0, 0, -0.5], eo(seg(L, 0, 2.2)), 1.2); m.root.rotation.y = -0.15; m.jaw.rotation.x = 0.4 + 0.2 * Math.sin(x.t * 9); aim(m, 'R', rootPt(m, -0.4, 1.8, 1.0), 0.7); aim(m, 'L', rootPt(m, 0.4, 1.8, 1.0), 0.7);
-  const f = put(x, 'gfreddy', s, 0, 0, 0, Math.PI); walkTo(f, [-1.5, 0, 2.2], [0.1, 0, 1.45], eo(seg(L, 0.3, 1.3)), 1.0); f.root.rotation.y = Math.PI + 0.15; f.setEyeGlow('#5ad8ff', 0.85);
+  const m = put(x, 'monty', s, 0, 0, 0, 0); walkTo(m, [1.15, 0, -2.4], [1.0, 0, -0.5], eo(seg(L, 0, 2.2)), 1.2); m.root.rotation.y = -0.15; m.jaw.rotation.x = 0.4 + 0.2 * Math.sin(x.t * 9); aim(m, 'R', rootPt(m, -0.4, 1.8, 1.0), 0.7); aim(m, 'L', rootPt(m, 0.4, 1.8, 1.0), 0.7);
+  const f = put(x, 'gfreddy', s, 0, 0, 0, Math.PI); walkTo(f, [-0.55, 0, 2.6], [0.1, 0, 1.45], eo(seg(L, 0, 1.0)), 1.0); f.root.rotation.y = Math.PI + 0.15; f.setEyeGlow('#5ad8ff', 0.85);
   const ao = eo(seg(L, 1.2, 1.7)); f.armR.piv.rotation.set(0, 0, -1.3 * ao); f.armL.piv.rotation.set(0, 0, 1.3 * ao);
   camMove(x, [-1.6, 1.8, -2.6], [0.3, 1.6, 1.4], [-1.3, 1.75, -2.0], [0.3, 1.7, 1.4], eo, 54); fillOn(x, f, 2.5, 2.0);
   if (L > 1.4) shieldRings(x, s, tp(f, 'torso', [0, 6, 2]), '#5ad8ff', 1.3);
