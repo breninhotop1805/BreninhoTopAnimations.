@@ -136,153 +136,162 @@ function mg(x, spec) { x.out.scene = x.S.void; x.out.ui = { type: 'mg', mg: spec
 function diner(x) { const s = x.S.diner; x.out.scene = s; x.post.tint.value.set(1.06, 1.0, 0.9); x.post.vig.value = 0.8; const f = put(x, 'fredbear', s, 0.9, 0.77, -4.4, -0.15); f.idle(x.t, 1); const b = put(x, 'springbonnie', s, -0.9, 0.77, -4.4, 0.15); b.idle(x.t, 1, 2); return [s, f, b]; }
 function office(x) { const s = x.S.office2; x.out.scene = s; x.post.vig.value = 0.9; return s; }
 function party(x, day = true) { const s = x.S.party; x.out.scene = s; x.post.vig.value = 0.7; return s; }
-function kidsParty(x, s, hats = true) { const P = [[0, -1.6, -2.0, 0.5], [1, -0.6, -1.4, 0.1], [2, 0.6, -1.5, -0.2], [3, 1.5, -2.1, -0.5]];
+function kidsParty(x, s, hats = true) { const P = [[0, -1.15, -1.25, 0.5], [1, -0.45, -1.5, 0.1], [2, 0.45, -1.5, -0.2], [3, 1.1, -1.25, -0.5]];
   return P.map(([i, px, pz, ry]) => { const k = put(x, 'kid' + i, s, px, 0, pz, ry); k.idle(x.t, 1, i); k.head.rotation.z = 0.12 * Math.sin(x.t * 5 + i);
     if (hats) { const h = x.FX.hats[i]; k.head.add(h); h.position.set(0, 8.3 * x_U, 0); h.scale.setScalar(1 / k.root.scale.x * 0.74); } return k; }); }
-function cakeOn(x, s, p) { const c = x.FX.cake; s.add(c); c.position.set(...p); return c; }
+function cakeOn(x, s, p) { const t = x.FX.ctable; s.add(t); t.position.set(p[0], 0, p[2]); const c = x.FX.cake; s.add(c); c.position.set(p[0], 0.82, p[2]); return c; }
 // Mangle hanging from a ceiling at height `ceil` (her body under it, head hanging)
-function mangleCeil(x, s, px, ceil, pz, yaw = Math.PI / 2) { const m = x.MANGLE; s.add(m.root); m.reset(); m.root.scale.setScalar(1.25); m.root.rotation.set(0, yaw, Math.PI); m.root.position.set(px, ceil, pz); return m; }
+function mangleCeil(x, s, px, ceil, pz, yaw = 0) { const m = x.MANGLE; s.add(m.root); m.reset(); m.root.scale.setScalar(1.25); m.root.rotation.set(0, yaw, Math.PI); m.root.position.set(px, ceil, pz); return m; }
 const mangleHead = m => { m.root.updateMatrixWorld(true); return m.headGroup.getWorldPosition(new V3()); };
 const KIDS = (walk, x0 = 0) => [{ x: 214 + x0, y: 200, type: 'foxy', walk }, { x: 238 + x0, y: 204, type: 'bonnie', walk }, { x: 262 + x0, y: 200, type: 'chica', walk }, { x: 286 + x0, y: 204, type: 'freddy', walk }];
 
+function ringWaves(x, s, p) { x.FX.waves.forEach((w, i) => { const k = (x.t * 1.3 + i / 4) % 1; s.add(w); w.position.copy(p); w.scale.setScalar(0.12 + 0.55 * k); w.material.opacity = 0.85 * (1 - k); w.material.color.set('#ff6060'); w.quaternion.copy(x.camera.quaternion); }); }
 // ===== HOOK =====
-// "Você provavelmente passou a vida inteira acreditando"
+// "Você provavelmente passou a vida inteira acreditando" — lights snap on, camera rushes through the diner to the stage
 at(0.00, 'hook', x => {
-  const [s, f] = diner(x); const L = x.L; x.S.dinerLamps.forEach(l => l.intensity = 3); x.S.dinerSpot.intensity = 30;
-  const hp = tp(f, 'head', [0, 4, 4]); camMove(x, [hp.x + 0.8, hp.y - 0.2, hp.z + 3.2], hp.toArray(), [hp.x + 0.4, hp.y - 0.05, hp.z + 2.0], hp.toArray(), eo, 44); staticIn(x, 0.2); x.post.vig.value = 1.0;
+  const [s, f, b] = diner(x); const L = x.L; const on = L > 0.25 ? 1 : (Math.sin(x.t * 60) > 0 ? 0.6 : 0.05);
+  x.S.dinerLamps.forEach(l => l.intensity = 10 * on); x.S.dinerSpot.intensity = 45 * on; f.head.rotation.y = -0.6 * (1 - eo(seg(L, 0.9, 1.6))); f.head.rotation.x = 0.1;
+  aim(f, 'R', rootPt(f, -0.6, 1.9 + 0.15 * Math.sin(x.t * 5), 0.5), eo(seg(L, 0.6, 1.2))); b.armL.piv.rotation.x = -0.5 - 0.3 * Math.sin(x.t * 4);
+  [[0, -1.2, 0.2], [1, 1.3, 0.6]].forEach(([i, px, pz]) => { const k = put(x, 'kid' + i, s, 0, 0, 0, Math.PI); walkTo(k, [px, 0, pz + 2.5], [px * 0.7, 0, pz - 1.0], seg(L, 0, 2.4), 0.7); k.root.rotation.y = Math.PI; });
+  camMove(x, [0.2, 1.3, 7.0], [0.6, 2.2, -4.4], [0.6, 2.4, -0.6], [0.9, 2.6, -4.4], eio, 50); staticIn(x, 0.15);
 });
 // "na cena errada da mordida de 87."
 at(2.48, 'wrong', x => {
-  const [s, f] = diner(x); const L = x.L; f.head.rotation.x = -0.1; const hp = tp(f, 'head', [0, 3, 4.5]);
-  cam(x, [hp.x + 0.25, hp.y + 0.05, hp.z + 1.6], hp.toArray(), 42); hand(x);
-  if (L > 0.5) lensOn(x, tp(f, 'head', [0, 2.2, 4.5]), 0.12, sm(seg(L, 0.5, 0.8)), 'x', '#ff5050');
+  const [s, f] = diner(x); const L = x.L; f.head.rotation.y = 0.25 * Math.sin(x.t * 2); f.head.rotation.z = 0.35 * eo(seg(L, 0.5, 1.0)); f.head.rotation.x = -0.15;
+  const hp = tp(f, 'head', [0, 4, 4]); camMove(x, [hp.x - 0.6, hp.y + 0.3, hp.z + 2.6], hp.toArray(), [hp.x + 0.3, hp.y + 0.1, hp.z + 1.6], hp.toArray(), eio, 44);
+  if (L > 1.1) { x.post.tint.value.set(1.25, 0.8, 0.8); x.post.stat.value = L < 1.25 ? 0.5 : 0.04; x.post.chroma.value = 0.6; shake(x, 0.15); }
 });
-// "Quando se fala nesse evento, todo mundo se lembra daquele"
+// "Quando se fala nesse evento, todo mundo se lembra daquele" — the show: kids jumping, Fredbear + Spring Bonnie performing
 at(4.46, 'everyone', x => {
-  const [s, f, b] = diner(x); const L = x.L;
-  [[0, -1.4, -1.4, 0], [1, -0.4, -1.1, 0], [2, 0.6, -1.2, 0], [3, 1.5, -1.5, 0]].forEach(([i, px, pz]) => { const k = put(x, 'kid' + i, s, px, 0, pz, Math.PI); k.idle(x.t, 1, i); k.head.rotation.x = -0.3; });
-  camMove(x, [0.9, 2.0, 4.6], [0, 1.8, -4.4], [0.5, 2.1, 3.4], [0, 2.0, -4.4], eo, 52); hand(x);
+  const [s, f, b] = diner(x); const L = x.L; aim(f, 'R', rootPt(f, -0.7, 2.0 + 0.2 * Math.sin(x.t * 6), 0.4), 1); f.head.rotation.z = 0.12 * Math.sin(x.t * 3); aim(b, 'L', rootPt(b, 0.7, 1.9 + 0.2 * Math.sin(x.t * 6 + 1), 0.4), 1); b.head.rotation.z = -0.12 * Math.sin(x.t * 3);
+  [[0, -1.4, -1.4], [1, -0.45, -1.0], [2, 0.5, -1.2], [3, 1.4, -1.5]].forEach(([i, px, pz]) => { const k = put(x, 'kid' + i, s, px, Math.max(0, Math.sin(x.t * 7 + i * 1.3)) * 0.18, pz, Math.PI); k.idle(x.t, 1, i);
+    const up = Math.sin(x.t * 7 + i * 1.3) > 0; k.armR.piv.rotation.z = up ? -2.6 : -0.3; k.armL.piv.rotation.z = up ? 2.6 : 0.3; });
+  const a = -0.5 + 0.9 * eio(x.u); cam(x, [Math.sin(a) * 4.6, 2.4 - 0.5 * x.u, 2.4 + Math.cos(a) * 1.6], [0, 1.6, -3.4], 54); sparkles(x, s, [0, 2.6, -4.2], 1.6, 8, 0.7);
 });
 // "minigame clássico do FNAF 4"
 at(7.30, 'arcade', x => {
-  const s = x.S.arcade; x.out.scene = s; const L = x.L; x.out.screen = 'mg'; x.out.mg = { cx: 240, cy: 120, z: 0.68, kids: KIDS(1, 40 - L * 20) };
-  const p = x.S.cabScreenPos; const k = eio(seg(L, 0, 1.88)); cam(x, [p.x + mix(0.9, 0, k), p.y + mix(0.1, 0.0, k), p.z + mix(4.2, 1.85, k)], [p.x, p.y - 0.05 * (1 - k), p.z], 46);
+  const s = x.S.arcade; x.out.scene = s; const L = x.L; x.out.screen = 'mg'; x.out.mg = { cx: 240, cy: 120, z: 0.68, kids: KIDS(1, 40 - L * 30), child: { x: 205 + 40 - L * 30, y: 202 } };
+  const p = x.S.cabScreenPos; const k = eio(seg(L, 0, 1.88)); cam(x, [p.x + mix(-1.2, 0, k), p.y + mix(0.4, 0.0, k), p.z + mix(3.6, 1.85, k)], [p.x, p.y - 0.05 * (1 - k), p.z], 46);
   x.post.flash.value = L > 1.72 ? (L - 1.72) / 0.16 * 0.8 : 0;
 });
 
 // ===== MINIGAME =====
-// "Onde a criança chorona é jogada"
 at(9.18, 'mg_carry', x => { const L = x.L; const k = seg(L, 0, 2.42); const dx = -70 * k;
   mg(x, { cx: 220 + dx, cy: 150, z: 1.6, kids: KIDS(1, dx), child: { x: 192 + dx, y: 202 } }); });
-// "na boca do Fredbear."
 at(11.60, 'mg_bite', x => { const L = x.L; const jaw = L < 0.35 ? 1 : 1 - sm(seg(L, 0.35, 0.45));
   mg(x, { cx: 140, cy: 122, z: 1.5, jaw, kids: [{ x: 152, y: 172, type: 'foxy', armsUp: 1 }, { x: 176, y: 172, type: 'bonnie', armsUp: 1 }], child: { x: 146, y: 108, flat: 1 },
     flash: L > 0.44 && L < 0.52 ? 1 : 0, black: L > 0.52 ? 0.85 : 0, glitch: L > 0.5 ? 0.8 : 0 }); });
 // "A internet inteira jurou na época que essa era a famosa mordida,"
-at(12.38, 'mg_famous', x => { const L = x.L;
-  mg(x, { cx: mix(118, 140, eio(x.u)), cy: 110, z: 2.2, jaw: 0.2, kids: KIDS(0, -40), dark: 0, q: L > 2.5 ? sm(seg(L, 2.5, 2.8)) : 0 }); });
+at(12.38, 'mg_famous', x => { const L = x.L; const z = mix(1.3, 2.4, eio(seg(L, 0, 2.4)));
+  mg(x, { cx: mix(200, 128, eio(seg(L, 0, 2.4))), cy: mix(140, 108, eio(seg(L, 0, 2.4))), z, jaw: 0.2 + 0.15 * Math.max(0, Math.sin(x.t * 6)), kids: KIDS(0, -40).map((k, i) => ({ ...k, armsUp: Math.sin(x.t * 8 + i) > 0 })), q: L > 2.5 ? sm(seg(L, 2.5, 2.8)) : 0 }); });
 // "mas tem um furo gigante aí."
 at(15.52, 'hole', x => {
-  const [s, f] = diner(x); const L = x.L; f.head.rotation.z = 0.2 * Math.sin(x.t * 9) * seg(L, 0.4, 0.6); x.post.tint.value.set(1.2, 0.85, 0.85); x.post.chroma.value = 0.5;
-  x.post.stat.value = Math.sin(x.t * 23) > 0.85 ? 0.4 : 0; camMove(x, [-0.4, 1.5, 1.2], [0.9, 2.6, -4.4], [-0.2, 1.6, 0.4], [0.9, 2.7, -4.4], eo, 46); shake(x, 0.1);
+  const [s, f] = diner(x); const L = x.L; f.head.rotation.z = 0.25 * Math.sin(x.t * 11) * seg(L, 0.3, 0.6); f.head.rotation.y = 0.3 * Math.sin(x.t * 7) * seg(L, 0.3, 0.6); x.post.tint.value.set(1.25, 0.8, 0.8); x.post.chroma.value = 0.6;
+  x.S.dinerLamps.forEach((l, i) => l.intensity = 10 * flicker(x.t, i)); x.post.stat.value = Math.sin(x.t * 23) > 0.85 ? 0.35 : 0;
+  camMove(x, [-0.8, 1.2, 2.6], [0.9, 2.6, -4.4], [0.2, 1.8, 0.0], [0.9, 2.7, -4.4], eio, 46); shake(x, 0.12);
 });
 // "Essa tragédia do minigame aconteceu, na verdade, em 1983."
 at(17.12, 'mg_1983', x => { const L = x.L; const st = L > 3.56 ? [mix(1.7, 1.0, eo(seg(L, 3.56, 3.72))), 1] : null;
-  mg(x, { cx: mix(90, 330, eio(seg(L, 0, 3.4))), cy: 130, z: 1.2, jaw: 0.2, kids: KIDS(0, 0), child: { x: 190, y: 202 }, stamp: st }); if (L > 3.56 && L < 3.72) shake(x, 0.4); });
+  mg(x, { cx: mix(90, 330, eio(seg(L, 0, 3.4))), cy: 130, z: 1.2, jaw: 0.2 + 0.2 * Math.max(0, Math.sin(x.t * 5)), kids: KIDS(0, 0).map((k, i) => ({ ...k, armsUp: Math.sin(x.t * 7 + i) > 0.3 })), child: { x: 190, y: 202 }, stamp: st }); if (L > 3.56 && L < 3.72) shake(x, 0.4); });
 // "A verdadeira mordida de 87 nunca foi mostrada na tela,"
 at(21.58, 'no_screen', x => {
   const s = x.S.arcade; x.out.scene = s; const L = x.L; x.out.screen = 'static';
-  const p = x.S.cabScreenPos; cam(x, [p.x + mix(0.5, 0.2, x.u), p.y + 0.15, p.z + mix(2.6, 2.1, x.u)], [p.x, p.y - 0.05, p.z], 46); x.S.cabLight.intensity = 2 + Math.random() * 0.5;
+  const p = x.S.cabScreenPos; const a = 0.6 - 1.0 * eio(x.u); cam(x, [p.x + Math.sin(a) * 2.4, p.y + 0.3, p.z + Math.cos(a) * 2.4], [p.x, p.y - 0.1, p.z], 46); x.S.cabLight.intensity = 2 + 0.6 * Math.sin(x.t * 40);
 });
 // "mas o FNAF 2"
-at(25.22, 'logo_fnaf2', x => { const s = office(x); cam(x, [0.4, 1.9, 2.4 - 0.3 * x.u], [0, 1.5, -6], 52); logoCard(x, 0); x.post.blur.value = 1; x.post.vig.value = 1.0; });
-// "entregou todas as pistas de quem foi a vítima e quem atacou."
+at(25.22, 'logo_fnaf2', x => { const s = office(x); const m = mangleCeil(x, s, 0, 2.66, -7.0); m.crawl(x.L, 1); cam(x, [0.3, 1.8, 2.6 - 0.6 * x.u], [0, 1.6, -6], 52); logoCard(x, 0); x.post.blur.value = 1; x.post.vig.value = 1.0; });
+// "entregou todas as pistas de quem foi a vítima e quem atacou." — Mangle crawls along the hallway ceiling towards us
 at(26.20, 'clues', x => {
-  const s = office(x); const L = x.L; const m = mangleCeil(x, s, 0, 2.66, -6.5); m.idle(x.t, 0.8); x.S.hallLights2.forEach((l, i) => l.intensity = 2.5 * flicker(x.t, i));
-  const l = x.FX.torch; s.add(l, l.target); l.position.set(0.3, 1.5, 0.5); l.target.position.set(0, 2.2, -6.5); l.intensity = 22; l.angle = 0.35;
-  camMove(x, [0.6, 1.6, 2.2], [0, 2.0, -6.5], [0.4, 1.65, 1.5], [0, 2.2, -6.5], eo, 46); hand(x);
+  const s = office(x); const L = x.L; const m = mangleCeil(x, s, 0, 2.66, mix(-9.0, -4.2, eo(seg(L, 0, 2.6)))); m.crawl(L * 1.4, 1 - seg(L, 2.2, 2.6)); m.idle(x.t, 0.6); x.S.hallLights2.forEach((l, i) => l.intensity = 2.5 * flicker(x.t, i));
+  const l = x.FX.torch; s.add(l, l.target); const hp = mangleHead(m); l.position.set(0.3, 1.5, 0.6); l.target.position.copy(hp); l.intensity = 7; l.angle = 0.3;
+  camMove(x, [0.0, 1.6, 1.6], [0, 2.2, -6], [0.0, 1.7, 0.6], [0, 2.3, -5], eo, 48); hand(x);
 });
-// "No final do jogo, o guarda Jeremy"
+// "No final do jogo, o guarda Jeremy" — Jeremy walks into the office
 at(28.80, 'jeremy', x => {
-  const s = office(x); const L = x.L; const j = put(x, 'jeremy', s, 0, 0, -2.6, 0.1); j.idle(x.t, 1);
-  camMove(x, [0.7, 1.75, 1.2], [0, 1.6, -2.6], [0.45, 1.75, 0.4], [0, 1.65, -2.6], eo, 48); lookAtCam(x, j, 0.6); fillOn(x, j, 1.6, 1.8);
+  const s = office(x); const L = x.L; const j = put(x, 'jeremy', s, 0, 0, 0, 0); walkTo(j, [0.2, 0, -5.0], [0, 0, -1.6], eo(seg(L, 0, 1.9)), 0.75); j.root.rotation.y = 0;
+  if (L > 1.7) lookAtCam(x, j, eo(seg(L, 1.7, 2.0)));
+  camMove(x, [0.6, 1.7, 1.6], [0, 1.6, -3.5], [0.45, 1.7, 1.3], [0, 1.65, -1.6], eo, 48); fillOn(x, j, 0.6, 1.8); x.S.officeLamp2.intensity = 6;
 });
-// "é transferido para o turno do dia para vigiar uma festa de aniversário."
+// "é transferido para o turno do dia para vigiar uma festa de aniversário." — party in full swing
 at(30.88, 'birthday', x => {
-  const s = party(x); const L = x.L; kidsParty(x, s); cakeOn(x, s, [0.0, 0.84, -2.2]);
-  const j = put(x, 'jeremy', s, 1.15, 0, 0.2, -0.6); j.idle(x.t, 1); j.armR.piv.rotation.z = -0.1; j.armL.piv.rotation.z = 0.1;
-  camMove(x, [0.6, 1.9, 3.8], [0.4, 1.0, -1.8], [0.4, 1.8, 2.9], [0.6, 1.0, -1.8], eo, 52); hand(x); sparkles(x, s, [0, 1.3, -2.2], 0.6, 6, 0.6);
+  const s = party(x); const L = x.L; const ks = kidsParty(x, s); ks.forEach((k, i) => { k.root.position.y = Math.max(0, Math.sin(x.t * 7 + i * 1.5)) * 0.16; const up = Math.sin(x.t * 7 + i * 1.5) > 0.2; k.armR.piv.rotation.z = up ? -2.5 : -0.2; k.armL.piv.rotation.z = up ? 2.5 : 0.2; });
+  cakeOn(x, s, [0.0, 0.84, -2.2]);
+  const j = put(x, 'jeremy', s, 0, 0, 0, -0.6); walkTo(j, [-1.2, 0, 1.0], [0.95, 0, 0.1], eo(seg(L, 0, 2.0)), 0.75); j.root.rotation.y = mix(Math.atan2(2.15, -0.9), -0.4, eo(seg(L, 1.9, 2.5)));
+  const a = 0.4 - 0.7 * eio(x.u); cam(x, [Math.sin(a) * 4.0, 1.9, Math.cos(a) * 3.6], [0.4, 1.0, -1.4], 52); sparkles(x, s, [0, 1.4, -2.2], 0.6, 8, 0.7);
 });
 // "E o Phone Guy avisa claramente"
 at(34.28, 'phone', x => {
   const s = office(x); const L = x.L; const ring = Math.floor(x.t * 2.2) % 2 === 0 && L < 1.0; const lift = eo(seg(L, 1.0, 1.35));
   x.S.phoneHandset2.position.set(0, 0.17 + (ring ? 0.012 * Math.sin(x.t * 90) : 0) + 0.22 * lift, 0.05 * lift); x.S.phoneHandset2.rotation.set(-0.5 * lift, 0, (ring ? 0.05 * Math.sin(x.t * 70) : 0) + 0.3 * lift); x.S.phoneLight2.intensity = ring ? 1.1 : 0.3;
-  camMove(x, [0.05, 1.9, 0.95], [-0.75, 1.05, -0.75], [-0.1, 1.8, 0.65], [-0.75, 1.08, -0.75], eo, 40); hand(x);
+  ringWaves(x, s, new V3(-0.75, 1.25, -0.72));
+  camMove(x, [0.4, 2.0, 1.1], [-0.75, 1.05, -0.75], [-0.1, 1.75, 0.55], [-0.75, 1.1, -0.75], eio, 42); hand(x);
 });
-// "que os robôs estão agressivos apenas com adultos."
+// "que os robôs estão agressivos apenas com adultos." — robot vision from the ceiling
 at(36.66, 'robot_vision', x => {
-  const s = party(x); const L = x.L; const ks = kidsParty(x, s); cakeOn(x, s, [0.0, 0.84, -2.2]); const j = put(x, 'jeremy', s, 2.4, 0, -1.0, -0.5); j.idle(x.t, 1);
-  cam(x, [0.2, 4.6, 1.8], [1.0, 0.8, -1.6], 54); hand(x, 0.5);
-  const lock = L > 0.9; const hp = tp(j, 'head', [0, 4, 0]); const [u, v] = proj(x, hp);
-  x.out.ui = { type: 'vision', box: lock ? [u - 0.13, v - 0.08, 0.26, 0.42] : [0.12, 0.42, 0.56, 0.3], label: lock ? 'ADULTO' : 'CRIANÇAS: OK', id: lock ? 'ALVO' : 'IGNORAR', locked: lock, col: lock ? '#ff3030' : '#5aff6a' };
+  const s = party(x); const L = x.L; const ks = kidsParty(x, s); cakeOn(x, s, [0.0, 0.84, -2.2]); const j = put(x, 'jeremy', s, 1.15, 0, 0.1, -0.6); j.idle(x.t, 1);
+  const a = -0.4 + 0.7 * eio(seg(L, 0, 1.0)); cam(x, [0.2 + Math.sin(a) * 1.2, 4.6, 1.8], [mix(-0.6, 1.4, eio(seg(L, 0, 1.0))), 0.8, -1.2], 54); hand(x, 0.5);
+  const lock = L > 1.05; const hp = tp(j, 'head', [0, 4, 0]); const [u, v] = proj(x, hp);
+  x.out.ui = { type: 'vision', box: lock ? [u - 0.12, v - 0.08, 0.24, 0.4] : [0.14, 0.42, 0.5, 0.3], label: lock ? 'ADULTO' : 'CRIANÇAS: OK', id: lock ? 'ALVO' : 'IGNORAR', locked: lock, col: lock ? '#ff3030' : '#5aff6a' };
   x.post.tint.value.set(1.1, 0.9, 0.9);
 });
 // "Ou seja, a verdadeira vítima dessa tragédia não foi uma criancinha,"
 at(38.68, 'not_child', x => {
-  const s = party(x); const L = x.L; kidsParty(x, s, false); const c = put(x, 'cchild', s, 0.1, 0, -0.4, 0); c.idle(x.t, 1); lookAtCam(x, c, 0.6);
-  const hp = tp(c, 'head', [0, 4, 0]); camMove(x, [hp.x + 0.5, hp.y + 0.3, hp.z + 2.6], [hp.x, hp.y - 0.4, hp.z], [hp.x + 0.3, hp.y + 0.2, hp.z + 2.1], [hp.x, hp.y - 0.4, hp.z], eo, 46); fillOn(x, c, 1.3, 1.4);
-  if (L > 2.6) lensOn(x, hp, 0.14, sm(seg(L, 2.6, 2.9)), 'x', '#ff5050');
+  const s = party(x); const L = x.L; const ks = kidsParty(x, s, false); ks.forEach((k, i) => { k.root.position.y = Math.max(0, Math.sin(x.t * 6 + i)) * 0.1; });
+  const c = put(x, 'cchild', s, 0.1, 0, -0.3, 0); c.idle(x.t, 1); c.head.rotation.x = 0.35 + 0.05 * Math.sin(x.t * 9); c.armR.piv.rotation.x = -1.6; c.armL.piv.rotation.x = -1.6; c.armR.piv.rotation.z = 0.35; c.armL.piv.rotation.z = -0.35;
+  const hp = tp(c, 'head', [0, 4, 0]); const a = -0.5 + 0.9 * eio(x.u); cam(x, [hp.x + Math.sin(a) * 2.0, hp.y + 0.35, hp.z + Math.cos(a) * 2.0], [hp.x, hp.y - 0.35, hp.z], 46); fillOn(x, c, 1.2, 1.4);
+  if (L > 2.6) { x.post.tint.value.set(0.85, 0.85, 1.0); }
 });
 // "foi na verdade o próprio segurança tentando proteger a festa."
 at(42.44, 'guard_protect', x => {
-  const s = party(x); const L = x.L; kidsParty(x, s); cakeOn(x, s, [0.0, 0.84, -2.2]); const j = put(x, 'jeremy', s, 0.1, 0, 0.6, 0); j.idle(x.t, 1);
-  const k = eo(seg(L, 0.2, 0.7)); j.armR.piv.rotation.set(-0.2 * k, 0, -1.3 * k); j.armL.piv.rotation.set(-0.2 * k, 0, 1.3 * k); lookAtCam(x, j, 0.5);
-  camMove(x, [0.5, 1.6, 3.4], [0.1, 1.4, 0.0], [0.35, 1.6, 2.7], [0.1, 1.45, 0.0], eo, 50); fillOn(x, j, 1.6, 1.8);
-  if (L > 0.9) lensOn(x, tp(j, 'head', [0, 4, 0]), 0.14, sm(seg(L, 0.9, 1.2)), 'ok', '#5aff6a');
+  const s = party(x); const L = x.L; kidsParty(x, s); cakeOn(x, s, [0.0, 0.84, -2.2]); const j = put(x, 'jeremy', s, 0, 0, 0, 0); walkTo(j, [1.0, 0, 2.6], [0.1, 0, 0.6], eo(seg(L, 0, 1.0)), 0.75); j.root.rotation.y = mix(-0.9, 0, eo(seg(L, 0.8, 1.2)));
+  const k = eo(seg(L, 1.0, 1.5)); j.armR.piv.rotation.set(-0.2 * k, 0, -1.35 * k); j.armL.piv.rotation.set(-0.2 * k, 0, 1.35 * k);
+  camMove(x, [0.9, 1.4, 4.2], [0.3, 1.3, 0.2], [0.3, 1.5, 2.8], [0.1, 1.45, 0.2], eio, 50); fillOn(x, j, 1.4, 1.8);
+  if (L > 1.6) { const c = put(x, 'cchild', s, -0.5, 0, -0.4, 0.3); c.idle(x.t, 1); }
 });
-// "E o culpado não é o Fredbear,"
+// "E o culpado não é o Fredbear," — Fredbear shakes his head "no"
 at(45.50, 'not_fredbear', x => {
-  const [s, f] = diner(x); const L = x.L; const hp = tp(f, 'head', [0, 4, 3]);
-  camMove(x, [hp.x + 0.6, hp.y - 0.1, hp.z + 2.4], hp.toArray(), [hp.x + 0.35, hp.y, hp.z + 1.9], hp.toArray(), eo, 44);
-  if (L > 0.9) lensOn(x, hp, 0.2, sm(seg(L, 0.9, 1.15)), 'x', '#ff5050');
+  const [s, f] = diner(x); const L = x.L; f.head.rotation.y = 0.45 * Math.sin(x.t * 9) * sm(seg(L, 0.4, 0.7)); aim(f, 'R', rootPt(f, -0.25, 1.95 + 0.04 * Math.sin(x.t * 12), 0.55), eo(seg(L, 0.3, 0.6)));
+  const hp = tp(f, 'head', [0, 3, 3]); camMove(x, [hp.x + 1.2, hp.y - 0.4, hp.z + 3.2], hp.toArray(), [hp.x + 0.3, hp.y - 0.1, hp.z + 2.2], hp.toArray(), eio, 46);
 });
-// "a principal suspeita de arrancar o lobo frontal dele é a Mangle."
+// "a principal suspeita de arrancar o lobo frontal dele é a Mangle." — reveal: she crawls on the office ceiling straight at us
 at(47.32, 'mangle', x => {
-  const s = office(x); const L = x.L; const m = mangleCeil(x, s, mix(0.0, 0.0, 0), 3.15, mix(-1.4, -0.4, eo(seg(L, 0, 2.0))), Math.PI / 2); m.crawl(L * 1.1, 1 - seg(L, 1.6, 2.2)); m.idle(x.t, 0.7);
-  const hp = mangleHead(m); const z = eo(seg(L, 1.8, 3.1)); cam(x, [hp.x + mix(1.2, 0.6, z), hp.y - mix(1.4, 0.75, z), hp.z + mix(1.8, 1.15, z)], [hp.x, hp.y, hp.z], 46); hand(x, 0.7);
-  x.S.officeLamp2.intensity = 6 * flicker(x.t, 3); x.S.hallLights2.forEach((l, i) => l.intensity = 2 * flicker(x.t, i));
+  const s = office(x); const L = x.L; const m = mangleCeil(x, s, 0, 3.15, mix(-4.5, -1.6, eo(seg(L, 0, 2.2)))); m.crawl(L * 1.3, 1 - seg(L, 1.9, 2.3)); m.idle(x.t, 0.5);
+  const hp = mangleHead(m); const z = eo(seg(L, 1.8, 3.1)); cam(x, [0, mix(1.5, 1.6, z), mix(2.4, hp.z + 1.6, z)], [hp.x, hp.y + 0.1, hp.z], mix(55, 46, z)); hand(x, 0.6);
+  x.S.officeLamp2.intensity = 2.5 * flicker(x.t, 3); x.S.officeFill2.intensity = 2; x.S.hallLights2.forEach((l, i) => l.intensity = 2 * flicker(x.t, i));
 });
-// "Se você reparar, o jumpscare dela é o único que ataca"
-at(50.42, 'office_ceiling', x => {
-  const s = office(x); const L = x.L; const m = mangleCeil(x, s, 0.0, 3.15, -0.3, Math.PI / 2); m.idle(x.t, 1); m.setJaw(0.15 + 0.1 * Math.sin(x.t * 3));
+// "Se você reparar, o jumpscare dela é o único que ataca" — she hangs right above the guard
+at(50.42, 'above_guard', x => {
+  const s = office(x); const L = x.L; const m = mangleCeil(x, s, 0, 3.15, 1.6, Math.PI); m.idle(x.t, 1); m.neck.rotation.x += 0.15 * Math.sin(x.t * 2.2); m.setJaw(0.1 + 0.12 * Math.max(0, Math.sin(x.t * 3)));
   const j = put(x, 'jeremy', s, 0, -0.02, 0.75, Math.PI); j.legR.piv.rotation.x = -1.5; j.legL.piv.rotation.x = -1.5; j.armR.piv.rotation.x = -0.9; j.armL.piv.rotation.x = -0.9; j.idle(x.t, 0.5);
-  camMove(x, [2.6, 1.4, 2.8], [0, 2.4, -0.3], [2.3, 1.45, 2.5], [0, 2.5, -0.3], eo, 58); hand(x); x.S.officeLamp2.intensity = 7;
+  camMove(x, [0.3, 1.55, -3.6], [0, 1.85, 0.6], [0.1, 1.6, -2.9], [0, 1.9, 0.6], eo, 52); x.S.officeLamp2.intensity = 4; x.S.officeLamp2.intensity = 3 * flicker(x.t, 8); x.S.officeFill2.intensity = 2;
 });
-// "pendurado no teto, com aquela mandíbula gigante"
+// "pendurado no teto, com aquela mandíbula gigante" — face to face, jaw opening wide
 at(53.14, 'jaw', x => {
-  const s = office(x); const L = x.L; const m = mangleCeil(x, s, 0.0, 3.15, -0.3, Math.PI / 2); m.idle(x.t, 0.5); m.setJaw(eo(seg(L, 0.9, 1.9)));
-  const hp = mangleHead(m); cam(x, [hp.x + 1.0, hp.y - 0.9, hp.z + 1.25], [hp.x, hp.y - 0.15, hp.z], 46); hand(x, 0.6); x.S.officeLamp2.intensity = 5;
+  const s = office(x); const L = x.L; const m = mangleCeil(x, s, 0, 3.15, -1.6); m.idle(x.t, 0.5); m.setJaw(eo(seg(L, 0.7, 1.9))); m.neck.rotation.x += 0.08 * Math.sin(x.t * 3);
+  const hp = mangleHead(m); hp.y -= 0.3; camMove(x, [0, hp.y - 0.1, hp.z + 1.62], hp.toArray(), [0, hp.y - 0.05, hp.z + 1.25], hp.toArray(), eio, 50); x.S.officeLamp2.intensity = 1.6; x.S.officeFill2.intensity = 2;
+  const l = x.FX.torch; s.add(l, l.target); l.position.set(0.25, hp.y + 0.2, hp.z + 2.0); l.target.position.copy(hp); l.intensity = 4; l.angle = 0.4;
 });
-// "caindo de cima para baixo, exatamente no alto da sua cabeça."
+// "caindo de cima para baixo, exatamente no alto da sua cabeça." — the drop (guard's POV)
 at(56.06, 'drop', x => {
-  const s = office(x); const L = x.L; x.S.officeLamp2.intensity = 4 * flicker(x.t, 6);
-  const m = mangleCeil(x, s, 0.0, 3.15, -0.3, Math.PI / 2); m.idle(x.t, 0.4); const k = eo(seg(L, 0.5, 0.9)); m.neck.rotation.x += 0.9 * k; m.setJaw(0.4 + 0.6 * k);
-  m.root.position.y = 3.15 - 0.55 * k; const hp0 = mangleHead(m); cam(x, [hp0.x + 0.35, 1.45, hp0.z + 1.6 - 0.5 * k], [hp0.x, hp0.y - 0.1, hp0.z], 60); if (L > 0.85 && L < 1.6) shake(x, 1.2 * (1 - seg(L, 0.85, 1.6)));
+  const s = office(x); const L = x.L; x.S.officeLamp2.intensity = 1.5 * flicker(x.t, 6); x.S.officeFill2.intensity = 1.2;
+  const m = mangleCeil(x, s, 0.0, 3.15, -1.2); m.idle(x.t, 0.4); const k = eo(seg(L, 0.5, 0.9)); m.setJaw(0.4 + 0.6 * k); m.root.position.y = 3.15 - 0.7 * k; m.root.position.z = -1.2 + 0.6 * k;
+  const hp0 = mangleHead(m); cam(x, [0, 1.45, hp0.z + mix(2.0, 1.0, k)], [hp0.x, hp0.y - 0.05, hp0.z], 60);
+  if (L > 0.85 && L < 1.6) shake(x, 1.2 * (1 - seg(L, 0.85, 1.6)));
   x.post.flash.value = L > 0.86 && L < 0.92 ? 0.35 : 0; x.post.stat.value = L > 1.0 && L < 1.3 ? 0.5 : (L > 2.2 ? 0.4 : 0); x.post.tint.value.set(1.2, 0.85, 0.85);
 });
-// "Você ainda confundia as duas tragédias?"
+// "Você ainda confundia as duas tragédias?" — Fredbear on the left, Mangle hanging on the right
 at(58.70, 'confused', x => {
-  const s = x.S.void; x.out.scene = s; const L = x.L; const f = put(x, 'fredbear', s, -0.95, 0, 0, 0.35); f.idle(x.t, 1);
-  const m = mangleCeil(x, s, 1.1, 3.3, 0.0, Math.PI / 2); m.idle(x.t, 1); m.setJaw(0.3);
-  x.S.voidSpot.intensity = 40; x.S.voidFill.intensity = 8; camMove(x, [0, 1.9, 6.0], [0, 1.8, 0], [0, 1.9, 5.2], [0, 1.85, 0], eo, 50);
-  pop(x, x.FX.q1, s, [0.1, 3.0, 0.3], 0.5, 0.8);
+  const s = x.S.void; x.out.scene = s; const L = x.L; const f = put(x, 'fredbear', s, -1.0, 0, 0, 0.3); f.idle(x.t, 1); f.head.rotation.z = 0.2 * eo(seg(L, 0.2, 0.6));
+  const m = mangleCeil(x, s, 1.05, 3.4, -0.6); m.idle(x.t, 1); m.setJaw(0.2 + 0.1 * Math.sin(x.t * 3));
+  x.S.voidSpot.intensity = 26; x.S.voidFill.intensity = 5; const a = -0.25 + 0.5 * eio(x.u); cam(x, [Math.sin(a) * 5.4, 1.9, Math.cos(a) * 5.4], [0, 1.85, 0], 50);
+  pop(x, x.FX.q1, s, [0.05, 3.1, 0.3], 0.5, 0.8);
 });
 // "Comenta aí e me segue para mais mistérios."
 at(61.02, 'outro', x => {
-  const s = office(x); const L = x.L; const j = put(x, 'jeremy', s, 0, 0, -1.4, 0.15); j.idle(x.t, 1); lookAtCam(x, j, 0.8);
-  aim(j, 'R', rootPt(j, -0.5, 2.0 + 0.1 * Math.sin(x.t * 9), 0.4), eo(seg(L, 0, 0.3)));
-  const m = mangleCeil(x, s, 0.6, 3.15, -2.4, Math.PI / 2); m.idle(x.t, 1);
-  camMove(x, [0.3, 1.7, 1.6], [0, 1.75, -1.4], [0.2, 1.7, 1.1], [0, 1.8, -1.4], eo, 52); fillOn(x, j, 0.7, 1.8); x.S.officeLamp2.intensity = 6;
+  const s = office(x); const L = x.L; const j = put(x, 'jeremy', s, 0, 0, -1.4, 0.0); j.idle(x.t, 1);
+  aim(j, 'R', rootPt(j, -0.5, 2.0 + 0.12 * Math.sin(x.t * 9), 0.4), eo(seg(L, 0, 0.3)));
+  const m = mangleCeil(x, s, 0.0, 3.15, -3.8); m.idle(x.t, 1); m.setJaw(0.15 * Math.max(0, Math.sin(x.t * 2)));
+  camMove(x, [0.2, 1.7, 1.6], [0, 1.95, -1.6], [0.1, 1.7, 1.0], [0, 2.0, -1.6], eo, 54); lookAtCam(x, j, 0.8); fillOn(x, j, 0.8, 1.8); x.S.officeLamp2.intensity = 7;
 });
 
 export const SHOTS = shots;
