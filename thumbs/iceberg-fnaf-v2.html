@@ -1,0 +1,89 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}canvas{display:block}</style></head><body>
+<canvas id="c" width="1280" height="720"></canvas>
+<script>
+const SHOW_TEXT = !location.hash.includes('notext');
+const c=document.getElementById('c'),x=c.getContext('2d');const W=1280,H=720;
+const img=new Image();img.src='iceberg-base.jpg';
+img.onload=()=>{
+ const s=2.31,x0=-170,y0=-190,WL=212*s+y0; // waterline ~300
+ // fill gaps by stretching edge columns, then main image
+ x.save();x.translate(2*(x0+554*s),0);x.scale(-1,1);x.drawImage(img,0,0,554,554,x0,y0,554*s,554*s);x.restore();
+ x.drawImage(img,0,0,554,554,x0,y0,554*s,554*s);
+ // color grade
+ const d=x.getImageData(0,0,W,H),p=d.data;
+ for(let y=0;y<H;y++)for(let X=0;X<W;X++){const i=(y*W+X)*4;let r=p[i],g=p[i+1],b=p[i+2];const l=.3*r+.59*g+.11*b;
+  if(y<WL){const sky=Math.max(0,Math.min(1,(b-r-40)/110));const top=1-.55*Math.pow(1-y/WL,1.5);
+   const sr=(25+l*.62)*top, sg=l*.07*top, sb=l*.09*top;
+   const ir=l*.78+12, ig=l*.80, ib=l*.86;
+   r=sr*sky+ir*(1-sky); g=sg*sky+ig*(1-sky); b=sb*sky+ib*(1-sky);
+   // red light hitting the ice from the sky
+   r+= (1-sky)*25;
+  }else{const dd=(y-WL)/(H-WL);const k=Math.pow(1-dd,1.15)*1.15+.04;
+   r=l*.22*k+Math.pow(1-dd,6)*45; g=l*.52*k; b=l*.58*k;}
+  p[i]=r;p[i+1]=g;p[i+2]=b;}
+ x.putImageData(d,0,0);
+ // blood sun glow
+ let sg=x.createRadialGradient(1180,10,5,1180,10,420);sg.addColorStop(0,'rgba(255,60,30,.55)');sg.addColorStop(.3,'rgba(160,0,0,.25)');sg.addColorStop(1,'rgba(0,0,0,0)');
+ x.globalCompositeOperation='screen';x.fillStyle=sg;x.fillRect(700,0,580,WL);x.globalCompositeOperation='source-over';
+ // red reflection streak on waterline
+ x.fillStyle='rgba(255,40,30,.25)';x.fillRect(0,WL-1,W,3);
+ // deep haze
+ let hz=x.createLinearGradient(0,WL,0,H);hz.addColorStop(0,'rgba(0,10,14,0)');hz.addColorStop(.55,'rgba(0,6,10,.3)');hz.addColorStop(1,'rgba(0,0,0,.9)');
+ x.fillStyle=hz;x.fillRect(0,WL,W,H-WL);
+
+ // ===== creature in the abyss (Springtrap-like silhouette) =====
+ x.save();x.translate(1070,572);x.scale(.92,.92);x.rotate(-.08);
+ const body=new Path2D();
+ body.ellipse(0,0,120,105,0,0,Math.PI*2);          // head
+ body.ellipse(0,72,82,52,0,0,Math.PI*2);           // muzzle
+ body.ellipse(0,300,300,150,0,0,Math.PI*2);        // shoulders
+ body.rect(-70,60,140,170);                         // neck
+ // left ear (tall)
+ body.moveTo(-85,-70);body.bezierCurveTo(-140,-190,-120,-290,-80,-305);body.bezierCurveTo(-45,-280,-30,-200,-25,-95);body.closePath();
+ // right ear (broken, bent)
+ body.moveTo(30,-95);body.bezierCurveTo(50,-190,70,-250,90,-270);body.bezierCurveTo(140,-280,190,-250,215,-215);
+ body.bezierCurveTo(170,-230,130,-225,115,-200);body.bezierCurveTo(105,-160,100,-110,90,-70);body.closePath();
+ x.filter='blur(3px)';x.fillStyle='#030607';x.fill(body);
+ // rim light from the surface
+ x.filter='blur(4px)';x.strokeStyle='rgba(110,190,200,.28)';x.lineWidth=5;x.save();x.translate(0,-4);x.stroke(body);x.restore();
+ x.filter='none';
+ // exposed wires / endoskeleton hints
+ x.strokeStyle='rgba(90,120,110,.35)';x.lineWidth=2;
+ [[-60,40,-95,120],[50,30,90,140],[-20,110,-40,200]].forEach(([a,b2,c2,e])=>{x.beginPath();x.moveTo(a,b2);x.quadraticCurveTo((a+c2)/2+15,(b2+e)/2,c2,e);x.stroke();});
+ // teeth
+ x.fillStyle='rgba(185,175,140,.55)';for(let t=-50;t<=40;t+=15){x.fillRect(t,98+Math.abs(t)*.15,9,15);}
+ x.fillStyle='rgba(185,175,140,.35)';for(let t=-45;t<=35;t+=15){x.fillRect(t,118,9,11);}
+ // eye sockets
+ x.fillStyle='#000';x.beginPath();x.ellipse(-45,-12,26,20,0,0,Math.PI*2);x.ellipse(45,-12,26,20,0,0,Math.PI*2);x.fill();
+ x.restore();
+ // fog over creature so it sinks into the dark
+ let fg=x.createLinearGradient(0,420,0,720);fg.addColorStop(0,'rgba(2,14,18,.10)');fg.addColorStop(1,'rgba(0,0,0,.75)');x.fillStyle=fg;x.fillRect(760,302,520,420);
+ // glowing pupils (drawn above fog)
+ x.save();x.translate(1070,572);x.scale(.92,.92);x.rotate(-.08);
+ x.globalCompositeOperation='screen';
+ [[-45,-12],[45,-12]].forEach(([ex,ey])=>{let eg=x.createRadialGradient(ex,ey,1,ex,ey,70);eg.addColorStop(0,'rgba(255,255,240,1)');eg.addColorStop(.08,'rgba(255,255,230,.9)');eg.addColorStop(.25,'rgba(200,230,180,.25)');eg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=eg;x.fillRect(ex-70,ey-70,140,140);});
+ x.restore();
+
+ // marine snow
+ for(let i=0;i<260;i++){const px=Math.random()*W,py=WL+Math.random()*(H-WL);const a=Math.random()*.35;x.fillStyle=`rgba(200,230,230,${a})`;const r=Math.random()*2+.5;x.beginPath();x.arc(px,py,r,0,7);x.fill();}
+ // god rays faint
+ x.globalCompositeOperation='screen';
+ for(let i=0;i<5;i++){const sx=200+i*230;let rg=x.createLinearGradient(0,WL,0,WL+300);rg.addColorStop(0,'rgba(120,60,50,.10)');rg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=rg;x.beginPath();x.moveTo(sx,WL);x.lineTo(sx+60,WL);x.lineTo(sx+170,WL+300);x.lineTo(sx+40,WL+300);x.fill();}
+ x.globalCompositeOperation='source-over';
+
+ // text
+ if(SHOW_TEXT){x.save();x.textAlign='right';x.lineJoin='round';
+  const t=(str,yy,sz)=>{x.font=`900 ${sz}px Inter`;x.shadowColor='rgba(255,0,0,.9)';x.shadowBlur=45;x.fillStyle='#ff1e12';x.fillText(str,1235,yy);
+   x.shadowBlur=0;x.lineWidth=6;x.strokeStyle='rgba(0,0,0,.85)';x.strokeText(str,1235,yy);x.fillStyle='#f2f2f2';x.fillText(str,1235,yy);};
+  t('NÃO',150,128);t('DESÇA.',268,118);
+  // blood drips from text
+  x.fillStyle='rgba(170,0,0,.95)';[[1185,152,26],[1040,272,38],[1205,270,22]].forEach(([dx,dy,l])=>{x.fillRect(dx,dy,6,l);x.beginPath();x.arc(dx+3,dy+l,5,0,7);x.fill();});
+  x.restore();}
+
+ // vignette
+ let v=x.createRadialGradient(W*.5,H*.45,260,W*.5,H*.5,820);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.88)');x.fillStyle=v;x.fillRect(0,0,W,H);
+ // film grain
+ const g2=x.getImageData(0,0,W,H),q=g2.data;for(let i=0;i<q.length;i+=4){const n=(Math.random()-.5)*22;q[i]+=n;q[i+1]+=n;q[i+2]+=n;}x.putImageData(g2,0,0);
+ document.title='done';
+};
+</script></body></html>
