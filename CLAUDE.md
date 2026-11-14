@@ -9,7 +9,8 @@ headless), sincronizada com a narração do usuário. Cada projeto é uma pasta 
 - **Volume dos efeitos** (ajuste final dele): os sons baixos/médios estão no ponto — manter. Os **brutos e abafantes**
   ficam MAIS BAIXOS: fogo (fireloop), "bling" (chime/bell/ding), jumpscare (scream/boom), passos robóticos (mstep),
   estrondos (thud/boom), estática/glitch. No sfx.py: ganho desses ~40–50% menor que antes; no `mux.sh` o limitador
-  dos efeitos fica em 0.32 (picos ~10 dB abaixo da voz) e o compressor mantém os baixos audíveis.
+  dos efeitos fica em 0.32 e depois `volume=0.2` (pedido dele no Iceberg: efeitos BEM baixos, picos ~20 dB abaixo da voz,
+  a narração nunca pode ficar abafada/"bugada" pelos efeitos). Vale pra todos os vídeos.
 - **Efeitos profissionais, sem poluição**: nada de repetir o mesmo som várias vezes (ex.: "bling"/chime a cada cena).
   Cada som marca um momento específico; variar (whoosh, clique, zumbido, passos, ambiente) e deixar respiros.
   Máx. ~3 chimes/bells por vídeo; passos em sequência com ganho baixo; fogo como ambiente contínuo baixo.
