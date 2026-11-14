@@ -1,0 +1,104 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}canvas{display:block}</style></head><body>
+<canvas id="c" width="1280" height="720"></canvas>
+<script>
+const SHOW_TEXT=!location.hash.includes('notext');
+const c=document.getElementById('c'),x=c.getContext('2d');const W=1280,H=720;
+let sd=11;const R=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};
+const img=new Image();img.src='iceberg-base.jpg';
+img.onload=()=>{
+ const s=1.7,x0=-30,y0=-40,WL=212*s+y0; // waterline ~320
+ x.drawImage(img,0,0,454,554,x0,y0,454*s,554*s);
+ x.drawImage(img,454,0,100,554,x0+454*s-1,y0,W-(x0+454*s)+2,554*s);
+ // grade
+ const d=x.getImageData(0,0,W,H),p=d.data;
+ for(let y=0;y<H;y++)for(let X=0;X<W;X++){const i=(y*W+X)*4;let r=p[i],g=p[i+1],b=p[i+2];const l=.3*r+.59*g+.11*b;
+  if(y<WL){const sky=Math.max(0,Math.min(1,(b-r-40)/110));const top=1-.6*Math.pow(1-y/WL,1.4);
+   const sr=(22+l*.6)*top,sg=l*.06*top,sb=l*.08*top;const ir=l*.8+14,ig=l*.8,ib=l*.86;
+   r=sr*sky+ir*(1-sky)+(1-sky)*22;g=sg*sky+ig*(1-sky);b=sb*sky+ib*(1-sky);
+  }else{const dd=(y-WL)/(H-WL);const k=Math.pow(1-dd,1.15)*1.15+.04;r=l*.22*k+Math.pow(1-dd,6)*45;g=l*.52*k;b=l*.58*k;}
+  p[i]=r;p[i+1]=g;p[i+2]=b;}
+ x.putImageData(d,0,0);
+ // blood sun
+ let sg=x.createRadialGradient(1200,0,5,1200,0,480);sg.addColorStop(0,'rgba(255,70,30,.6)');sg.addColorStop(.3,'rgba(170,0,0,.25)');sg.addColorStop(1,'rgba(0,0,0,0)');
+ x.globalCompositeOperation='screen';x.fillStyle=sg;x.fillRect(600,0,680,WL);x.globalCompositeOperation='source-over';
+ x.fillStyle='rgba(255,40,30,.28)';x.fillRect(0,WL-1,W,3);
+ let hz=x.createLinearGradient(0,WL,0,H);hz.addColorStop(0,'rgba(0,10,14,0)');hz.addColorStop(.55,'rgba(0,6,10,.3)');hz.addColorStop(1,'rgba(0,0,0,.9)');
+ x.fillStyle=hz;x.fillRect(0,WL,W,H-WL);
+
+ // ===== FREDDY silhouette on the peak =====
+ const fx=262,fy=262; // feet on left peak
+ x.save();x.translate(fx,fy);x.scale(1.35,1.35);const parts=[];const F={};['ellipse','roundRect','rect','arc'].forEach(m=>F[m]=(...a)=>{const q=new Path2D();q[m](...a);parts.push(q);});const k=1.0;
+ F.roundRect(-27,-92,54,64,22);           // torso
+ F.ellipse(0,-50,25,24,0,0,7);            // belly
+ F.roundRect(-26,-138,52,44,18);          // wide head
+ F.ellipse(0,-100,19,11,0,0,7);           // snout
+ F.ellipse(-24,-140,9,9,0,0,7);F.ellipse(24,-140,9,9,0,0,7); // ears
+ F.rect(-11,-166,22,24);F.rect(-18,-146,36,5); // top hat
+ F.roundRect(-22,-34,17,36,6);F.roundRect(5,-34,17,36,6);   // legs
+ F.ellipse(-15,0,15,6,0,0,7);F.ellipse(15,0,15,6,0,0,7);    // feet
+ F.roundRect(-44,-88,15,58,7);F.roundRect(29,-88,15,58,7);  // arms hanging
+ F.ellipse(-37,-28,9,8,0,0,7);F.ellipse(37,-28,9,8,0,0,7);  // hands
+ F.rect(35,-58,4,30);F.ellipse(37,-60,5,6,0,0,7);           // mic
+ x.shadowColor='rgba(255,30,20,.9)';x.shadowBlur=22;x.fillStyle='#080303';parts.forEach(q=>x.fill(q));x.shadowBlur=0;x.fillStyle='#060202';parts.forEach(q=>x.fill(q));
+ // eyes
+ x.globalCompositeOperation='screen';[[-10,-118],[10,-118]].forEach(([ex,ey])=>{let eg=x.createRadialGradient(ex,ey,.5,ex,ey,14);eg.addColorStop(0,'rgba(255,255,255,1)');eg.addColorStop(.2,'rgba(255,90,80,.7)');eg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=eg;x.fillRect(ex-14,ey-14,28,28);});
+ x.restore();
+
+ // ===== SPRINGTRAP in the deep, under the iceberg =====
+ const SX=760,SY=600,SS=.92;
+ // red-teal light shaft falling on him
+ x.save();x.globalCompositeOperation='screen';let ls=x.createLinearGradient(0,WL,0,H);ls.addColorStop(0,'rgba(140,40,30,.18)');ls.addColorStop(1,'rgba(0,0,0,0)');
+ x.fillStyle=ls;x.beginPath();x.moveTo(700,WL);x.lineTo(820,WL);x.lineTo(1000,H);x.lineTo(700,H);x.fill();x.restore();
+ x.save();x.translate(SX,SY);x.scale(SS,SS);x.rotate(-.12);
+ const B=new Path2D();
+ B.ellipse(0,0,112,100,0,0,7);B.ellipse(0,70,78,50,0,0,7);B.ellipse(0,300,290,150,0,0,7);B.rect(-65,60,130,170);
+ B.moveTo(-82,-65);B.bezierCurveTo(-135,-180,-118,-270,-80,-290);B.bezierCurveTo(-45,-265,-30,-180,-24,-90);B.closePath();
+ B.moveTo(28,-90);B.bezierCurveTo(45,-170,62,-215,85,-232);B.bezierCurveTo(130,-240,175,-215,200,-185);
+ B.bezierCurveTo(160,-198,125,-192,110,-172);B.bezierCurveTo(100,-135,96,-100,86,-66);B.closePath();
+ // body fill: worn olive suit, lit from above
+ let bg=x.createLinearGradient(0,-290,0,300);bg.addColorStop(0,'#26261a');bg.addColorStop(.35,'#121409');bg.addColorStop(1,'#040505');
+ x.filter='blur(1.5px)';x.fillStyle=bg;x.fill(B);
+ x.filter='blur(3px)';x.strokeStyle='rgba(150,210,200,.35)';x.lineWidth=4;x.save();x.translate(0,-3);x.stroke(B);x.restore();x.filter='none';
+ // torn holes in ear + exposed endo
+ x.fillStyle='#050505';x.beginPath();x.ellipse(-82,-200,12,22,.2,0,7);x.ellipse(150,-205,10,7,.3,0,7);x.fill();
+ x.strokeStyle='rgba(120,130,120,.6)';x.lineWidth=2.5;x.beginPath();x.moveTo(-82,-180);x.lineTo(-80,-222);x.stroke();
+ // torn patch on head showing endoskeleton
+ x.fillStyle='#070707';x.beginPath();x.moveTo(40,-70);x.lineTo(85,-40);x.lineTo(70,10);x.lineTo(35,-20);x.closePath();x.fill();
+ x.strokeStyle='rgba(130,135,120,.55)';x.lineWidth=2;for(let w=0;w<4;w++){x.beginPath();x.moveTo(45+w*8,-55+w*5);x.quadraticCurveTo(60,-20,50+w*6,0);x.stroke();}
+ // shading on face (lit top)
+ let fs=x.createRadialGradient(-10,-60,10,0,0,140);fs.addColorStop(0,'rgba(120,120,70,.15)');fs.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=fs;x.fill(B);
+ // eye sockets
+ x.fillStyle='#000';x.beginPath();x.ellipse(-42,-10,25,19,0,0,7);x.ellipse(42,-10,25,19,0,0,7);x.fill();
+ // jaw + teeth
+ x.fillStyle='#020202';x.beginPath();x.ellipse(0,100,62,22,0,0,7);x.fill();
+ x.fillStyle='rgba(200,190,150,.6)';for(let t=-48;t<=40;t+=13){x.fillRect(t,84+Math.abs(t)*.12,8,15+R()*5);}
+ x.fillStyle='rgba(200,190,150,.55)';for(let t=-42;t<=34;t+=13){x.fillRect(t,108,8,11);}
+ // wires on neck/chest
+ x.strokeStyle='rgba(100,120,105,.45)';x.lineWidth=2.5;[[-55,130,-95,240],[45,125,95,250],[-10,140,-25,250],[15,135,30,255]].forEach(([a,b2,c2,e])=>{x.beginPath();x.moveTo(a,b2);x.quadraticCurveTo((a+c2)/2+18,(b2+e)/2,c2,e);x.stroke();});
+ x.restore();
+ // water haze over him
+ let fg=x.createLinearGradient(0,WL,0,H);fg.addColorStop(0,'rgba(3,16,20,.45)');fg.addColorStop(.6,'rgba(2,10,14,.35)');fg.addColorStop(1,'rgba(0,0,0,.7)');
+ x.fillStyle=fg;x.fillRect(560,WL+2,720,H-WL);
+ // glowing pupils
+ x.save();x.translate(SX,SY);x.scale(SS,SS);x.rotate(-.12);x.globalCompositeOperation='screen';
+ [[-42,-10],[42,-10]].forEach(([ex,ey])=>{let eg=x.createRadialGradient(ex,ey,1,ex,ey,80);eg.addColorStop(0,'rgba(255,255,245,1)');eg.addColorStop(.07,'rgba(255,255,230,.95)');eg.addColorStop(.22,'rgba(190,230,170,.3)');eg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=eg;x.fillRect(ex-80,ey-80,160,160);});
+ x.restore();
+
+ // bubbles rising from him + marine snow
+ for(let i=0;i<14;i++){const bx=SX-30+R()*120,by=WL+20+R()*240,r=2+R()*5;x.strokeStyle=`rgba(200,235,240,${.25+R()*.3})`;x.lineWidth=1.5;x.beginPath();x.arc(bx,by,r,0,7);x.stroke();}
+ for(let i=0;i<260;i++){const px=R()*W,py=WL+R()*(H-WL);x.fillStyle=`rgba(200,230,230,${R()*.35})`;x.beginPath();x.arc(px,py,R()*2+.5,0,7);x.fill();}
+ x.globalCompositeOperation='screen';
+ for(let i=0;i<5;i++){const sx=120+i*240;let rg=x.createLinearGradient(0,WL,0,WL+300);rg.addColorStop(0,'rgba(120,60,50,.09)');rg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=rg;x.beginPath();x.moveTo(sx,WL);x.lineTo(sx+60,WL);x.lineTo(sx+170,WL+300);x.lineTo(sx+40,WL+300);x.fill();}
+ x.globalCompositeOperation='source-over';
+
+ if(SHOW_TEXT){x.save();x.textAlign='right';x.lineJoin='round';
+  const t=(str,yy,sz)=>{x.font=`900 ${sz}px Inter`;x.shadowColor='rgba(255,0,0,.9)';x.shadowBlur=45;x.fillStyle='#ff1e12';x.fillText(str,1240,yy);
+   x.shadowBlur=0;x.lineWidth=6;x.strokeStyle='rgba(0,0,0,.85)';x.strokeText(str,1240,yy);x.fillStyle='#f2f2f2';x.fillText(str,1240,yy);};
+  t('NÃO',140,124);t('DESÇA.',258,114);
+  x.fillStyle='rgba(170,0,0,.95)';[[1190,142,26],[1050,262,34],[1212,260,20]].forEach(([dx,dy,l])=>{x.fillRect(dx,dy,6,l);x.beginPath();x.arc(dx+3,dy+l,5,0,7);x.fill();});
+  x.restore();}
+ let v=x.createRadialGradient(W*.5,H*.45,260,W*.5,H*.5,820);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.85)');x.fillStyle=v;x.fillRect(0,0,W,H);
+ const g2=x.getImageData(0,0,W,H),q=g2.data;for(let i=0;i<q.length;i+=4){const n=(Math.random()-.5)*20;q[i]+=n;q[i+1]+=n;q[i+2]+=n;}x.putImageData(g2,0,0);
+ document.title='done';
+};
+</script></body></html>
