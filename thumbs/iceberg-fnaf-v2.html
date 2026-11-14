@@ -32,7 +32,7 @@ img.onload=()=>{
  x.fillStyle=hz;x.fillRect(0,WL,W,H-WL);
 
  // ===== creature in the abyss (Springtrap-like silhouette) =====
- x.save();x.translate(250,600);x.scale(.92,.92);x.rotate(.06);
+ x.save();x.translate(455,600);x.scale(.92,.92);x.rotate(.06);
  const body=new Path2D();
  body.ellipse(0,0,120,105,0,0,Math.PI*2);          // head
  body.ellipse(0,72,82,52,0,0,Math.PI*2);           // muzzle
@@ -57,9 +57,9 @@ img.onload=()=>{
  x.fillStyle='#000';x.beginPath();x.ellipse(-45,-12,26,20,0,0,Math.PI*2);x.ellipse(45,-12,26,20,0,0,Math.PI*2);x.fill();
  x.restore();
  // fog over creature so it sinks into the dark
- let fg=x.createLinearGradient(0,420,0,720);fg.addColorStop(0,'rgba(2,14,18,.10)');fg.addColorStop(1,'rgba(0,0,0,.75)');x.fillStyle=fg;x.fillRect(0,302,620,420);
+ let fg=x.createLinearGradient(0,420,0,720);fg.addColorStop(0,'rgba(2,14,18,.10)');fg.addColorStop(1,'rgba(0,0,0,.75)');x.fillStyle=fg;x.fillRect(0,302,860,420);
  // glowing pupils (drawn above fog)
- x.save();x.translate(250,600);x.scale(.92,.92);x.rotate(.06);
+ x.save();x.translate(455,600);x.scale(.92,.92);x.rotate(.06);
  x.globalCompositeOperation='screen';
  [[-45,-12],[45,-12]].forEach(([ex,ey])=>{let eg=x.createRadialGradient(ex,ey,1,ex,ey,70);eg.addColorStop(0,'rgba(255,255,240,1)');eg.addColorStop(.08,'rgba(255,255,230,.9)');eg.addColorStop(.25,'rgba(200,230,180,.25)');eg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=eg;x.fillRect(ex-70,ey-70,140,140);});
  x.restore();
