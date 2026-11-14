@@ -1,9 +1,10 @@
-<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}canvas{display:block}</style></head><body>
+<!doctype html><html><head><meta charset="utf-8"><style>@font-face{font-family:Creepster;src:url(fonts/Creepster.ttf)}html,body{margin:0;background:#000}canvas{display:block}</style></head><body>
 <canvas id="c" width="1280" height="720"></canvas>
 <script>
+const DRIPS=[[1000,140,30,9],[1170,138,18,7],[880,282,26,8],[1080,280,40,10],[1205,278,16,6]];
 const SHOW_TEXT = !location.hash.includes('notext');
 const c=document.getElementById('c'),x=c.getContext('2d');const W=1280,H=720;
-const img=new Image();img.src='iceberg-base.jpg';
+const img=new Image();document.fonts.load('100px Creepster').then(()=>{img.src='iceberg-base.jpg';});
 img.onload=()=>{
  const s=2.31,x0=-170,y0=-190,WL=212*s+y0; // waterline ~300
  // fill gaps by stretching edge columns, then main image
@@ -73,11 +74,19 @@ img.onload=()=>{
 
  // text
  if(SHOW_TEXT){x.save();x.textAlign='right';x.lineJoin='round';
-  const t=(str,yy,sz)=>{x.font=`900 ${sz}px Inter`;x.shadowColor='rgba(255,0,0,.9)';x.shadowBlur=45;x.fillStyle='#ff1e12';x.fillText(str,1235,yy);
-   x.shadowBlur=0;x.lineWidth=6;x.strokeStyle='rgba(0,0,0,.85)';x.strokeText(str,1235,yy);x.fillStyle='#f2f2f2';x.fillText(str,1235,yy);};
-  t('NÃO',150,128);t('DESÇA.',268,118);
-  // blood drips from text
-  x.fillStyle='rgba(170,0,0,.95)';[[1185,152,26],[1040,272,38],[1205,270,22]].forEach(([dx,dy,l])=>{x.fillRect(dx,dy,6,l);x.beginPath();x.arc(dx+3,dy+l,5,0,7);x.fill();});
+  const t=(str,yy,sz)=>{x.font=`${sz}px Creepster`;
+   const gr=x.createLinearGradient(0,yy-sz*.8,0,yy);gr.addColorStop(0,'#ff3b24');gr.addColorStop(.5,'#d10d0d');gr.addColorStop(1,'#7d0000');
+   x.shadowColor='rgba(0,0,0,.95)';x.shadowBlur=35;x.lineWidth=13;x.strokeStyle='#050000';x.strokeText(str,1235,yy);
+   x.shadowColor='rgba(0,0,0,.9)';x.shadowBlur=8;x.shadowOffsetY=4;x.fillStyle=gr;x.fillText(str,1235,yy);
+   x.shadowColor='transparent';const wd=x.measureText(str).width;return 1235-wd;
+   // wet highlight on top edge
+   x.save();x.globalCompositeOperation='source-atop';x.restore();};
+  const l1=t('NÃO',200,175),w1=1235-l1;const l2=t('DESÇA.',330,160),w2=1235-l2;
+  // blood drips
+  const drip=(dx,dy,l,w)=>{x.beginPath();x.moveTo(dx-w/2,dy);x.lineTo(dx+w/2,dy);x.quadraticCurveTo(dx+w*.25,dy+l*.6,dx+w*.3,dy+l);
+   x.arc(dx,dy+l,w*.55,0,Math.PI);x.quadraticCurveTo(dx-w*.25,dy+l*.6,dx-w/2,dy);x.fill();};
+  x.fillStyle='#b30000';x.shadowColor='rgba(0,0,0,.8)';x.shadowBlur=4;
+  [[l1+w1*.2,193,26,10],[l1+w1*.66,193,40,12],[l2+w2*.1,323,34,11],[l2+w2*.5,323,22,9],[l2+w2*.74,323,46,12]].forEach(([dx,dy,l,w])=>drip(dx,dy,l,w));
   x.restore();}
 
  // vignette
