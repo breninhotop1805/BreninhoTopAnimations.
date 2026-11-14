@@ -224,7 +224,42 @@ loopfill(lambda d: drone(d, 60), 342.4, 344.4, 0.03)
 loopfill(lambda d: buzz(d, 120), 344.5, 346.6, 0.03); for_t = [344.6, 345.6]
 for t in for_t: add(beep(1100, 0.05), t, 0.12)
 
-# ================================ (parts 4–6 follow) ================================
+
+# ================================ PART 4 (346.6 – 454.3) ================================
+add(dive_whoosh(2.7), 346.7, 0.30); loopfill(underwater, 346.7, 358.5, 0.38); add(bubbles(3.5, 9), 346.9, 0.12); add(thud(44, 0.25, 0.8), 348.3, 0.26)
+add(drone(7.0, 38), 351.5, 0.07); add(bubbles(1.2, 30), 358.6, 0.2); add(breath(0.9), 358.7, 0.12)
+add(fire(4.0), 359.6, 0.10); add(creak(1.0, 90), 361.4, 0.1); add(thud(60, 0.2, 0.6), 362.2, 0.15)
+add(boot(0.8), 363.6, 0.12); add(whoosh(0.6), 366.4, 0.12)
+for t in [367.7, 368.4, 369.2]: add(click(), t, 0.15)
+add(zap(0.2), 369.9, 0.08); loopfill(lambda d: whir(d, 120, 130), 370.6, 373.4, 0.04); add(whisper(2.0), 371.0, 0.08)
+add(static(1.5), 373.6, 0.03); add(whoosh(1.2), 373.7, 0.1); add(glitch(0.3), 375.1, 0.08)
+add(glitch(0.25), 377.2, 0.09); add(laugh(3, 340, 0.16, 0.5), 377.4, 0.3)
+for t in [378.6, 379.6, 380.6]: add(glitch(0.15), t, 0.05)
+add(glitch(0.25), 381.8, 0.08); add(laugh(2, 320, 0.18, 0.5), 382.0, 0.25)
+add(whisper(3.0), 382.6, 0.12); add(static(0.4), 387.1, 0.05); add(laugh(3, 900, 0.1, 0.3), 387.6, 0.25)
+loopfill(lambda d: static(d), 388.4, 393.4, 0.02); add(glitch(0.2), 390.1, 0.06); add(glitch(0.2), 391.8, 0.06)
+add(whoosh(0.6), 393.4, 0.12)
+loopfill(lambda d: whir(d, 70, 72), 395.0, 406.5, 0.05)
+add(sting(1.4), 398.0, 0.07); add(buzz(2.0, 120), 400.0, 0.03)
+for t in np.arange(402.0, 404.2, 0.7): add(mstep(), t, 0.1)
+for i, t in enumerate([404.26, 404.83, 405.40, 405.97]): add(scream(0.5), t, 0.08); add(static(0.15), t + 0.45, 0.05)
+add(creak(1.2, 100), 406.8, 0.12); add(glitch(0.15), 407.9, 0.06)
+add(drone(3.4, 45), 409.0, 0.07); add(whisper(2.0), 409.6, 0.08)
+add(thud(50, 0.25, 0.7), 412.8, 0.22); add(static(0.3), 413.8, 0.04)
+add(glitch(0.3), 415.0, 0.05); add(growl(2.6, 50), 416.8, 0.12); add(laugh(3, 760, 0.14, 0.3), 418.2, 0.25)
+add(curtain(0.6), 419.8, 0.1); add(click(), 422.52, 0.3)
+add(metal_step(180) * 0.6, 423.2, 0.16); add(creak(1.0, 140), 424.0, 0.1); add(metal_step(160) * 0.6, 426.7, 0.18); add(thud(70, 0.1), 428.1, 0.15)
+loopfill(lambda d: drone(d, 50), 428.6, 431.3, 0.05)
+for t in np.arange(431.4, 433.6, 0.35): add(footstep(170), t, 0.08)
+add(splash() * 0.6, 434.2, 0.3); add(dive_whoosh(1.2), 434.4, 0.2); add(whoosh(0.6), 435.1, 0.1)
+loopfill(lambda d: chatter(d, 0.9), 435.4, 438.6, 0.3); add(laugh(4, 620, 0.12, 0.45), 436.6, 0.4)
+for t in np.arange(438.7, 440.9, 0.55): add(footstep(110), t, 0.1)
+add(sting(1.2), 441.1, 0.07); add(laugh(3, 300, 0.17, 0.5), 444.0, 0.25)
+add(servo(0.6, 300, 420), 444.8, 0.12)
+add(glitch(0.3), 446.6, 0.06); add(drone(4.4, 42), 446.6, 0.06); add(glitch(0.2), 448.8, 0.05)
+add(creak(1.0, 110), 451.2, 0.14); add(static(0.25), 452.4, 0.05); add(laugh(2, 330, 0.2, 0.4), 453.4, 0.2)
+
+# ================================ (parts 5–6 follow) ================================
 
 mix += 0.3 * np.sin(2 * np.pi * 50 * np.arange(N) / SR) * 0.004
 mix[:] = np.tanh(mix * 1.15) * 0.8

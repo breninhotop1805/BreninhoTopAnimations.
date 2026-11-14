@@ -120,9 +120,9 @@ at(381.78, 'glitch2', x => {
 });
 // "Uma consciência digital que se infiltrou na mente de uma funcionária, a Vanessa," — a faceless worker with the headset, him whispering behind
 at(382.48, 'vanessa', x => {
-  const s = voidS(x, 0, 40, '#a05aff', 0.15); const L = x.L; s.fog = null; const v = put(x, 'guard', s, 0, 0, 0, 0); v.idle(x.t, 0.5); v.head.rotation.x = 0.1;
+  const s = voidS(x, 0, 50, '#a05aff', 0.04); const L = x.L; s.fog = null; const v = put(x, 'guard', s, 0, 0, 0, 0); x.post.tint.value.set(0.6, 0.55, 0.75); v.idle(x.t, 0.5); v.head.rotation.x = 0.1;
   v.root.updateMatrixWorld(true); s.add(VR); v.head.getWorldPosition(VR.position); VR.position.y += 0.27; VR.position.z += 0.2; VR.rotation.set(0, Math.PI, 0); VR.scale.setScalar(1.6);
-  const g = put(x, 'glitchtrap', s, 0.75, 0, -0.9, -0.5); g.idle(x.t, 1); g.ghostish = true; glitchIn(x, g, 0.4); g.head.rotation.y = -0.4; g.head.rotation.x = 0.2; aim(g, 'R', tp(v, 'head', [4, 4, 0]), 0.7);
+  const g = put(x, 'glitchtrap', s, 0.75, 0, -0.9, -0.5); g.idle(x.t, 1); x.post.chroma.value = 0.35; g.head.rotation.y = -0.4; g.head.rotation.x = 0.2; aim(g, 'R', tp(v, 'head', [4, 4, 0]), 0.7);
   rimOn(x, s, [0, 3.5, -3], [0, 1.6, 0], 60, '#a05aff'); camMove(x, [-0.6, 1.6, 3.4], [0.2, 1.6, 0], [-0.4, 1.65, 2.6], [0.25, 1.65, 0], eo, 38);
 });
 // "e transformou ela na Vanny"
@@ -194,7 +194,7 @@ at(419.70, 'books_name', x => {
 // "Andrew"
 at(422.52, 'andrew', x => {
   const s = voidS(x, 26, 40, '#a040ff', 1.5); const L = x.L; const a = put(x, 'andrew', s, 0, 0, 0, 0); a.idle(x.t, 0.6); lookAtCam(x, a, 1); a.head.rotation.x -= 0.1;
-  const hp = tp(a, 'head', [0, 4, 0]); camMove(x, [hp.x + 0.2, hp.y, hp.z + 2.0], hp.toArray(), [hp.x + 0.08, hp.y, hp.z + 1.6], hp.toArray(), eo, 34); if (L < 0.06) x.post.flash.value = 0.15;
+  const hp = tp(a, 'head', [0, 3, 0]); camMove(x, [hp.x + 0.25, hp.y + 0.05, hp.z + 2.8], hp.toArray(), [hp.x + 0.1, hp.y + 0.05, hp.z + 2.2], hp.toArray(), eo, 34); if (L < 0.06) x.post.flash.value = 0.15;
 });
 // "Seja quem for a ideia é a mesma, a vítima virou o carcereiro" — William behind bars, the guardians outside
 at(422.94, 'jailer', x => {
