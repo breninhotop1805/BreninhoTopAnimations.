@@ -1,0 +1,78 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}canvas{display:block}</style></head><body>
+<canvas id="c" width="1280" height="720"></canvas>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
+const W=1280,H=720,WL=268;
+// sky
+let g=x.createLinearGradient(0,0,0,WL);g.addColorStop(0,'#020205');g.addColorStop(1,'#2a0b12');
+x.fillStyle=g;x.fillRect(0,0,W,WL);
+// blood moon
+let m=x.createRadialGradient(1120,70,10,1120,70,160);m.addColorStop(0,'rgba(255,40,30,.55)');m.addColorStop(1,'rgba(255,0,0,0)');
+x.fillStyle=m;x.fillRect(900,0,380,260);x.fillStyle='#8a1010';x.fillRect(1090,40,60,60);x.fillStyle='#a51717';x.fillRect(1100,48,40,44);
+// water
+g=x.createLinearGradient(0,WL,0,H);g.addColorStop(0,'#0d4152');g.addColorStop(.35,'#071f2c');g.addColorStop(.7,'#030a10');g.addColorStop(1,'#000');
+x.fillStyle=g;x.fillRect(0,WL,W,H-WL);
+// light rays
+x.save();x.globalCompositeOperation='lighter';
+for(let i=0;i<6;i++){const sx=120+i*190;let rg=x.createLinearGradient(0,WL,0,WL+330);rg.addColorStop(0,'rgba(120,200,220,.10)');rg.addColorStop(1,'rgba(0,0,0,0)');
+x.fillStyle=rg;x.beginPath();x.moveTo(sx,WL);x.lineTo(sx+50,WL);x.lineTo(sx+130,WL+330);x.lineTo(sx+20,WL+330);x.fill();}
+x.restore();
+// iceberg
+const S=20,CX=430;
+function half(y){ if(y<WL){const t=(y-110)/(WL-110);return t<0?-1:20+t*150;}
+ const t=(y-WL)/(H-WL);return 170+Math.sin(Math.min(t*1.6,1)*Math.PI/2)*190-Math.max(0,t-.55)*420;}
+for(let y=110;y<H;y+=S){const hw=half(y+S/2);if(hw<=0)continue;
+ const jag=Math.floor(rnd()*3)-1;
+ for(let xx=CX-hw+jag*S;xx<CX+hw+jag*S;xx+=S){
+  const bx=Math.round(xx/S)*S;let col;
+  if(y<WL){const v=200+rnd()*55;col=`rgb(${v-30},${v-5},${v})`;if(bx>CX+20)col=`rgb(${v-80},${v-50},${v-30})`;}
+  else{const d=(y-WL)/(H-WL);const v=(1-d)*150*(.7+rnd()*.3);col=`rgb(${v*.35},${v*.75},${v})`;
+   if(d>.6&&rnd()<.08)col='rgb(60,10,70)';}
+  x.fillStyle=col;x.fillRect(bx,y,S,S);x.fillStyle='rgba(0,0,0,.18)';x.fillRect(bx,y+S-3,S,3);x.fillRect(bx+S-3,y,3,S);}
+}
+// waterline shimmer
+x.fillStyle='rgba(180,230,255,.35)';x.fillRect(0,WL-2,W,4);
+// cracks bleeding red down the berg
+x.strokeStyle='rgba(170,0,0,.55)';x.lineWidth=4;x.beginPath();let px=CX-40,py=WL+10;x.moveTo(px,py);
+for(let i=0;i<14;i++){px+=(rnd()-.5)*60;py+=30;x.lineTo(px,py);}x.stroke();
+// darkness overlay
+g=x.createLinearGradient(0,WL,0,H);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.5,'rgba(0,0,0,.45)');g.addColorStop(1,'rgba(0,0,0,.92)');
+x.fillStyle=g;x.fillRect(0,WL,W,H-WL);
+// pixel art helper
+function art(rows,pal,ox,oy,p){rows.forEach((r,j)=>[...r].forEach((ch,i)=>{if(pal[ch]){x.fillStyle=pal[ch];x.fillRect(ox+i*p,oy+j*p,p,p);}}));}
+// purple guy in the abyss
+x.save();let pg=x.createRadialGradient(430,640,10,430,640,240);pg.addColorStop(0,'rgba(150,40,200,.55)');pg.addColorStop(1,'rgba(80,0,120,0)');
+x.fillStyle=pg;x.fillRect(150,400,560,320);x.restore();
+const purple=["..PPPPPPPP..",".PPPPPPPPPP.",".PPPPPPPPPP.",".PPWWPPWWPP.",".PPWWPPWWPP.",".PPPPPPPPPP.",".PWPPPPPPWP.",".PPWWWWWWPP.","..PPPPPPPP..","PPPPPPPPPPPP","PPPPPYPPPPPP","PPPPPPPPPPPP"];
+art(purple,{P:'#3a1050',W:'#ffffff',Y:'#c9a21a'},430-6*22,520,22);
+// eye glow
+x.save();x.globalCompositeOperation='lighter';[[430-6*22+3*22+22,520+3*22+22],[430-6*22+7*22+22,520+3*22+22]].forEach(([ex,ey])=>{
+ let eg=x.createRadialGradient(ex,ey,2,ex,ey,60);eg.addColorStop(0,'rgba(255,255,255,.7)');eg.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=eg;x.fillRect(ex-60,ey-60,120,120);});x.restore();
+// Freddy on the tip
+const fred=["......HHHH......","......HHHH......",".....HHHHHH.....",".BBB........BBB.",".BDBBBBBBBBBBDB.","..BBBBBBBBBBBB..","..BKKKBBBBKKKB..","..BKWKBBBBKWKB..","..BKKKBBBBKKKB..","..BRBBLKKLBBBB..","..BRLLLLLLLLBB..","..BLKKKKKKKKLB..","..BLKWKWKWKWLB..","..BRLLLLLLLLBB..","...BBBBBBBBBB..."];
+x.save();x.shadowColor='rgba(255,0,0,.6)';x.shadowBlur=40;
+art(fred,{H:'#262626',B:'#6b3f1e',D:'#3e220d',L:'#c08a52',K:'#050505',W:'#ffffff',R:'#b00000'},CX-8*11,78,11);x.restore();
+// bubbles
+for(let i=0;i<40;i++){const bx=rnd()*W,by=WL+20+rnd()*(H-WL);x.strokeStyle=`rgba(180,230,255,${.15+rnd()*.25})`;x.lineWidth=2;const r=2+rnd()*6;x.strokeRect(bx,by,r*2,r*2);}
+// depth meter
+x.font='800 26px "JetBrains Mono"';x.fillStyle='rgba(200,240,255,.75)';
+[['-0m',WL],['-1.000m',WL+160],['-3.000m',WL+330]].forEach(([t,y])=>{x.fillRect(22,y,18,3);x.fillText(t,48,y+9);});
+x.fillStyle='rgba(200,240,255,.5)';x.fillRect(22,WL,3,340);
+// vignette
+let v=x.createRadialGradient(W/2,H/2,250,W/2,H/2,820);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.85)');x.fillStyle=v;x.fillRect(0,0,W,H);
+// text
+function txt(t,tx,ty,size,fill,stroke,sw,rot){x.save();x.translate(tx,ty);x.rotate(rot);x.font=`900 ${size}px Inter`;const mw=x.measureText(t).width;if(tx+mw>1240){size=size*(1240-tx)/mw;x.font=`900 ${size}px Inter`;}x.lineJoin='round';
+ x.shadowColor='rgba(255,0,0,.8)';x.shadowBlur=35;x.lineWidth=sw;x.strokeStyle=stroke;x.strokeText(t,0,0);x.shadowBlur=0;x.fillStyle=fill;x.fillText(t,0,0);x.restore();}
+// label
+x.save();x.translate(760,80);x.rotate(-.04);x.fillStyle='#f5c400';x.fillRect(0,0,430,70);x.font='900 48px Inter';x.fillStyle='#000';x.fillText('ICEBERG FNAF',18,54);x.restore();
+let rg2=x.createLinearGradient(0,170,0,460);rg2.addColorStop(0,'#ff2a1a');rg2.addColorStop(1,'#8f0000');
+txt('NÃO',770,345,215,rg2,'#000',18,-.04);
+txt('DESÇA.',720,520,170,rg2,'#000',18,-.04);
+// drips on text
+x.fillStyle='#9a0000';[[812,338,30],[960,333,45],[1135,327,25],[790,510,60],[1000,503,40],[1150,498,75]].forEach(([dx,dy,l])=>{x.fillRect(dx,dy,12,l);x.fillRect(dx-3,dy+l,18,12);});
+// arrow to the eyes
+x.save();x.strokeStyle='#ff1a1a';x.fillStyle='#ff1a1a';x.lineWidth=14;x.lineCap='round';x.shadowColor='#000';x.shadowBlur=10;
+x.beginPath();x.moveTo(820,575);x.quadraticCurveTo(720,650,610,610);x.stroke();
+x.beginPath();x.moveTo(585,600);x.lineTo(640,575);x.lineTo(628,640);x.closePath();x.fill();x.restore();
+</script></body></html>
