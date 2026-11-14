@@ -281,7 +281,49 @@ add(whisper(2.4), 495.3, 0.1); add(sting(1.4), 497.3, 0.07)
 for k in range(5): add(click(), 498.0 + k * 0.455, 0.15)
 add(static(0.3), 500.8, 0.06)
 
-# ================================ (part 6 follows) ================================
+
+# ================================ PART 6 (501.07 – 627.27) + ending ================================
+add(dive_whoosh(2.7), 501.1, 0.30); loopfill(underwater, 501.1, 509.5, 0.42); add(bubbles(3.0, 7), 501.3, 0.1); add(thud(40, 0.35, 1.0), 502.9, 0.26)
+add(drone(3.5, 36), 506.0, 0.07); add(chime(1.8), 507.0, 0.1)  # chime 3/3 — the soul at the bottom
+add(heartbeat(), 509.9, 0.18); add(heartbeat(), 510.8, 0.16)
+loopfill(lambda d: whir(d, 70, 72), 512.2, 515.2, 0.05); add(bubbles(3.0, 4), 512.3, 0.08)
+loopfill(underwater, 515.2, 519.7, 0.38); add(whisper(2.6), 516.4, 0.07)
+add(laugh(3, 760, 0.12, 0.3), 519.8, 0.3); add(snap(), 522.1, 0.3); add(scream(0.5), 522.15, 0.05)
+add(servo(0.4, 500, 300), 522.8, 0.15); add(snap(), 523.95, 0.2)
+add(drone(4.0, 40), 524.8, 0.07); add(whisper(2.4), 525.6, 0.08)
+for t in [529.1, 529.6, 530.2, 530.8]: add(metal_step(260) * 0.4, t, 0.14)
+add(bubbles(3.8, 4), 531.4, 0.08); add(whisper(2.4), 532.4, 0.07)
+add(whoosh(1.4), 535.7, 0.1); add(zap(0.2), 537.4, 0.08); loopfill(lambda d: whir(d, 110, 120), 538.3, 540.0, 0.04)
+for t in np.arange(540.2, 543.4, 0.7): add(zap(0.15), t, 0.05); add(metal_step(300) * 0.3, t + 0.3, 0.12)
+for k in range(5): add(beep(900 + 60 * k, 0.07), 544.0 + k * 0.48, 0.1)
+add(curtain(0.5), 546.5, 0.1); add(heartbeat(), 548.1, 0.16)
+add(laugh(4, 640, 0.12, 0.35), 549.3, 0.3); add(glitch(0.4), 552.6, 0.08); add(growl(1.6, 46), 552.9, 0.12)
+for t in np.arange(555.0, 557.2, 0.62): add(mstep(), t, 0.1)
+add(whisper(2.0), 555.4, 0.07)
+add(drone(5.0, 38), 557.3, 0.06); add(heartbeat(), 560.2, 0.14); add(heartbeat(), 561.3, 0.11)
+add(whisper(1.6), 562.3, 0.1); loopfill(lambda d: drone(d, 64), 563.7, 572.0, 0.025)
+add(breath(1.4, False), 565.0, 0.08)
+add(curtain(0.8), 567.3, 0.06)
+add(bell(523, 1.6, 1.0, 0.25), 570.7, 0.4)   # soft single tone, "eu ainda estou aqui"
+add(whisper(1.6), 572.1, 0.08)
+add(whoosh(1.0), 573.8, 0.12); loopfill(ocean, 573.9, 575.2, 0.2); add(click(), 575.2, 0.3); add(curtain(0.5), 576.7, 0.1); add(click(), 577.6, 0.3)
+add(drone(2.2, 44), 578.3, 0.05); add(whisper(2.4), 580.6, 0.08)
+loopfill(underwater, 583.3, 587.0, 0.3); add(bubbles(3.6, 4), 583.4, 0.08)
+add(laugh(2, 560, 0.15, 0.3), 587.4, 0.25); loopfill(rain, 589.1, 590.1, 0.1)
+add(breath(1.2, False), 590.4, 0.1)
+add(whisper(3.2), 592.7, 0.1)
+loopfill(underwater, 596.0, 601.9, 0.42); add(boom(1.0, 2.0) * 0.6, 597.3, 0.08); add(boot(0.8), 600.0, 0.14); add(growl(1.4, 40), 600.2, 0.12)
+add(dive_whoosh(5.0), 602.0, 0.3); add(splash() * 0.8, 605.6, 0.3); loopfill(ocean, 606.0, 607.1, 0.25)
+add(whoosh(3.2), 607.1, 0.12)
+for k in range(6): add(thud(70 - 5 * k, 0.12, 0.4), 607.3 + k * 0.52, 0.12)
+add(boot(0.6), 610.6, 0.12); add(growl(0.8, 55), 612.9, 0.08)
+add(click(), 613.5, 0.25); loopfill(lambda d: whir(d, 70, 72), 613.5, 614.6, 0.05)
+add(laugh(3, 700, 0.13, 0.3), 614.9, 0.2)
+loopfill(lambda d: chatter(d, 0.8), 616.2, 620.2, 0.3); add(laugh(5, 600, 0.12, 0.45), 616.6, 0.35); add(laugh(4, 520, 0.13, 0.4), 618.3, 0.3)
+loopfill(ocean, 620.3, 623.2, 0.25)
+loopfill(rain, 623.2, 625.4, 0.1); add(thunder(1.8), 624.0, 0.3)
+add(lowpass(noise(1.2), 0.05) * 0, 625.4, 0); mbox(TOREADOR[:6], 625.7, 0.13, 0.0, 0.08); add(static(0.4), 626.85, 0.05)
+
 
 mix += 0.3 * np.sin(2 * np.pi * 50 * np.arange(N) / SR) * 0.004
 mix[:] = np.tanh(mix * 1.15) * 0.8

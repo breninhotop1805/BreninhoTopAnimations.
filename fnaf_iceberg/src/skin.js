@@ -384,7 +384,7 @@ export function recolorChild(canvas, pal) {
 
 // Spectral copy of a character: additive glowing silhouette.
 export function makeGhost(ch, color = '#9fdcff') {
-  const gm = new THREE.MeshBasicMaterial({ map: ch.tex, color, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, alphaTest: 0.5, fog: false });
+  const gm = new THREE.MeshBasicMaterial({ map: ch.tex, color, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, alphaTest: 0.02, fog: false });
   ch.root.traverse(o => { if (o.isMesh) { o.material = gm; o.castShadow = false; o.receiveShadow = false; } });
   ch.ghostMat = gm; return ch;
 }

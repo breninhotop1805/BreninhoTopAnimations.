@@ -208,7 +208,7 @@ at(57.54, 'not_defect', x => {
 at(60.98, 'possessed', x => {
   const s = voidS(x, 34, 18, '#9ad8ff'); const L = x.L; const f = put(x, 'freddy', s, 0, 0, 0, 0); f.idle(x.t, 0.6);
   const k = eio(seg(L, 0.1, 1.1)); const g = ghostKid(x, 0, s, [0, mix(0, 0.5, k), mix(1.3, 0.05, k)], Math.PI, 0.55 * (1 - seg(L, 0.9, 1.3)));
-  f.setEyeGlow('#e8f6ff', sm(seg(L, 1.0, 1.25)) * (L > 1.3 ? 0.6 : 1)); if (L > 1.05 && L < 1.12) x.post.flash.value = 0.08;
+  f.setEyeGlow('#e8f6ff', sm(seg(L, 1.0, 1.25)) * (L > 1.3 ? 0.6 : 1));
   const a = mix(0.7, 0.25, eio(x.u)); cam(x, [Math.sin(a) * 4.4, 1.9, Math.cos(a) * 4.4], [0, 1.8, 0], 36);
 });
 // "as crianças assassinadas de 85 ficaram presas dentro deles"
