@@ -837,12 +837,12 @@ at(230.52, 'flesh', x => {
 });
 // "Num dos minijogos do FNAF 3, tem uma criança sozinha na chuva, do lado de fora da pizzaria" — 8-bit look
 at(233.16, 'rain_mini', x => {
-  const s = facade(x, 1.0); const L = x.L; x.post.pix.value = PIX(x) * 0.55; const k = put(x, 'kid0', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.4;
+  const s = facade(x, 1.0); const L = x.L; x.post.pix.value = PIX(x) * 0.55; const k = put(x, 'charlotte', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.4;
   k.armR.piv.rotation.x = -1.2; k.armL.piv.rotation.x = -1.2; k.armR.piv.rotation.z = 0.5; k.armL.piv.rotation.z = -0.5; k.torso.rotation.x = 0.1 + 0.03 * Math.sin(x.t * 9);
   x.S.inLamps.forEach(l => l.intensity = 10); x.S.facadeHemi.intensity = 1.6; cam(x, [0.3, 1.7, mix(9.4, 8.0, eio(x.u))], [0.2, 1.5, 1.0], 40); x.post.vig.value = 0.7; x.post.grain.value = 0; x.S.streetLamp.intensity = 40;
 });
 at(235.54, 'rain_kid', x => {
-  const s = facade(x, 0.4); const L = x.L; const k = put(x, 'kid0', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.45;
+  const s = facade(x, 0.4); const L = x.L; const k = put(x, 'charlotte', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.45;
   k.armR.piv.rotation.x = -1.2; k.armL.piv.rotation.x = -1.2; k.armR.piv.rotation.z = 0.5; k.armL.piv.rotation.z = -0.5; k.torso.rotation.x = 0.1 + 0.03 * Math.sin(x.t * 9); tears(x, k, 0.8);
   const hp = tp(k, 'head', [0, 4, 4]); camMove(x, [hp.x + 1.4, hp.y + 0.1, hp.z + 2.6], hp.toArray(), [hp.x + 0.8, hp.y, hp.z + 1.7], hp.toArray(), eio, 36); rain(x, s, 0.4, 3); fillOn(x, k, 1.2, 1.4); x.S.streetLamp.intensity = 40;
 });
@@ -1044,7 +1044,7 @@ at(305.00, 'soul_rest', x => {
 at(309.82, 'discovered', x => {
   const s = x.S.shop; x.out.scene = s; x.post.vig.value = 1.0; x.S.shopLamp.intensity = 4; const t = tankAt(x, s, [-1.5, 1.01, -3.2], 0.85, 1.6);
   const w = put(x, 'william', s, -0.5, 0, -1.9, -2.45); w.idle(x.t, 0.6); w.head.rotation.x = 0.1; aim(w, 'R', new V3(-1.3, 1.6, -2.95), eo(seg(x.L, 0.6, 1.2)));
-  const hp = tp(w, 'head', [0, 4, 4]); camMove(x, [-2.4, 1.9, -2.2], hp.toArray(), [-2.1, 1.85, -2.35], hp.toArray(), eo, 44); keyOn(x, s, [-1.5, 1.8, -3.1], hp.toArray(), 8, 0.6); KEY.color.set('#3ad8ff');
+  const hp = tp(w, 'head', [0, 4, 4]); camMove(x, [-2.6, 1.9, -1.6], hp.toArray(), [-2.3, 1.85, -1.8], hp.toArray(), eo, 46); keyOn(x, s, [-1.5, 1.8, -3.1], hp.toArray(), 2.5, 0.6); KEY.color.set('#3ad8ff');
 });
 // "e ele não matava só por matar"
 at(312.72, 'not_just', x => {
@@ -1057,7 +1057,7 @@ at(314.26, 'studying', x => {
   const s = x.S.screenroom; x.out.scene = s; x.out.screen = 'code'; const c = x.S.crtScreenPos; x.S.crtLight.intensity = 3; const L = x.L;
   const w = put(x, 'william', s, c.x + 0.1, 0, c.z + 1.25, Math.PI); w.idle(x.t, 0.6); w.head.rotation.x = 0.1; aim(w, 'R', new V3(c.x - 0.15, 0.95, c.z + 0.35), 0.9); aim(w, 'L', new V3(c.x + 0.25, 0.95, c.z + 0.35), 0.9);
   w.armR.piv.rotation.x += 0.08 * Math.sin(x.t * 22); w.armL.piv.rotation.x += 0.08 * Math.sin(x.t * 19 + 1);
-  camMove(x, [c.x + 2.4, 1.8, c.z + 2.4], [c.x, 1.25, c.z + 0.6], [c.x + 2.0, 1.75, c.z + 2.0], [c.x, 1.25, c.z + 0.6], eo, 44); fillOn(x, w, 0.8, 1.8);
+  camMove(x, [c.x + 3.0, 1.75, c.z + 1.9], [c.x, 1.3, c.z + 0.8], [c.x + 2.7, 1.72, c.z + 1.7], [c.x, 1.3, c.z + 0.8], eo, 44); fillOn(x, w, 0.8, 1.8);
 });
 // "querendo entender como prender a alma de alguém numa máquina" — a soul pulled into an endoskeleton
 at(317.20, 'trap_soul', x => {
@@ -1079,13 +1079,13 @@ function bedKid(x, s) { const c = put(x, 'cchild', s, -2.4, 0.62, -0.7, 0.9); c.
 at(325.78, 'plush', x => {
   const s = bedroom(x, 0.8); const L = x.L; const c = bedKid(x, s); const p = plush(x, s, [-2.15, 0.71, 0.05], -0.6); p.head.rotation.y = -0.5 * eo(seg(L, 0.8, 1.3));
   c.head.rotation.y = 0.5 * eo(seg(L, 1.5, 2.0)); c.head.rotation.x = 0.25;
-  camMove(x, [-0.2, 1.7, 2.4], [-2.35, 1.0, -0.5], [-0.8, 1.6, 1.8], [-2.35, 1.05, -0.5], eo, 40); fillOn(x, c, 1.3, 1.2);
+  camMove(x, [0.4, 1.9, 2.8], [-2.4, 1.2, -0.6], [-0.2, 1.8, 2.3], [-2.4, 1.2, -0.6], eo, 40); fillOn(x, c, 1.3, 1.2);
 });
 // "Ele conforta, dá conselho, sempre tá perto" — the boy hugs the plush
 at(329.10, 'comforts', x => {
   const s = bedroom(x, 0.8); const L = x.L; const c = bedKid(x, s); const k = eo(seg(L, 0.2, 0.9)); const pp = [mix(-2.15, -2.13, k), mix(0.71, 0.86, k), mix(0.05, -0.25, k)];
   const p = plush(x, s, pp, mix(-0.6, -0.7, k)); const ch = tp(p, 'torso', [0, 6, 0]); aim(c, 'R', ch, k); aim(c, 'L', ch, k); c.head.rotation.x = 0.4 * k; c.head.rotation.y = 0.3 * k;
-  camMove(x, [-0.7, 1.6, 1.9], [-2.35, 1.05, -0.5], [-1.0, 1.55, 1.5], [-2.35, 1.05, -0.5], eo, 40); fillOn(x, c, 1.3, 1.2);
+  camMove(x, [0.1, 1.85, 2.5], [-2.4, 1.2, -0.6], [-0.3, 1.8, 2.2], [-2.4, 1.2, -0.6], eo, 40); fillOn(x, c, 1.3, 1.2);
 });
 // "Mas tem fã que pergunta, brinquedo nenhum fala, então quem tá falando?"
 at(331.72, 'who_talks', x => {
@@ -1104,7 +1104,7 @@ at(336.08, 'speaker', x => {
 at(338.78, 'listening', x => {
   const s = x.S.screenroom; x.out.scene = s; x.out.screen = 'static'; const c = x.S.crtScreenPos; x.S.crtLight.intensity = 3; const L = x.L;
   const w = put(x, 'william', s, c.x + 0.1, 0, c.z + 1.25, Math.PI); w.idle(x.t, 0.4); w.head.rotation.x = 0.05; aim(w, 'L', rootPt(w, 0.35, 1.7, 0.2), 0.9);
-  camMove(x, [c.x - 1.4, 1.75, c.z + 0.2], tp(w, 'head', [0, 3, 4]).toArray(), [c.x - 1.1, 1.72, c.z + 0.35], tp(w, 'head', [0, 3, 4]).toArray(), eo, 42); x.S.crtLight.intensity = 1.5;
+  camMove(x, [c.x - 3.0, 1.75, c.z + 1.9], [c.x, 1.3, c.z + 0.8], [c.x - 2.7, 1.72, c.z + 1.7], [c.x, 1.3, c.z + 0.8], eo, 44); fillOn(x, w, 1.2, 1.8);
   x.post.tint.value.set(0.9, 0.95, 1.1);
 });
 // "Alguns dizem que isso era cuidado,"

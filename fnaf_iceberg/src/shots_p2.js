@@ -237,12 +237,12 @@ at(230.52, 'flesh', x => {
 });
 // "Num dos minijogos do FNAF 3, tem uma criança sozinha na chuva, do lado de fora da pizzaria" — 8-bit look
 at(233.16, 'rain_mini', x => {
-  const s = facade(x, 1.0); const L = x.L; x.post.pix.value = PIX(x) * 0.55; const k = put(x, 'kid0', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.4;
+  const s = facade(x, 1.0); const L = x.L; x.post.pix.value = PIX(x) * 0.55; const k = put(x, 'charlotte', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.4;
   k.armR.piv.rotation.x = -1.2; k.armL.piv.rotation.x = -1.2; k.armR.piv.rotation.z = 0.5; k.armL.piv.rotation.z = -0.5; k.torso.rotation.x = 0.1 + 0.03 * Math.sin(x.t * 9);
   x.S.inLamps.forEach(l => l.intensity = 10); x.S.facadeHemi.intensity = 1.6; cam(x, [0.3, 1.7, mix(9.4, 8.0, eio(x.u))], [0.2, 1.5, 1.0], 40); x.post.vig.value = 0.7; x.post.grain.value = 0; x.S.streetLamp.intensity = 40;
 });
 at(235.54, 'rain_kid', x => {
-  const s = facade(x, 0.4); const L = x.L; const k = put(x, 'kid0', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.45;
+  const s = facade(x, 0.4); const L = x.L; const k = put(x, 'charlotte', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.45;
   k.armR.piv.rotation.x = -1.2; k.armL.piv.rotation.x = -1.2; k.armR.piv.rotation.z = 0.5; k.armL.piv.rotation.z = -0.5; k.torso.rotation.x = 0.1 + 0.03 * Math.sin(x.t * 9); tears(x, k, 0.8);
   const hp = tp(k, 'head', [0, 4, 4]); camMove(x, [hp.x + 1.4, hp.y + 0.1, hp.z + 2.6], hp.toArray(), [hp.x + 0.8, hp.y, hp.z + 1.7], hp.toArray(), eio, 36); rain(x, s, 0.4, 3); fillOn(x, k, 1.2, 1.4); x.S.streetLamp.intensity = 40;
 });

@@ -189,7 +189,42 @@ add(buzz(1.5, 120), 258.8, 0.04); add(glitch(0.2), 259.5, 0.06); add(glitch(0.2)
 loopfill(lambda d: drone(d, 42), 261.6, 264.5, 0.06); add(heartbeat(), 262.4, 0.15); add(heartbeat(), 263.4, 0.12)
 loopfill(lambda d: whir(d, 70, 72), 264.6, 267.9, 0.05); add(bubbles(3.2, 4), 264.7, 0.08); add(sting(1.4), 266.3, 0.07)
 
-# ================================ (parts 3–6 follow) ================================
+
+# ================================ PART 3 (267.93 – 346.6) ================================
+add(dive_whoosh(2.7), 268.0, 0.30); loopfill(underwater, 268.0, 272.6, 0.38); add(bubbles(3.5, 9), 268.2, 0.12); add(thud(46, 0.25, 0.8), 269.6, 0.26)
+for k in range(2): add(ring2(), 272.7 + k * 0.7, 0.42)
+add(click(), 274.1, 0.3); add(static(1.6), 274.2, 0.03)
+add(boot(0.6), 276.5, 0.12)
+for t in np.arange(276.7, 279.2, 0.16): add(tick(0.7), t, 0.25)
+for t in np.arange(279.3, 281.0, 0.11): add(tick(0.6), t, 0.22)
+add(alarm(0.18, 880), 280.4, 0.1)
+loopfill(lambda d: chatter(d, 0.9), 281.0, 284.0, 0.35); add(laugh(4, 640, 0.12, 0.45), 281.4, 0.4)
+add(siren(1.6), 282.6, 0.12); add(pop_sfx(), 284.2, 0.2)
+add(creak(0.5, 300), 285.0, 0.12); for_t = [284.8, 285.4, 286.0, 286.6, 287.2]
+for t in for_t: add(footstep(90), t, 0.12)
+add(doorcreak(0.6), 287.7, 0.12); loopfill(lambda d: chatter(d, 0.6), 287.8, 289.6, 0.2)
+loopfill(underwater, 289.7, 292.7, 0.35); add(drone(3.0, 42), 289.7, 0.08)
+add(sting(1.4), 292.8, 0.08); loopfill(lambda d: drone(d, 40), 295.1, 296.9, 0.06)
+add(curtain(0.5), 297.2, 0.1); add(thud(90, 0.06, 0.3), 298.81, 0.4); add(knock(), 298.82, 0.2)
+add(curtain(0.6), 300.8, 0.1); add(curtain(0.4), 301.6, 0.08)
+loopfill(lambda d: whir(d, 70, 72), 304.0, 305.0, 0.06); add(bubbles(1.0, 6), 304.0, 0.1)
+loopfill(lambda d: whir(d, 110, 120), 305.0, 309.8, 0.05); add(whisper(2.4), 306.4, 0.08)
+add(bubbles(2.8, 4), 309.9, 0.08); add(heartbeat(), 311.0, 0.15)
+add(whisper(1.4), 312.8, 0.1); add(laugh(3, 300, 0.16, 0.5), 313.3, 0.25)
+add(typing(2.8), 314.3, 0.35)
+add(whoosh(1.0), 317.2, 0.12); add(zap(0.25), 318.25, 0.1)
+add(heartbeat(), 319.4, 0.15); add(pop_sfx(), 321.5, 0.15)
+loopfill(underwater, 322.9, 325.8, 0.4); add(boom(1.0, 2.2) * 0.6, 323.4, 0.08)
+loopfill(lambda d: drone(d, 55), 325.8, 336.0, 0.03); add(breath(0.8), 326.6, 0.1); add(breath(0.8), 328.2, 0.1)
+add(curtain(0.5), 329.3, 0.1); add(breath(1.0, False), 330.4, 0.1)
+add(whisper(1.6), 333.0, 0.08); add(pop_sfx(), 335.0, 0.15)
+add(static(1.2), 336.4, 0.03); add(buzz(1.2, 180), 336.6, 0.03)
+loopfill(lambda d: static(d), 338.8, 342.3, 0.02); add(whisper(2.0), 339.6, 0.08); add(click(), 339.0, 0.25)
+loopfill(lambda d: drone(d, 60), 342.4, 344.4, 0.03)
+loopfill(lambda d: buzz(d, 120), 344.5, 346.6, 0.03); for_t = [344.6, 345.6]
+for t in for_t: add(beep(1100, 0.05), t, 0.12)
+
+# ================================ (parts 4–6 follow) ================================
 
 mix += 0.3 * np.sin(2 * np.pi * 50 * np.arange(N) / SR) * 0.004
 mix[:] = np.tanh(mix * 1.15) * 0.8
