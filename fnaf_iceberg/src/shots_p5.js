@@ -13,7 +13,7 @@ function mirrorPose(a, b) { for (const k of ['armR', 'armL', 'legR', 'legL']) { 
 // "Camada 5, o fundo"
 at(454.3, 'dive5', x => { dive(x, 4, ICE_DEPTHS[3], ICE_DEPTHS[4]); });
 // "Aqui ninguém deveria chegar"
-at(458.98, 'nobody', x => { const L = x.L; iceCam(x, mix(-42, -45, eio(x.u)), 0.1, 18, -6, 46, -5); ice(x, { red: 1, rush: 0.5 }); });
+at(458.98, 'nobody', x => { const L = x.L; iceCam(x, mix(-42, -45, eio(x.u)), 0.1, 26, -6, 46, -15); ice(x, { red: 1, rush: 0.5 }); });
 // "Os jogos mais novos trouxeram uma coisa" — Secret of the Mimic logo over a dark silhouette
 at(460.50, 'logo_sotm', x => {
   const s = voidS(x, 0, 30, '#ff8a3a', 0.5); const m = put(x, 'mimic', s, 0, 0, 0, 0); m.idle(x.t, 0.5); mimicEyes(x, 0.8); cam(x, [0, 1.7, 4.6 - 0.3 * x.u], [0, 1.8, 0], 38); logoCard(x, 0); x.post.blur.value = 1;
@@ -33,7 +33,7 @@ at(465.16, 'mimic', x => {
 at(466.00, 'edwin', x => {
   const s = x.S.shop; x.out.scene = s; x.post.vig.value = 0.9; const L = x.L; x.S.shopLamp.intensity = 14; const m = put(x, 'mimic', s, 1.3, 0, -2.6, -0.4); m.idle(x.t, 0.2); m.head.rotation.x = 0.35; mimicEyes(x, 0.05);
   const e = put(x, 'edwin', s, 0.1, 0, -1.6, 1.2); e.idle(x.t, 1); aim(e, 'R', tp(m, 'torso', [0, 7, 3]), 0.8 + 0.1 * Math.sin(x.t * 9)); e.head.rotation.x = 0.1; if (L > 1.9) lookAtCam(x, e, eo(seg(L, 1.9, 2.4)));
-  camMove(x, [-1.2, 1.7, 1.2], [0.7, 1.5, -2.1], [-0.8, 1.65, 0.6], [0.7, 1.55, -2.2], eo, 42); fillOn(x, e, 1.4, 1.8);
+  camMove(x, [1.2, 1.7, 1.4], [0.7, 1.5, -2.1], [1.0, 1.65, 0.9], [0.7, 1.55, -2.2], eo, 44); fillOn(x, e, 1.4, 1.8);
 });
 // "Feito para aprender e copiar o comportamento humano" — it mirrors Edwin's every move
 at(468.88, 'learn', x => {
@@ -50,7 +50,7 @@ at(471.52, 'not_love', x => {
 // "Depois de uma tragédia com a família do criador,"
 at(474.06, 'tragedy', x => {
   const s = voidS(x, 22, 26, '#ff2a1a', 0.6); const L = x.L; const e = put(x, 'edwin', s, 0, 0, 0, 0); kneel(e, 1); e.head.rotation.x = 0.6; aim(e, 'R', rootPt(e, 0.05, 1.5, 0.35), 0.9); aim(e, 'L', rootPt(e, -0.05, 1.5, 0.35), 0.9);
-  e.torso.rotation.x += 0.03 * Math.sin(x.t * 8); camMove(x, [0.6, 1.0, 3.2], [0, 1.0, 0], [0.3, 1.1, 2.4], [0, 1.05, 0], eo, 38); x.post.tint.value.set(1.0, 0.85, 0.88);
+  e.torso.rotation.x += 0.03 * Math.sin(x.t * 8); camMove(x, [0.9, 1.0, 3.8], [0, 0.9, 0], [0.6, 1.05, 3.2], [0, 0.95, 0], eo, 38); fillOn(x, e, 1.0, 1.4); x.post.tint.value.set(1.0, 0.85, 0.88);
 });
 // "ele aprendeu a dor. Raiva." — the eyes burn, it shakes
 at(476.70, 'rage', x => {
@@ -62,7 +62,7 @@ at(476.70, 'rage', x => {
 // "E começou a copiar exatamente isso" — stalking through the ruined Pizzaplex
 at(478.54, 'copy_that', x => {
   const s = ruinAtrium(x); const L = x.L; const m = put(x, 'mimic', s, 0, 0, 0, 0); walkTo(m, [0.2, 0, -6.5], [0.1, 0, -3.4], eo(seg(L, 0, 2.4)), 1.0); lookAtCam(x, m, 0.5); mimicEyes(x, 1.3);
-  camMove(x, [0.6, 1.2, 1.2], [0, 2.0, -6], [0.3, 1.4, 0.2], [0, 2.1, -4], eo, 42); fillOn(x, m, 2.4, 2.4); hand(x, 0.7);
+  camMove(x, [0.6, 1.3, -0.4], [0, 2.0, -6], [0.3, 1.5, -1.0], [0, 2.1, -4], eo, 42); fillOn(x, m, 2.4, 2.4); hand(x, 0.7);
 });
 // "O Mimic imita vozes, imita pessoas" — sound rings at its head, then it takes a person's pose
 at(480.98, 'voices', x => {
@@ -78,7 +78,7 @@ at(483.32, 'ruin_fake', x => {
   camMove(x, [0.3, 1.5, -0.4], [0, 1.9, -4.2], [0.15, 1.7, -1.6], [0, 2.0, -4.2], eo, 42); fillOn(x, c, 2.2, 2.2);
 });
 // "E aí nasce a teoria mais perturbadora dos últimos anos"
-at(486.56, 'theory5', x => { const L = x.L; iceCam(x, mix(-44, -47, eio(x.u)), mix(-0.4, 0.2, eio(x.u)), 20, -5, 46, 6); ice(x, { red: 1, rush: 0.6 }); });
+at(486.56, 'theory5', x => { const L = x.L; iceCam(x, mix(-44, -47, eio(x.u)), mix(-0.4, 0.2, eio(x.u)), 26, -5, 46, 15); ice(x, { red: 1, rush: 0.6 }); });
 // "E se algumas das vezes em que a gente achou que o William tinha voltado"
 at(489.64, 'what_if', x => {
   const s = fright(x, 0.8); const L = x.L; const c = put(x, 'spring', s, 0, 0, -5.0, 0); c.idle(x.t, 1); twitch(c, x.t, 1); lookAtCam(x, c, 0.5);
@@ -86,7 +86,7 @@ at(489.64, 'what_if', x => {
 });
 // "Não era ele." — Springtrap flickers into the Mimic
 at(493.70, 'not_him', x => {
-  const s = fright(x, 0.8); const L = x.L; const sw = L > 0.5; const c = put(x, sw ? 'mimic' : 'spring', s, 0, 0, -5.0, 0); c.idle(x.t, 1); lookAtCam(x, c, 0.8); if (sw) mimicEyes(x, 1.4);
+  const s = fright(x, 0.8); const L = x.L; const sw = L > 0.5; const c = put(x, sw ? 'mimic' : 'spring', s, 0, 0, -5.0, 0); c.idle(x.t, 1); lookAtCam(x, c, 0.8); if (sw) mimicEyes(x, 1.0); x.S.frLamps.forEach(l => l.intensity *= 0.4);
   if (L > 0.35 && L < 0.75) { glitchIn(x, c, 1); x.post.stat.value = 0.45; x.post.chroma.value = 1; }
   const hp = tp(c, 'head', [0, 4, 4]); cam(x, [hp.x + 0.2, hp.y - 0.1, hp.z + 2.2 - 0.3 * x.u], hp.toArray(), 38); fillOn(x, c, 2, 2);
 });
@@ -94,7 +94,7 @@ at(493.70, 'not_him', x => {
 at(495.14, 'machine', x => {
   const s = voidS(x, 26, 36, '#a040ff', 1.5); const L = x.L; s.fog = null; const m = put(x, 'mimic', s, 0, 0, 0, 0); m.idle(x.t, 0.8); lookAtCam(x, m, 0.8); mimicEyes(x, 1);
   const g = put(x, 'gWilliam', s, 0, 0.05, 0.15, 0); g.idle(x.t, 0.8); lookAtCam(x, g, 0.8); g.ghostMat.color.set('#c070ff'); g.ghostMat.opacity = 0.4 * sm(seg(L, 1.4, 2.4)); g.root.scale.setScalar(1.3);
-  const a = mix(0.5, -0.2, eio(x.u)); cam(x, [Math.sin(a) * 4.0, 1.9, Math.cos(a) * 4.0], [0, 1.8, 0], 38);
+  const a = mix(0.5, -0.2, eio(x.u)); cam(x, [Math.sin(a) * 4.0, 1.9, Math.cos(a) * 4.0], [0, 1.8, 0], 38); keyOn(x, s, [1.2, 3.6, 3.0], [0, 1.6, 0], 18, 0.4);
 });
 // "Tão bem, que nem dá mais para saber a diferença" — William and the Mimic, one light switching between them
 at(497.92, 'difference', x => {
