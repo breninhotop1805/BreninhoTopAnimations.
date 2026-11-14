@@ -40,7 +40,7 @@ const C = {
 for (let i = 0; i < 5; i++) { C['kid' + i] = new Character('kid' + i, recolorChild(sk.child, KIDPAL[i])); C['kid' + i].baseScale = 0.74; C['gk' + i] = makeGhost(new Character('gk' + i, recolorChild(sk.child, KIDPAL[i])), '#bfe6ff'); C['gk' + i].baseScale = 0.74; }
 for (const n of ['freddy', 'bonnie', 'chica', 'foxy', 'golden', 'springbonnie', 'spring', 'scrap', 'fredbear', 'puppet', 'glitchtrap']) C[n].baseScale = 1.22;
 for (const n of ['bonnie', 'chica', 'foxy', 'springbonnie']) SK.addEyeGlow(C[n]);
-C.baby.baseScale = 1.34; C.mimic.baseScale = 1.45; for (const n of ['cchild', 'gCchild', 'charlotte', 'gCharlotte', 'elizabeth', 'andrew', 'gAndrew']) C[n].baseScale = 0.76; C.michael.baseScale = 0.92;
+C.baby.baseScale = 1.34; C.chica.baseScale = 1.34; // no ears/hat: a bit taller so she matches the band C.mimic.baseScale = 1.45; for (const n of ['cchild', 'gCchild', 'charlotte', 'gCharlotte', 'elizabeth', 'andrew', 'gAndrew']) C[n].baseScale = 0.76; C.michael.baseScale = 0.92;
 const MANGLE = SK.addMangleJaw(new SK.MangleRig(sk.mangle));
 // fx objects
 const paperCv = document.createElement('canvas'); paperCv.width = 192; paperCv.height = 256; { const c2 = paperCv.getContext('2d'); c2.fillStyle = '#efe4c8'; c2.fillRect(0, 0, 192, 256); c2.strokeStyle = 'rgba(80,110,160,0.35)'; c2.lineWidth = 1; for (let i = 0; i < 256; i += 12) { c2.beginPath(); c2.moveTo(0, i); c2.lineTo(192, i); c2.stroke(); }

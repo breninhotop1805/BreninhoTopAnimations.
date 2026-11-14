@@ -11,7 +11,7 @@ const TEARM = new THREE.MeshBasicMaterial({ color: '#8ad0ff', toneMapped: false,
 const TEARS = Array.from({ length: 2 }, () => new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), TEARM));
 EXTRA.push(ICE, ...TEARS);
 const _cleanup1 = cleanup;
-cleanup = function (x) { _cleanup1(x); unmask(); x.S.giftLid.rotation.x = 0; x.C.gWilliam.ghostMat.color.set('#ff6a5a'); KEY.color.set('#fff2e0'); x.S.iceBubbles.forEach(b => b.scale.setScalar(1)); };
+cleanup = function (x) { _cleanup1(x); unmask(); x.S.gg.background.set('#000000'); x.S.giftLid.rotation.x = 0; x.C.gWilliam.ghostMat.color.set('#ff6a5a'); KEY.color.set('#fff2e0'); x.S.iceBubbles.forEach(b => b.scale.setScalar(1)); };
 function tears(x, c, k) { TEARS.forEach((d, i) => { c.head.add(d); const l = 0.4 + 3.2 * k; d.position.set((i ? 1.9 : -1.9) * U16, (3.4 - l / 2) * U16, 4.66 * U16); d.scale.set(0.45 * U16, l * U16, 0.2 * U16); }); }
 function diner(x, dim = 1) { const s = x.S.diner; x.out.scene = s; x.post.vig.value = 0.85; x.post.tint.value.set(1.06, 1.0, 0.9); x.S.dinerLamps.forEach(l => l.intensity *= dim); x.S.dinerSpot.intensity *= dim; return s; }
 function partyR(x) { const s = x.S.party; x.out.scene = s; x.post.vig.value = 0.9; return s; }
@@ -29,7 +29,7 @@ at(161.42, 'for_real', x => {
 });
 // "No FNAF 4, você joga como uma criança terrorizada,"
 at(162.82, 'fnaf4', x => {
-  const s = bedroom(x, 0.6); const L = x.L; const c = put(x, 'cchild', s, -2.55, 0.62, -0.9, 0.35); c.legR.piv.rotation.x = -1.5; c.legL.piv.rotation.x = -1.5; c.root.position.y = 0.62 - 0.56 * 0.76 + 0.09;
+  const s = bedroom(x, 0.6); const L = x.L; const c = put(x, 'cchild', s, -2.75, 0.62, -0.9, 1.25); c.legR.piv.rotation.x = -1.5; c.legL.piv.rotation.x = -1.5; c.root.position.y = 0.62 - 0.56 * 0.76 + 0.09;
   c.head.rotation.x = 0.25; c.head.rotation.y = 0.35 * Math.sin(x.t * 2.2); c.armR.piv.rotation.x = -1.2; c.armL.piv.rotation.x = -1.2; c.torso.rotation.z = 0.02 * Math.sin(x.t * 18);
   tears(x, c, 0.5 + 0.5 * seg(L, 0, 3));
   camMove(x, [-0.6, 1.35, 2.4], [-2.5, 0.95, -0.7], [-1.3, 1.2, 1.5], [-2.5, 1.0, -0.7], eio, 40); fillOn(x, c, 1.4, 1.2);
@@ -51,26 +51,26 @@ at(167.68, 'bullies', x => {
 });
 // "levantam o menino até a boca do Freddy" — on the stage, they lift him to Fredbear's mouth
 function biteSetup(x, lift, bend) {
-  const s = diner(x, 0.85); const f = put(x, 'fredbear', s, 0, 0.77, -4.6, 0); f.idle(x.t, 0.5); f.torso.rotation.x = 0.38 * bend; f.head.rotation.x = 0.25 * bend;
-  const m = put(x, 'michael', s, -0.42, 0.77, -3.15, 0.6), a = put(x, 'kid3', s, 0.42, 0.77, -3.2, -0.6, 1.2); wearMask(x, m, 'foxy'); wearMask(x, a, 'freddy');
-  const c = put(x, 'cchild', s, 0, 0, 0, 0); c.root.rotation.set(-Math.PI / 2, 0, 0); c.root.position.set(0, mix(1.55, 2.25, lift), mix(-1.7, -2.0, lift));
+  const s = diner(x, 0.85); const f = put(x, 'fredbear', s, 0, 0.77, -4.8, 0); f.idle(x.t, 0.5); f.torso.rotation.x = 0.38 * bend; f.head.rotation.x = 0.25 * bend;
+  const m = put(x, 'michael', s, -0.8, 0.77, -3.3, 1.3), a = put(x, 'kid3', s, 0.8, 0.77, -3.35, -1.3, 1.2); wearMask(x, m, 'foxy'); wearMask(x, a, 'freddy');
+  const c = put(x, 'cchild', s, 0, 0, 0, 0); c.root.rotation.set(-Math.PI / 2, 0, 0); c.root.position.set(0, mix(1.9, 2.72, lift), mix(-2.2, -2.5, lift));
   c.armR.piv.rotation.z = -0.4 + 0.3 * Math.sin(x.t * 9); c.armL.piv.rotation.z = 0.4 - 0.3 * Math.sin(x.t * 9 + 1); c.legR.piv.rotation.x = 0.3 * Math.sin(x.t * 11); c.legL.piv.rotation.x = -0.3 * Math.sin(x.t * 11);
   aim(m, 'R', tp(c, 'torso', [0, 9, 0]), 1); aim(m, 'L', tp(c, 'legL', [0, -4, 0]), 1); aim(a, 'L', tp(c, 'torso', [0, 3, 0]), 1); aim(a, 'R', tp(c, 'legR', [0, -6, 0]), 1);
   return [s, f, c, m, a];
 }
 at(171.50, 'lift', x => {
   const L = x.L; const [s, f, c, m] = biteSetup(x, eo(seg(L, 0, 1.6)), eo(seg(L, 0.6, 2.0)));
-  camMove(x, [3.6, 2.0, -2.6], [0, 2.0, -3.7], [3.0, 2.15, -2.9], [0, 2.2, -3.8], eo, 40); fillOn(x, f, 2, 2.4);
+  camMove(x, [2.2, 1.5, 0.9], [0, 2.2, -3.6], [1.8, 1.6, 0.4], [0, 2.4, -3.8], eo, 42); fillOn(x, f, 2, 2.4);
 });
 // "pra ele dar um beijo"
 at(173.70, 'kiss', x => {
   const L = x.L; const [s, f, c, m] = biteSetup(x, 1, 1); m.head.rotation.z = 0.2 * Math.sin(x.t * 9);
-  const hp = tp(f, 'head', [0, 3, 4]); camMove(x, [hp.x + 2.6, hp.y - 0.1, hp.z + 0.9], [hp.x, hp.y - 0.2, hp.z + 0.6], [hp.x + 2.1, hp.y, hp.z + 0.8], [hp.x, hp.y - 0.2, hp.z + 0.6], eo, 40); fillOn(x, f, 1.5, 2.6);
+  const hp = tp(f, 'head', [0, 3, 4]); camMove(x, [0.6, 3.1, -1.4], [0, 2.6, -4.0], [0.4, 3.0, -1.9], [0, 2.65, -4.05], eo, 42); fillOn(x, f, 1.5, 2.6);
 });
 // "A boca fecha," — the head slams down; red; black
 at(174.86, 'crunch', x => {
   const L = x.L; const k = ei(seg(L, 0.12, 0.3)); const [s, f, c] = biteSetup(x, 1, 1); f.head.rotation.x += 0.45 * k; f.torso.rotation.x += 0.12 * k;
-  const hp = tp(f, 'head', [0, 3, 4]); cam(x, [hp.x + 2.1, hp.y, hp.z + 0.8], [hp.x, hp.y - 0.2, hp.z + 0.6], 40); if (L > 0.3) shake(x, 1.2 * (1 - seg(L, 0.3, 1.0)));
+  const hp = tp(f, 'head', [0, 3, 4]); cam(x, [0.4, 3.0, -1.9], [0, 2.65, -4.05], 42); if (L > 0.3) shake(x, 1.2 * (1 - seg(L, 0.3, 1.0)));
   if (L > 0.3) { x.post.tint.value.set(1.5, 0.4, 0.4); x.post.flash.value = L < 0.4 ? 0.35 : 0; } x.post.fade.value = sm(seg(L, 0.9, 1.5)); x.post.chroma.value = 0.8 * k;
 });
 // "ele está morto" — on the floor, alone under one lamp
@@ -147,8 +147,8 @@ at(196.84, 'detail', x => {
 // "Ela foi projetada pelo próprio William"
 at(199.08, 'designed', x => {
   const s = x.S.shop; x.out.scene = s; x.post.vig.value = 0.85; const L = x.L; const b = put(x, 'baby', s, 1.4, 0, -2.6, -0.5); b.setEyes('#2a2a2a'); b.head.rotation.x = 0.4; droop(b, 0.4);
-  const w = put(x, 'william', s, 0.2, 0, -1.6, 2.2); w.idle(x.t, 0.8); aim(w, 'R', tp(b, 'torso', [0, 6, 3]), 0.8 + 0.1 * Math.sin(x.t * 8)); w.head.rotation.x = 0.2;
-  camMove(x, [2.6, 1.7, 0.4], [0.7, 1.5, -2.2], [2.1, 1.65, -0.2], [0.7, 1.5, -2.3], eo, 42); x.S.shopLamp.intensity = 14; fillOn(x, w, 1.5, 1.8);
+  const w = put(x, 'william', s, -0.3, 0, -1.5, 2.1); w.idle(x.t, 0.8); aim(w, 'R', tp(b, 'torso', [0, 6, 3]), 0.8 + 0.1 * Math.sin(x.t * 8)); w.head.rotation.x = 0.2;
+  camMove(x, [1.5, 1.65, 1.6], [0.6, 1.4, -2.1], [1.2, 1.6, 1.2], [0.6, 1.4, -2.1], eo, 42); x.S.shopLamp.intensity = 14; fillOn(x, w, 1.5, 1.8);
 });
 // "pra atrair e capturar crianças" — the claw reaches out for a kid
 at(201.74, 'lure', x => {
@@ -237,9 +237,9 @@ at(230.52, 'flesh', x => {
 });
 // "Num dos minijogos do FNAF 3, tem uma criança sozinha na chuva, do lado de fora da pizzaria" — 8-bit look
 at(233.16, 'rain_mini', x => {
-  const s = facade(x, 0.4); const L = x.L; x.post.pix.value = PIX(x); const k = put(x, 'kid0', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.4;
+  const s = facade(x, 1.0); const L = x.L; x.post.pix.value = PIX(x) * 0.55; const k = put(x, 'kid0', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.4;
   k.armR.piv.rotation.x = -1.2; k.armL.piv.rotation.x = -1.2; k.armR.piv.rotation.z = 0.5; k.armL.piv.rotation.z = -0.5; k.torso.rotation.x = 0.1 + 0.03 * Math.sin(x.t * 9);
-  cam(x, [mix(0.4, 0.2, x.u), 1.5, mix(6.8, 5.6, eio(x.u))], [0.3, 1.2, 1.0], 40); x.post.vig.value = 0.7; x.post.grain.value = 0; x.S.streetLamp.intensity = 40;
+  x.S.inLamps.forEach(l => l.intensity = 10); x.S.facadeHemi.intensity = 1.6; cam(x, [0.3, 1.7, mix(9.4, 8.0, eio(x.u))], [0.2, 1.5, 1.0], 40); x.post.vig.value = 0.7; x.post.grain.value = 0; x.S.streetLamp.intensity = 40;
 });
 at(235.54, 'rain_kid', x => {
   const s = facade(x, 0.4); const L = x.L; const k = put(x, 'kid0', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.45;
@@ -280,12 +280,12 @@ at(247.82, 'gifts', x => {
 });
 // "Aquele minigame do FNAF 2 em que ela põe máscara nas crianças mortas"
 at(250.32, 'gg', x => {
-  const s = x.S.gg; x.out.scene = s; x.post.pix.value = PIX(x); const L = x.L; const names = ['freddy', 'bonnie', 'chica', 'foxy'];
+  const s = x.S.gg; x.out.scene = s; s.background.set('#2c2c50'); x.post.pix.value = PIX(x); const L = x.L; const names = ['freddy', 'bonnie', 'chica', 'foxy'];
   const spots = [[-2.2, -1.0], [-0.7, -1.6], [0.8, -1.6], [2.3, -1.0]];
   spots.forEach(([px, pz], i) => { const k = lie(x, 'kid' + i, s, px, pz, 0.2 * (i - 1.5), 0.74); if (L > 0.6 + i * 0.75) wearMask(x, k, names[i]); });
   const i = Math.min(3, Math.floor(Math.max(0, L - 0.2) / 0.75)); const p = put(x, 'puppet', s, 0, 0, 0, 0); const sp = spots[i]; const ph = (Math.max(0, L - 0.2) % 0.75) / 0.75;
-  p.root.position.set(sp[0] + 0.15, 0.25 + 0.1 * Math.sin(x.t * 3), sp[1] + 0.9 - 0.2 * Math.sin(ph * Math.PI)); p.root.rotation.y = Math.PI * 0.9; p.idle(x.t, 1); aim(p, 'R', new V3(sp[0], 0.3, sp[1]), Math.sin(ph * Math.PI));
-  cam(x, [mix(-0.3, 0.3, x.u), 3.0, 2.4], [0, 0.3, -1.3], 44); x.post.vig.value = 0.6; x.post.grain.value = 0;
+  p.root.position.set(sp[0] + 0.35, 0.05 * Math.sin(x.t * 3), sp[1] - 0.6); p.root.rotation.y = -0.3; p.idle(x.t, 1); aim(p, 'R', new V3(sp[0], 0.3, sp[1]), Math.sin(ph * Math.PI));
+  cam(x, [mix(-0.3, 0.3, x.u), 4.0, 3.6], [0, 0.4, -0.9], 46); x.post.vig.value = 0.6; x.post.grain.value = 0;
 });
 // "Ela não estava enfeitando ninguém,"
 at(254.36, 'not_decorating', x => {

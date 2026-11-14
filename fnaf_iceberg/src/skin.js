@@ -1046,6 +1046,14 @@ export function scrapEars(ch) {
 // Vanny: painted ears (hat top) removed; tall white 3D rabbit ears with pink inner.
 export function buildVanny(canvas) {
   const A = imgCopy(canvas); eraseRect(A, 32, 0, 32, 8);
+  // the Minecraft skin leaves holes in the base head (sides/neck): fill every transparent base-head pixel
+  // with the overlay colour at the same spot, or with Vanny's white fur, so the head is a solid 3D block
+  { const k = A.width / 64, g = A.getContext('2d'), d = g.getImageData(0, 0, 64 * k, 16 * k), w = 64 * k;
+    for (let y = 0; y < 16 * k; y++) for (let x = 0; x < 32 * k; x++) { const i = (y * w + x) * 4; if (d.data[i + 3] > 127) continue;
+      const j = (y * w + x + 32 * k) * 4; if (false) { d.data[i] = d.data[j]; d.data[i + 1] = d.data[j + 1]; d.data[i + 2] = d.data[j + 2]; } else { d.data[i] = 238; d.data[i + 1] = 234; d.data[i + 2] = 240; } d.data[i + 3] = 255; }
+    // flatten the overlay face onto the base head and drop the floating overlay box (no gap between them)
+    for (let y = 8 * k; y < 16 * k; y++) for (let x = 0; x < 32 * k; x++) { const i = (y * w + x) * 4, j = (y * w + x + 32 * k) * 4; if (d.data[j + 3] > 127) { d.data[i] = d.data[j]; d.data[i + 1] = d.data[j + 1]; d.data[i + 2] = d.data[j + 2]; } }
+    g.putImageData(d, 0, 0); eraseRect(A, 32, 0, 32, 16); }
   const ch = new Character('vanny', A);
   earPair(ch, ['.ww.', 'wppw', 'wppw', 'wppw', 'wppw', 'wppw', 'wppw', 'wppw', 'wwww', '.ww.'], { w: '#eeeaf0', p: '#f0a0b8' }, 0.6, 0.9, 2.0, 8.0, -0.4, 0.12);
   ch.earR.rotation.x = -0.25; ch.baseScale = 1.0; return finish(ch);

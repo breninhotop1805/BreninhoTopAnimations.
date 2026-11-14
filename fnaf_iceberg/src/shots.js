@@ -611,7 +611,7 @@ const TEARM = new THREE.MeshBasicMaterial({ color: '#8ad0ff', toneMapped: false,
 const TEARS = Array.from({ length: 2 }, () => new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), TEARM));
 EXTRA.push(ICE, ...TEARS);
 const _cleanup1 = cleanup;
-cleanup = function (x) { _cleanup1(x); unmask(); x.S.giftLid.rotation.x = 0; x.C.gWilliam.ghostMat.color.set('#ff6a5a'); KEY.color.set('#fff2e0'); x.S.iceBubbles.forEach(b => b.scale.setScalar(1)); };
+cleanup = function (x) { _cleanup1(x); unmask(); x.S.gg.background.set('#000000'); x.S.giftLid.rotation.x = 0; x.C.gWilliam.ghostMat.color.set('#ff6a5a'); KEY.color.set('#fff2e0'); x.S.iceBubbles.forEach(b => b.scale.setScalar(1)); };
 function tears(x, c, k) { TEARS.forEach((d, i) => { c.head.add(d); const l = 0.4 + 3.2 * k; d.position.set((i ? 1.9 : -1.9) * U16, (3.4 - l / 2) * U16, 4.66 * U16); d.scale.set(0.45 * U16, l * U16, 0.2 * U16); }); }
 function diner(x, dim = 1) { const s = x.S.diner; x.out.scene = s; x.post.vig.value = 0.85; x.post.tint.value.set(1.06, 1.0, 0.9); x.S.dinerLamps.forEach(l => l.intensity *= dim); x.S.dinerSpot.intensity *= dim; return s; }
 function partyR(x) { const s = x.S.party; x.out.scene = s; x.post.vig.value = 0.9; return s; }
@@ -629,7 +629,7 @@ at(161.42, 'for_real', x => {
 });
 // "No FNAF 4, você joga como uma criança terrorizada,"
 at(162.82, 'fnaf4', x => {
-  const s = bedroom(x, 0.6); const L = x.L; const c = put(x, 'cchild', s, -2.55, 0.62, -0.9, 0.35); c.legR.piv.rotation.x = -1.5; c.legL.piv.rotation.x = -1.5; c.root.position.y = 0.62 - 0.56 * 0.76 + 0.09;
+  const s = bedroom(x, 0.6); const L = x.L; const c = put(x, 'cchild', s, -2.75, 0.62, -0.9, 1.25); c.legR.piv.rotation.x = -1.5; c.legL.piv.rotation.x = -1.5; c.root.position.y = 0.62 - 0.56 * 0.76 + 0.09;
   c.head.rotation.x = 0.25; c.head.rotation.y = 0.35 * Math.sin(x.t * 2.2); c.armR.piv.rotation.x = -1.2; c.armL.piv.rotation.x = -1.2; c.torso.rotation.z = 0.02 * Math.sin(x.t * 18);
   tears(x, c, 0.5 + 0.5 * seg(L, 0, 3));
   camMove(x, [-0.6, 1.35, 2.4], [-2.5, 0.95, -0.7], [-1.3, 1.2, 1.5], [-2.5, 1.0, -0.7], eio, 40); fillOn(x, c, 1.4, 1.2);
@@ -651,26 +651,26 @@ at(167.68, 'bullies', x => {
 });
 // "levantam o menino até a boca do Freddy" — on the stage, they lift him to Fredbear's mouth
 function biteSetup(x, lift, bend) {
-  const s = diner(x, 0.85); const f = put(x, 'fredbear', s, 0, 0.77, -4.6, 0); f.idle(x.t, 0.5); f.torso.rotation.x = 0.38 * bend; f.head.rotation.x = 0.25 * bend;
-  const m = put(x, 'michael', s, -0.42, 0.77, -3.15, 0.6), a = put(x, 'kid3', s, 0.42, 0.77, -3.2, -0.6, 1.2); wearMask(x, m, 'foxy'); wearMask(x, a, 'freddy');
-  const c = put(x, 'cchild', s, 0, 0, 0, 0); c.root.rotation.set(-Math.PI / 2, 0, 0); c.root.position.set(0, mix(1.55, 2.25, lift), mix(-1.7, -2.0, lift));
+  const s = diner(x, 0.85); const f = put(x, 'fredbear', s, 0, 0.77, -4.8, 0); f.idle(x.t, 0.5); f.torso.rotation.x = 0.38 * bend; f.head.rotation.x = 0.25 * bend;
+  const m = put(x, 'michael', s, -0.8, 0.77, -3.3, 1.3), a = put(x, 'kid3', s, 0.8, 0.77, -3.35, -1.3, 1.2); wearMask(x, m, 'foxy'); wearMask(x, a, 'freddy');
+  const c = put(x, 'cchild', s, 0, 0, 0, 0); c.root.rotation.set(-Math.PI / 2, 0, 0); c.root.position.set(0, mix(1.9, 2.72, lift), mix(-2.2, -2.5, lift));
   c.armR.piv.rotation.z = -0.4 + 0.3 * Math.sin(x.t * 9); c.armL.piv.rotation.z = 0.4 - 0.3 * Math.sin(x.t * 9 + 1); c.legR.piv.rotation.x = 0.3 * Math.sin(x.t * 11); c.legL.piv.rotation.x = -0.3 * Math.sin(x.t * 11);
   aim(m, 'R', tp(c, 'torso', [0, 9, 0]), 1); aim(m, 'L', tp(c, 'legL', [0, -4, 0]), 1); aim(a, 'L', tp(c, 'torso', [0, 3, 0]), 1); aim(a, 'R', tp(c, 'legR', [0, -6, 0]), 1);
   return [s, f, c, m, a];
 }
 at(171.50, 'lift', x => {
   const L = x.L; const [s, f, c, m] = biteSetup(x, eo(seg(L, 0, 1.6)), eo(seg(L, 0.6, 2.0)));
-  camMove(x, [3.6, 2.0, -2.6], [0, 2.0, -3.7], [3.0, 2.15, -2.9], [0, 2.2, -3.8], eo, 40); fillOn(x, f, 2, 2.4);
+  camMove(x, [2.2, 1.5, 0.9], [0, 2.2, -3.6], [1.8, 1.6, 0.4], [0, 2.4, -3.8], eo, 42); fillOn(x, f, 2, 2.4);
 });
 // "pra ele dar um beijo"
 at(173.70, 'kiss', x => {
   const L = x.L; const [s, f, c, m] = biteSetup(x, 1, 1); m.head.rotation.z = 0.2 * Math.sin(x.t * 9);
-  const hp = tp(f, 'head', [0, 3, 4]); camMove(x, [hp.x + 2.6, hp.y - 0.1, hp.z + 0.9], [hp.x, hp.y - 0.2, hp.z + 0.6], [hp.x + 2.1, hp.y, hp.z + 0.8], [hp.x, hp.y - 0.2, hp.z + 0.6], eo, 40); fillOn(x, f, 1.5, 2.6);
+  const hp = tp(f, 'head', [0, 3, 4]); camMove(x, [0.6, 3.1, -1.4], [0, 2.6, -4.0], [0.4, 3.0, -1.9], [0, 2.65, -4.05], eo, 42); fillOn(x, f, 1.5, 2.6);
 });
 // "A boca fecha," — the head slams down; red; black
 at(174.86, 'crunch', x => {
   const L = x.L; const k = ei(seg(L, 0.12, 0.3)); const [s, f, c] = biteSetup(x, 1, 1); f.head.rotation.x += 0.45 * k; f.torso.rotation.x += 0.12 * k;
-  const hp = tp(f, 'head', [0, 3, 4]); cam(x, [hp.x + 2.1, hp.y, hp.z + 0.8], [hp.x, hp.y - 0.2, hp.z + 0.6], 40); if (L > 0.3) shake(x, 1.2 * (1 - seg(L, 0.3, 1.0)));
+  const hp = tp(f, 'head', [0, 3, 4]); cam(x, [0.4, 3.0, -1.9], [0, 2.65, -4.05], 42); if (L > 0.3) shake(x, 1.2 * (1 - seg(L, 0.3, 1.0)));
   if (L > 0.3) { x.post.tint.value.set(1.5, 0.4, 0.4); x.post.flash.value = L < 0.4 ? 0.35 : 0; } x.post.fade.value = sm(seg(L, 0.9, 1.5)); x.post.chroma.value = 0.8 * k;
 });
 // "ele está morto" — on the floor, alone under one lamp
@@ -747,8 +747,8 @@ at(196.84, 'detail', x => {
 // "Ela foi projetada pelo próprio William"
 at(199.08, 'designed', x => {
   const s = x.S.shop; x.out.scene = s; x.post.vig.value = 0.85; const L = x.L; const b = put(x, 'baby', s, 1.4, 0, -2.6, -0.5); b.setEyes('#2a2a2a'); b.head.rotation.x = 0.4; droop(b, 0.4);
-  const w = put(x, 'william', s, 0.2, 0, -1.6, 2.2); w.idle(x.t, 0.8); aim(w, 'R', tp(b, 'torso', [0, 6, 3]), 0.8 + 0.1 * Math.sin(x.t * 8)); w.head.rotation.x = 0.2;
-  camMove(x, [2.6, 1.7, 0.4], [0.7, 1.5, -2.2], [2.1, 1.65, -0.2], [0.7, 1.5, -2.3], eo, 42); x.S.shopLamp.intensity = 14; fillOn(x, w, 1.5, 1.8);
+  const w = put(x, 'william', s, -0.3, 0, -1.5, 2.1); w.idle(x.t, 0.8); aim(w, 'R', tp(b, 'torso', [0, 6, 3]), 0.8 + 0.1 * Math.sin(x.t * 8)); w.head.rotation.x = 0.2;
+  camMove(x, [1.5, 1.65, 1.6], [0.6, 1.4, -2.1], [1.2, 1.6, 1.2], [0.6, 1.4, -2.1], eo, 42); x.S.shopLamp.intensity = 14; fillOn(x, w, 1.5, 1.8);
 });
 // "pra atrair e capturar crianças" — the claw reaches out for a kid
 at(201.74, 'lure', x => {
@@ -837,9 +837,9 @@ at(230.52, 'flesh', x => {
 });
 // "Num dos minijogos do FNAF 3, tem uma criança sozinha na chuva, do lado de fora da pizzaria" — 8-bit look
 at(233.16, 'rain_mini', x => {
-  const s = facade(x, 0.4); const L = x.L; x.post.pix.value = PIX(x); const k = put(x, 'kid0', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.4;
+  const s = facade(x, 1.0); const L = x.L; x.post.pix.value = PIX(x) * 0.55; const k = put(x, 'kid0', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.4;
   k.armR.piv.rotation.x = -1.2; k.armL.piv.rotation.x = -1.2; k.armR.piv.rotation.z = 0.5; k.armL.piv.rotation.z = -0.5; k.torso.rotation.x = 0.1 + 0.03 * Math.sin(x.t * 9);
-  cam(x, [mix(0.4, 0.2, x.u), 1.5, mix(6.8, 5.6, eio(x.u))], [0.3, 1.2, 1.0], 40); x.post.vig.value = 0.7; x.post.grain.value = 0; x.S.streetLamp.intensity = 40;
+  x.S.inLamps.forEach(l => l.intensity = 10); x.S.facadeHemi.intensity = 1.6; cam(x, [0.3, 1.7, mix(9.4, 8.0, eio(x.u))], [0.2, 1.5, 1.0], 40); x.post.vig.value = 0.7; x.post.grain.value = 0; x.S.streetLamp.intensity = 40;
 });
 at(235.54, 'rain_kid', x => {
   const s = facade(x, 0.4); const L = x.L; const k = put(x, 'kid0', s, 0.4, 0, 2.2, 0.15); k.idle(x.t, 1); k.head.rotation.x = 0.45;
@@ -880,12 +880,12 @@ at(247.82, 'gifts', x => {
 });
 // "Aquele minigame do FNAF 2 em que ela põe máscara nas crianças mortas"
 at(250.32, 'gg', x => {
-  const s = x.S.gg; x.out.scene = s; x.post.pix.value = PIX(x); const L = x.L; const names = ['freddy', 'bonnie', 'chica', 'foxy'];
+  const s = x.S.gg; x.out.scene = s; s.background.set('#2c2c50'); x.post.pix.value = PIX(x); const L = x.L; const names = ['freddy', 'bonnie', 'chica', 'foxy'];
   const spots = [[-2.2, -1.0], [-0.7, -1.6], [0.8, -1.6], [2.3, -1.0]];
   spots.forEach(([px, pz], i) => { const k = lie(x, 'kid' + i, s, px, pz, 0.2 * (i - 1.5), 0.74); if (L > 0.6 + i * 0.75) wearMask(x, k, names[i]); });
   const i = Math.min(3, Math.floor(Math.max(0, L - 0.2) / 0.75)); const p = put(x, 'puppet', s, 0, 0, 0, 0); const sp = spots[i]; const ph = (Math.max(0, L - 0.2) % 0.75) / 0.75;
-  p.root.position.set(sp[0] + 0.15, 0.25 + 0.1 * Math.sin(x.t * 3), sp[1] + 0.9 - 0.2 * Math.sin(ph * Math.PI)); p.root.rotation.y = Math.PI * 0.9; p.idle(x.t, 1); aim(p, 'R', new V3(sp[0], 0.3, sp[1]), Math.sin(ph * Math.PI));
-  cam(x, [mix(-0.3, 0.3, x.u), 3.0, 2.4], [0, 0.3, -1.3], 44); x.post.vig.value = 0.6; x.post.grain.value = 0;
+  p.root.position.set(sp[0] + 0.35, 0.05 * Math.sin(x.t * 3), sp[1] - 0.6); p.root.rotation.y = -0.3; p.idle(x.t, 1); aim(p, 'R', new V3(sp[0], 0.3, sp[1]), Math.sin(ph * Math.PI));
+  cam(x, [mix(-0.3, 0.3, x.u), 4.0, 3.6], [0, 0.4, -0.9], 46); x.post.vig.value = 0.6; x.post.grain.value = 0;
 });
 // "Ela não estava enfeitando ninguém,"
 at(254.36, 'not_decorating', x => {
@@ -1149,9 +1149,9 @@ const UCN = (() => { const s = new THREE.Scene(); s.background = new THREE.Color
   // lights: hanging bulb over the desk, dim cold fill, red alarm glow
   const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), new THREE.MeshBasicMaterial({ color: '#fff0c8', toneMapped: false })); bulb.position.set(0, 3.2, -1.0); g.add(bulb); BX(g, 0.01, 0.8, 0.01, blk, 0, 3.6, -1.0);
   const L = new THREE.SpotLight('#ffe6c0', 30, 9, 0.9, 0.6, 1.3); L.position.set(0, 3.15, -1.0); L.target.position.set(0, 0, -0.6); L.castShadow = true; L.shadow.mapSize.set(1024, 1024); L.shadow.bias = -0.002; s.add(L, L.target);
-  s.add(new THREE.HemisphereLight('#6a6a8a', '#100808', 0.6)); const red = new THREE.PointLight('#ff2a1a', 0, 9, 1.4); red.position.set(0, 2.6, 1.5); s.add(red);
+  s.add(new THREE.HemisphereLight('#7a7a9a', '#140c0c', 1.3)); { const f = new THREE.PointLight('#c8d0ff', 6, 10, 1.5); f.position.set(0, 2.2, 2.5); s.add(f); } const red = new THREE.PointLight('#ff2a1a', 0, 9, 1.4); red.position.set(0, 2.6, 1.5); s.add(red);
   s.userData.lamp = L; s.userData.red = red; return s; })();
-function ucn(x, red = 0) { const s = UCN; x.out.scene = s; s.userData.fan.rotation.z = x.t * 25; s.userData.lamp.intensity = 30 * (red > 0.5 ? 0.6 + 0.4 * flicker(x.t, 2) : 1); s.userData.red.intensity = 14 * red; x.post.vig.value = 0.95; return s; }
+function ucn(x, red = 0) { const s = UCN; x.out.scene = s; s.userData.fan.rotation.z = x.t * 25; s.userData.lamp.intensity = 18 * (red > 0.5 ? 0.6 + 0.4 * flicker(x.t, 2) : 1); s.userData.red.intensity = 14 * red; x.post.vig.value = 0.95; return s; }
 // ---------- THE PIT: dark ball pit (after refs/pit.jpg) ----------
 const PIT = (() => { const s = new THREE.Scene(); s.background = new THREE.Color('#05030a'); s.fog = new THREE.Fog('#05030a', 6, 16); const r = rng(1985);
   const cols = ['#c8202a', '#2050d8', '#e8c020', '#20a040', '#e86a10', '#8a2ad8']; const geo = new THREE.SphereGeometry(1, 12, 9); const m4 = new THREE.Matrix4();
@@ -1185,14 +1185,14 @@ const BAND_JS = ['freddy', 'chica', 'foxy', 'baby'];
 // "Camada 4, a fossa"
 at(346.6, 'dive4', x => { dive(x, 3, ICE_DEPTHS[2], ICE_DEPTHS[3]); });
 // "Daqui pra baixo eu aviso, tudo é teoria pesada, escondida e que a maioria dos fãs nunca viu"
-at(351.42, 'warning4', x => { const L = x.L; const k = eio(x.u); iceCam(x, mix(-31, -37, k), mix(-0.2, 0.3, k), 20, -3, 46, mix(6, -6, k)); ice(x, { rush: 0.7, red: 0.25 }); });
+at(351.42, 'warning4', x => { const L = x.L; const k = eio(x.u); iceCam(x, mix(-31, -37, k), mix(-0.2, 0.3, k), 24, -3, 46, mix(14, -14, k)); ice(x, { rush: 0.7, red: 0.25 }); });
 // "Respira fundo" — a burst of bubbles
-at(358.56, 'breathe', x => { const L = x.L; iceCam(x, -37.5, 0.3, 14, 0.5, 50, -4); ice(x, { rush: 5 * (1 - seg(L, 0, 1.0)) + 0.6, red: 0.25 }); x.S.iceBubbles.forEach(b => b.scale.setScalar(0.7)); });
+at(358.56, 'breathe', x => { const L = x.L; iceCam(x, -37.5, 0.3, 20, 0.5, 50, -12); ice(x, { rush: 5 * (1 - seg(L, 0, 1.0)) + 0.6, red: 0.25 }); x.S.iceBubbles.forEach(b => b.scale.setScalar(0.7)); });
 // "Depois do incêndio da Fazbear's Fright, William deveria estar acabado"
 at(359.56, 'fire', x => {
   const s = fright(x, 0.8); const L = x.L; const c = put(x, 'spring', s, 0, 0, -5.2, 0); const k = eio(seg(L, 1.6, 3.4)); twitch(c, x.t, 1.4); c.idle(x.t, 1);
   c.root.position.y = -(c.hipY - 2 * U16) * c.root.scale.x * k; c.legR.piv.rotation.x = -1.5 * k; c.legL.piv.rotation.x = -1.5 * k; c.head.rotation.x = 0.5 * k; aim(c, 'R', rootPt(c, -0.5, 2.0, 0.5), 0.8 * (1 - k));
-  fireAt(x, s, -1.2, -5.4, 0.8, 5, 3.0, 9); x.FX.fire.userData.fl.forEach((m, i) => { if (i % 2) m.position.x += 2.4; }); x.S.frLamps.forEach(l => l.intensity = 1.5);
+  fireAt(x, s, -1.7, -6.0, 0.5, 3, 2.2, 6); x.FX.fire.userData.fl.forEach((m, i) => { if (i % 2) m.position.x += 3.4; }); x.S.frLamps.forEach(l => l.intensity = 1.5);
   camMove(x, [0.5, 1.6, -1.6], [0, 1.6, -5.2], [0.25, 1.4, -2.6], [0, 1.1, -5.2], eio, 44); x.post.tint.value.set(1.15, 0.92, 0.8); fillOn(x, c, 1.2, 1.8);
 });
 // "Mas a Fazbear Entertainment decidiu fazer um jogo de" — a VR headset on the company desk
@@ -1213,7 +1213,7 @@ at(367.48, 'boards', x => {
 // "Placas que carregavam pedaços do remanescente" — cyan specks rising off the boards
 at(370.56, 'boards_glow', x => {
   const s = x.S.shop; x.out.scene = s; x.post.vig.value = 1.0; const L = x.L; s.add(PCB); PCB.position.set(-0.7, 1.02, -2.75); PCB.rotation.set(0, 0.2, 0); x.S.shopLamp.intensity = 4;
-  sparkles(x, s, [-0.7, 1.25 + 0.1 * Math.sin(x.t), -2.7], 0.35, 8, 0.5); keyOn(x, s, [-0.7, 1.6, -2.4], [-0.7, 1.0, -2.75], 8 * sm(seg(L, 0.2, 0.8)), 0.8); KEY.color.set('#3ad8ff');
+  sparkles(x, s, [-0.7, 1.25 + 0.1 * Math.sin(x.t), -2.7], 0.35, 8, 0.18); keyOn(x, s, [-0.7, 1.6, -2.4], [-0.7, 1.0, -2.75], 8 * sm(seg(L, 0.2, 0.8)), 0.8); KEY.color.set('#3ad8ff');
   camMove(x, [-1.1, 1.4, -2.0], [-0.7, 1.1, -2.75], [-0.95, 1.3, -2.25], [-0.7, 1.12, -2.75], eio, 40);
 });
 // "Pedaços dele, e ele voltou, agora como um vírus,"
@@ -1240,7 +1240,7 @@ at(381.78, 'glitch2', x => {
 });
 // "Uma consciência digital que se infiltrou na mente de uma funcionária, a Vanessa," — a faceless worker with the headset, him whispering behind
 at(382.48, 'vanessa', x => {
-  const s = voidS(x, 6, 40, '#a05aff', 0.4); const L = x.L; s.fog = null; const v = put(x, 'guard', s, 0, 0, 0, 0); v.idle(x.t, 0.5); v.head.rotation.x = 0.1;
+  const s = voidS(x, 0, 40, '#a05aff', 0.15); const L = x.L; s.fog = null; const v = put(x, 'guard', s, 0, 0, 0, 0); v.idle(x.t, 0.5); v.head.rotation.x = 0.1;
   v.root.updateMatrixWorld(true); s.add(VR); v.head.getWorldPosition(VR.position); VR.position.y += 0.27; VR.position.z += 0.2; VR.rotation.set(0, Math.PI, 0); VR.scale.setScalar(1.6);
   const g = put(x, 'glitchtrap', s, 0.75, 0, -0.9, -0.5); g.idle(x.t, 1); g.ghostish = true; glitchIn(x, g, 0.4); g.head.rotation.y = -0.4; g.head.rotation.x = 0.2; aim(g, 'R', tp(v, 'head', [4, 4, 0]), 0.7);
   rimOn(x, s, [0, 3.5, -3], [0, 1.6, 0], 60, '#a05aff'); camMove(x, [-0.6, 1.6, 3.4], [0.2, 1.6, 0], [-0.4, 1.65, 2.6], [0.25, 1.65, 0], eo, 38);
@@ -1254,7 +1254,7 @@ at(387.10, 'vanny', x => {
 at(388.40, 'no_body', x => {
   const s = x.S.screenroom; x.out.scene = s; const L = x.L; x.out.screen = 'virus'; x.S.crtLight.intensity = 3; x.S.neonMat.opacity = 0; x.S.neonLight.intensity = 0;
   const spots = [[1.2, -0.6], [-1.4, -0.2], [0.2, 0.6]]; const i = Math.floor(L / 1.7) % 3; const g = put(x, 'glitchtrap', s, spots[i][0], 0, spots[i][1], -spots[i][0] * 0.3); g.idle(x.t, 1); glitchIn(x, g, 0.7); lookAtCam(x, g, 0.6);
-  if ((L % 1.7) < 0.08) x.post.stat.value = 0.5; const c = x.S.crtScreenPos; camMove(x, [c.x + 0.2, 1.7, c.z + 4.4], [c.x, 1.3, c.z], [c.x - 0.3, 1.6, c.z + 3.4], [c.x, 1.3, c.z], eo, 44); fillOn(x, g, 1.2, 1.8);
+  if ((L % 1.7) < 0.06) x.post.stat.value = 0.3; const c = x.S.crtScreenPos; camMove(x, [c.x + 0.2, 1.7, c.z + 4.4], [c.x, 1.3, c.z], [c.x - 0.3, 1.6, c.z + 3.4], [c.x, 1.3, c.z], eo, 44); fillOn(x, g, 1.2, 1.8);
 });
 // "Ultimate Custom Night" — UCN logo over the office
 at(393.46, 'logo_ucn', x => { const s = ucn(x); cam(x, [0, 1.75, 2.6 - 0.2 * x.u], [0, 1.4, -1.5], 50); logoCard(x, 1); x.post.blur.value = 1; });
@@ -1314,7 +1314,7 @@ at(419.70, 'books_name', x => {
 // "Andrew"
 at(422.52, 'andrew', x => {
   const s = voidS(x, 26, 40, '#a040ff', 1.5); const L = x.L; const a = put(x, 'andrew', s, 0, 0, 0, 0); a.idle(x.t, 0.6); lookAtCam(x, a, 1); a.head.rotation.x -= 0.1;
-  const hp = tp(a, 'head', [0, 4, 4]); camMove(x, [hp.x + 0.2, hp.y, hp.z + 1.5], hp.toArray(), [hp.x + 0.08, hp.y, hp.z + 1.1], hp.toArray(), eo, 34); if (L < 0.06) x.post.flash.value = 0.15;
+  const hp = tp(a, 'head', [0, 4, 0]); camMove(x, [hp.x + 0.2, hp.y, hp.z + 2.0], hp.toArray(), [hp.x + 0.08, hp.y, hp.z + 1.6], hp.toArray(), eo, 34); if (L < 0.06) x.post.flash.value = 0.15;
 });
 // "Seja quem for a ideia é a mesma, a vítima virou o carcereiro" — William behind bars, the guardians outside
 at(422.94, 'jailer', x => {
@@ -1327,7 +1327,7 @@ at(422.94, 'jailer', x => {
 at(426.58, 'never_free', x => {
   const s = voidS(x, 30 * (1 - sm(seg(x.L, 1.2, 1.9))), 30, '#ffd040', 1); const L = x.L; s.fog = null; s.add(x.FX.cage); x.FX.cage.position.set(0, 0, -0.6); x.FX.cage.scale.set(1.0, 0.95, 1);
   const w = put(x, 'william', s, 0, 0, -1.0, 0); w.idle(x.t, 1); aim(w, 'R', new V3(-0.2, 1.5, -0.62), 1); aim(w, 'L', new V3(0.2, 1.45, -0.62), 1); w.head.rotation.x = -0.1; w.root.position.x = 0.02 * Math.sin(x.t * 30) * seg(L, 0.3, 1.2);
-  const hp = tp(w, 'head', [0, 4, 4]); camMove(x, [hp.x + 0.3, hp.y - 0.1, 0.9], hp.toArray(), [hp.x + 0.15, hp.y - 0.05, 0.3], hp.toArray(), eo, 38);
+  const hp = tp(w, 'head', [0, 4, 4]); camMove(x, [hp.x + 0.4, hp.y - 0.1, 1.8], hp.toArray(), [hp.x + 0.2, hp.y - 0.05, 1.2], hp.toArray(), eo, 38);
 });
 // "Nos livros, existe um lugar chamado O Fosso" — the ball pit
 at(428.58, 'pit', x => {
@@ -1338,7 +1338,7 @@ at(431.26, 'dive_pit', x => {
   const s = pit(x, 0); const L = x.L; const k = put(x, 'kid2', s, 0, 0, 0, Math.PI); const j = seg(L, 2.4, 3.1);
   k.root.position.set(0.2, 0.3 + 1.2 * Math.sin(Math.PI * j * 0.7) - 2.2 * ei(seg(L, 2.8, 3.14)), mix(1.2, -0.6, j)); k.root.rotation.x = -0.6 * j; k.walk(L * 2.2 * (1 - j), 1); k.root.visible = L < 3.1;
   if (L < 2.4) walkTo(k, [0.6, 0.3, 2.6], [0.2, 0.3, 1.2], seg(L, 0, 2.4), 0.5);
-  camMove(x, [1.6, 1.4, 3.8], [0, 0.6, 0], [1.2, 1.2, 3.0], [0, 0.4, -0.4], eo, 42);
+  camMove(x, [2.4, 1.8, 4.8], [0, 0.6, 0], [1.9, 1.6, 4.0], [0, 0.4, -0.4], eo, 42);
 });
 // "te leva de volta pra 1985" — under the balls, a flash, warm light
 at(434.40, 'back85', x => {
@@ -1359,12 +1359,12 @@ at(438.62, 'other_side', x => {
 // "Ele." — a yellow rabbit in the dark
 at(440.96, 'him', x => {
   const s = hall(x, 0.0); x.S.hallLamps.forEach(l => l.intensity = 0); const L = x.L; const b = put(x, 'springbonnie', s, 0, 0, -6.6, 0); b.idle(x.t, 0.3); lookAtCam(x, b, 0.9);
-  rimOn(x, s, [0, 3.0, -8.5], [0, 1.6, -6.6], 50, '#b060ff'); cam(x, [0.1, 1.6, -3.0 + 0.2 * x.u], [0, 1.9, -6.6], 40); b.setEyeGlow('#ffffff', 0.5);
+  rimOn(x, s, [0, 3.0, -8.5], [0, 1.6, -6.6], 90, '#b060ff'); keyOn(x, s, [0.8, 2.6, -4.0], [0, 1.8, -6.6], 10, 0.4); cam(x, [0.1, 1.6, -3.0 + 0.2 * x.u], [0, 1.9, -6.6], 40); b.setEyeGlow('#ffffff', 0.5);
 });
 // "De roxo, num traje de coelho amarelo, sorrindo"
 at(441.54, 'purple_suit', x => {
   const s = voidS(x, 26, 40, '#a040ff', 1.5); const L = x.L; const b = put(x, 'springbonnie', s, 0, 0, 0, 0); b.idle(x.t, 0.6); lookAtCam(x, b, 1); b.head.rotation.z = 0.25 * eo(seg(L, 2.3, 2.9));
-  const p = put(x, 'gWilliam', s, 0, 0, 0.0, 0); p.ghostMat.color.set('#a040ff'); p.ghostMat.opacity = 0.35 * sm(seg(L, 0.2, 0.8)) * (1 - sm(seg(L, 2.2, 2.8))); p.root.scale.setScalar(1.12);
+  rimOn(x, s, [0, 3.6, -3], [0, 1.6, 0], 70, '#a040ff');
   const hp = tp(b, 'head', [0, 4, 4]); camMove(x, [0.6, 1.5, 4.2], [0, 1.7, 0], [hp.x + 0.15, hp.y - 0.05, hp.z + 1.6], hp.toArray(), eio, 36);
 });
 // "Sabe o que isso significa?" — he reaches out to you
