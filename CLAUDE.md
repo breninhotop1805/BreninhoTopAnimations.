@@ -164,3 +164,6 @@ Analisado quadro a quadro (4 fps) nos vídeos de referência:
   no espaço local do corpo/cabeça: braço dentro do próprio corpo/cabeça, dentro de outro personagem, braço
   encostando no braço de outro, cabeça dentro de outro. Vídeo final só com ZERO `LOG ATRAVESSA`.
 - Fogo: luzes do fogo NA FRENTE do personagem (iluminam o rosto), bloom baixo (0,15) nas cenas de fogo.
+- **APROVADO por ele** ("Excelente! Pegou a visão! Movimentos fluidos, câmeras fluidas, expressões sem bugar!"):
+  o remake do Springtrap em `fnaf_volta_mine` é o **novo padrão de qualidade e a base pra copiar nos próximos vídeos**
+  (face.js + act.js + câmera em 2 passadas + checagem de colisão). Sempre dá pra aprimorar conforme o vídeo.
