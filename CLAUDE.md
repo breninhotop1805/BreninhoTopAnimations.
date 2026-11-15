@@ -132,3 +132,20 @@ Analisado quadro a quadro (4 fps) nos vídeos de referência:
 2. Contact sheet de todas as cenas (frame a ~60% de cada cena) e corrigir enquadramento/luz/colisão.
 3. Só então renderizar o vídeo inteiro; conferir frames do vídeo final antes de entregar.
 4. Se ele pedir ajuste rápido que afeta só um trecho, re-renderizar só o trecho e emendar.
+
+## Pedido depois do teste de animação (ANOTADO — reforço máximo)
+- **NUNCA personagens/partes atravessando outros personagens.** Isso já foi pedido várias vezes. No teste, Toy Chica e
+  Glamrock Freddy acenaram com as mãos atravessando uma na outra — erro inaceitável.
+  - Em cena com dois personagens lado a lado, gestos (acenar, apontar, abraçar) usam o **braço de fora**; espaçamento
+    mínimo ~1,9 unidades entre centros quando os dois gesticulam.
+  - **Checagem automática obrigatória** em todo vídeo: a cada quadro, mãos/cotovelos/cabeça de cada personagem contra o
+    corpo (torso+cabeça, sem braços) dos outros e contra as mãos/cotovelos dos outros (distância < 0,28 = erro).
+    Logar `LOG ATRAVESSA ...` e só renderizar o vídeo final com **zero** ocorrências; depois conferir visualmente.
+- **Iluminação vem do ambiente** (lâmpadas penduradas, spot do palco, luzes coloridas, janelas, telas, fogo): nada de luz
+  "de estúdio" presa na câmera nem fill genérico que deixa tudo chapado. Ambiente/hemisfério fraco, sombras reais, cada
+  luz com uma fonte visível ou plausível no cenário.
+- **Humanos no estilo dos animatrônicos novos** (`lab_modelos/src/humans.js`, referência: guarda do @lukskk): cabeça
+  cúbica grande, rosto chapado (sobrancelha fina, olhos quadrados pequenos, nariz 3D saltado, boca em linha), uniforme em
+  blocos, mãos com dedos. **Cabelo em voxel 3D** (franja em mechas de alturas diferentes, laterais e nuca), nunca pintado
+  chapado nem "capacete"/caixa; quepe do guarda desce até a testa (nada de "testudo"). Rosto atua: piscar, sobrancelha,
+  boca abrindo. Escalas fixas: adultos 1.0, crianças 0.74 (HUMAN_SCALE).
