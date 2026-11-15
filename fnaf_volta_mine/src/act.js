@@ -29,7 +29,7 @@ export const POSES = {
   sad:     { aR: [-0.14, 0, 0.03], aL: [-0.14, 0, -0.03], h: [0.3, 0, 0.08], t: [0.12, 0, 0] },
   angry:   { aR: [-0.35, 0, -0.32], aL: [-0.35, 0, 0.32], h: [0.22, 0, 0], t: [0.1, 0, 0] },               // fists out, head down
   laugh:   { aR: [-0.7, 0, 0.22], aL: [-0.7, 0, -0.22], h: [-0.45, 0, 0], t: [-0.14, 0, 0] },              // hands on belly, head thrown back
-  evil:    { aR: [-0.8, 0, 0.25], aL: [-0.8, 0, -0.25], h: [0.25, 0, 0.12], t: [0.08, 0, 0] },             // rubbing hands, head down, grin
+  evil:    { aR: [-0.85, 0, 0.16], aL: [-0.85, 0, -0.16], h: [0.25, 0, 0.12], t: [0.08, 0, 0] },             // rubbing hands, head down, grin
   reach:   { aR: [-1.35, 0, 0.1], aL: [-1.35, 0, -0.1], t: [0.18, 0, 0], h: [-0.1, 0, 0] },                // both arms forward (grab)
   flex:    { aR: [0, 0, -1.55], aL: [0, 0, 1.55], h: [-0.12, 0, 0], t: [-0.05, 0, 0], y: 0.02 },           // strong pose
   wave:    { aR: [-0.25, 0, -2.45], h: [0, 0, -0.12] },
