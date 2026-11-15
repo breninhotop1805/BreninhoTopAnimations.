@@ -106,6 +106,27 @@ headless), sincronizada com a narração do usuário. Cada projeto é uma pasta 
    a prévia com áudio antes de entregar e corrigir qualquer atraso.
 - Somam-se a todas as regras anteriores deste arquivo. Animações fluidas e bonitas acima de tudo.
 
+## Estilo de movimento e câmera — referência: canal @lukskk (vídeos que ele mandou) — SEGUIR SEMPRE
+Analisado quadro a quadro (4 fps) nos vídeos de referência:
+- **Câmera:** quase sempre na altura dos olhos ou levemente de baixo; personagem grande no quadro (do peito pra cima
+  ou corpo inteiro bem perto), nada de planos abertos e vazios. Em toda cena um movimento suave e contínuo:
+  push-in lento, leve deriva lateral/órbita curta. Nas palavras-chave, **punch-in rápido** (zoom/aproximação com
+  ease-out em ~0.25 s) no rosto ou na ação. Cortes a cada ~1,5–2 s acompanhando a fala.
+- **Fundo levemente desfocado** (profundidade de campo) quando é close; personagem nítido e bem iluminado.
+- **Atuação dos personagens (fluida, "cartoon"):**
+  - Andar de perfil com braços balançando, tronco inclinado pra frente; ao pegar/empurrar algo, braços esticados à
+    frente (pose de alcançar) e corpo inclinado.
+  - Gestos claros e segurados por um instante: mão no queixo (pensando), apontar, mão no peito, braços pra cima
+    (comemorar), ombros encolhidos. Entram com **overshoot** (easing back) e assentam suave — nada linear/robótico.
+  - Cabeça sempre viva: inclina, vira pro outro personagem, olha pra câmera na fala dele.
+  - Reações exageradas: mandíbula **caindo** de susto (jaw abre com bounce), tremidinha, pulo pra trás.
+  - Respiração/idle sutil sempre; ninguém parado como estátua.
+- **Elementos de apoio:** balão "?" / "!" que pulam sobre a cabeça em dúvida/surpresa (pop com overshoot);
+  personagens de frente pra câmera quando falam/reagem; dois personagens interagindo no mesmo quadro.
+- **Modelos novos (lab_modelos/):** animatrônicos no estilo desse canal (blocos com quinas em pixel, cabeça cúbica
+  grande, olhos de pixel art, focinho saltado, juntas de cotovelo/joelho) — aguardando o "pode salvar" dele para
+  substituir os antigos. A pasta está no .git/info/exclude até ele aprovar.
+
 ## Processo de qualidade
 1. Testar modelos (lineup claro, frente e lado) antes das cenas.
 2. Contact sheet de todas as cenas (frame a ~60% de cada cena) e corrigir enquadramento/luz/colisão.
