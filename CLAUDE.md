@@ -167,3 +167,11 @@ Analisado quadro a quadro (4 fps) nos vídeos de referência:
 - **APROVADO por ele** ("Excelente! Pegou a visão! Movimentos fluidos, câmeras fluidas, expressões sem bugar!"):
   o remake do Springtrap em `fnaf_volta_mine` é o **novo padrão de qualidade e a base pra copiar nos próximos vídeos**
   (face.js + act.js + câmera em 2 passadas + checagem de colisão). Sempre dá pra aprimorar conforme o vídeo.
+
+## Volume dos efeitos — correção no vídeo do Mimic
+- Com `volume=0.2` os efeitos ficaram INAUDÍVEIS ("cadê os efeitos sonoros? Nenhum tem! Mas proporcionais"): a narração
+  dele vem muito alta/comprimida (média ≈ −7,5 dB) e o barramento ficou ~29 dB abaixo. Padrão agora no `mux.sh`:
+  limitador 0.32 e depois **`volume=0.85`** → efeitos com pico ≈ −11 dB e média ≈ −24 dB (≈ 16 dB abaixo da média da
+  voz): dá pra ouvir cada efeito sem abafar a narração. Sempre MEDIR (volumedetect) o barramento de efeitos e a voz antes
+  de entregar: média dos efeitos 14–18 dB abaixo da média da voz. Os brutos (fogo, estrondo, estática) continuam com
+  ganho baixo no sfx.py.
