@@ -6,17 +6,22 @@
 import * as THREE from 'three';
 import { Character, U } from './skin.js';
 
-const M = (c, metal = 0.75, rough = 0.45, em = null, ei = 0) => new THREE.MeshStandardMaterial({ color: c, metalness: metal, roughness: rough, emissive: em || '#000000', emissiveIntensity: ei });
+let SEEDP = 3; const rnd = () => ((SEEDP = (SEEDP * 1664525 + 1013904223) >>> 0) / 4294967296);
+function pixTex(n = 8) { const c = document.createElement('canvas'); c.width = c.height = n; const g = c.getContext('2d');
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) { const v = Math.round(200 + 55 * rnd() - (x === 0 || y === 0 ? 30 : 0)); g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(x, y, 1, 1); }
+  const t = new THREE.CanvasTexture(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.colorSpace = THREE.SRGBColorSpace; return t; }
+const M = (c, metal = 0.6, rough = 0.55, em = null, ei = 0) => new THREE.MeshStandardMaterial({ color: c, map: pixTex(), metalness: metal, roughness: rough, emissive: em || '#000000', emissiveIntensity: ei });
 export function buildMimicV2(canvas) {
   const ch = new Character('mimic', canvas, { prop: { leg: 1.32, arm: 1.42, torso: 1.12 } });
   for (const m of [ch.body, ch.bodyO, ch.headMesh, ch.hat]) m.visible = false; for (const L of [ch.armR, ch.armL, ch.legR, ch.legL]) { L.a.visible = false; L.o.visible = false; }
-  const met = M('#5a4844'), met2 = M('#6e5650', 0.7, 0.5), dk = M('#2a2222', 0.6, 0.55), rust = M('#7a4a38', 0.55, 0.6), silver = M('#bdb6b8', 0.9, 0.25), plate = M('#4a3e3e', 0.7, 0.5);
+  const met = M('#5a4844'), met2 = M('#6e5650', 0.7, 0.5), dk = M('#2a2222', 0.6, 0.55), rust = M('#7a4a38', 0.55, 0.6), silver = M('#c8c4c8', 0.35, 0.4), plate = M('#4a3e3e', 0.7, 0.5);
   const cab = ['#e8742a', '#c8402a', '#e8b24a', '#8a2a2a', '#3a2a2a'].map(c => M(c, 0.1, 0.55, c, 0.12));
   const add = (m, p) => { m.castShadow = true; m.receiveShadow = true; p.add(m); return m; };
-  const cyl = (r, h, mat, x, y, z, p, rx = 0, rz = 0, ry = 0, seg = 12) => { const m = add(new THREE.Mesh(new THREE.CylinderGeometry(r * U, r * U, h * U, seg), mat), p); m.position.set(x * U, y * U, z * U); m.rotation.set(rx, ry, rz); return m; };
+  const cyl = (r, h, mat, x, y, z, p, rx = 0, rz = 0, ry = 0, seg = 12) => { const m = add(new THREE.Mesh(new THREE.BoxGeometry(2 * r * U * 0.9, h * U, 2 * r * U * 0.9), mat), p); m.position.set(x * U, y * U, z * U); m.rotation.set(rx, ry, rz); return m; };
   const box = (w, h, d, mat, x, y, z, p) => { const m = add(new THREE.Mesh(new THREE.BoxGeometry(w * U, h * U, d * U), mat), p); m.position.set(x * U, y * U, z * U); return m; };
-  const ball = (r, mat, x, y, z, p) => { const m = add(new THREE.Mesh(new THREE.SphereGeometry(r * U, 14, 10), mat), p); m.position.set(x * U, y * U, z * U); return m; };
-  const tube = (pts, mat, p, r = 0.2, n = 24) => add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(q => new THREE.Vector3(q[0] * U, q[1] * U, q[2] * U))), n, r * U, 8), mat), p);
+  const ball = (r, mat, x, y, z, p) => { const m = add(new THREE.Mesh(new THREE.BoxGeometry(1.8 * r * U, 1.8 * r * U, 1.8 * r * U), mat), p); m.position.set(x * U, y * U, z * U); return m; };
+  const tube = (pts, mat, p, r = 0.2) => { const cv = new THREE.CatmullRomCurve3(pts.map(q => new THREE.Vector3(q[0] * U, q[1] * U, q[2] * U))); const s2 = Math.max(0.5, 2.2 * r) * U; const n = Math.max(3, Math.ceil(cv.getLength() / s2));
+    const g = new THREE.Group(); p.add(g); const geo = new THREE.BoxGeometry(s2 * 1.05, s2 * 1.05, s2 * 1.05); for (let i = 0; i <= n; i++) { const v = cv.getPointAt(i / n); const m = add(new THREE.Mesh(geo, mat), g); m.position.copy(v); } return g; };
   const bellows = (r, h, y0, p, mat = dk, n = 9) => { cyl(r * 0.72, h, met, 0, y0 - h / 2, 0, p); for (let i = 0; i < n; i++) cyl(r, h / n * 0.62, mat, 0, y0 - (i + 0.5) * h / n, 0, p); };
   const gear = (x, y, z, r, p) => { const g = new THREE.Group(); g.position.set(x * U, y * U, z * U); p.add(g); cyl(r, 0.7, dk, 0, 0, 0, g, 0, Math.PI / 2); for (let k = 0; k < 10; k++) { const a = k / 10 * Math.PI * 2; box(0.6, 0.45, 0.45, dk, 0, Math.cos(a) * (r + 0.25), Math.sin(a) * (r + 0.25), g).rotation.x = a; } cyl(0.4, 0.9, silver, 0, 0, 0, g, 0, Math.PI / 2); return g; };
 
