@@ -148,3 +148,19 @@ Analisado quadro a quadro (4 fps) nos vídeos de referência:
 - O que ele quer agora: **animações dos bonecos de Minecraft MAIS BONITAS e COM EMOÇÃO** (estavam "muito feias e sem
   emoção"). Manter o visual Minecraft; melhorar a atuação: expressões no rosto, poses e gestos fortes com antecipação e
   overshoot, caminhada com peso, reações exageradas, respiração, cabeça viva.
+
+## Kit de atuação dos bonecos de Minecraft (fnaf_volta_mine/src) — usar nos próximos vídeos
+- **Rosto (face.js):** expressões trocando a TEXTURA da skin (pálpebras, sobrancelha "inclinada" via pálpebra
+  raiva/tristeza, boca abrindo). Nada de geometria nova no rosto → não flutua, não pisca errado, não atravessa.
+  Config por personagem em `FACES` (retângulos dos olhos/boca na skin). Humanos piscam rápido (~0,16 s) de vez em
+  quando; animatrônicos não piscam. "Cuidado com essa de piscar, NÃO PODE BUGAR."
+- **Corpo (act.js):** poses somadas com curvas (arcos X+Z), antecipação só no tronco/cabeça (membros nunca antecipam
+  pra dentro do corpo), overshoot + acomodação (`springE`), follow-through da cabeça/tronco, `walkPath` com peso
+  e parada suave, `alive` (respiração/peso), gestos: think, point, shrug, cheer, chest, scared, cower, sad, angry,
+  laugh, evil, reach, flex, wave(braço de fora), agony, slump, startle (pulo de susto com squash), nod, headShake.
+- **Câmera em 2 passadas por quadro (main.js):** a 1ª posiciona a câmera, a 2ª roda a cena de novo pra que todo
+  `lookAtCam` use a câmera DESTE quadro → a cabeça não "pula" no começo da cena.
+- **Checagem de colisão orientada (act.js `collisionCheck`):** pontos ao longo do braço (centro + 4 cantos) testados
+  no espaço local do corpo/cabeça: braço dentro do próprio corpo/cabeça, dentro de outro personagem, braço
+  encostando no braço de outro, cabeça dentro de outro. Vídeo final só com ZERO `LOG ATRAVESSA`.
+- Fogo: luzes do fogo NA FRENTE do personagem (iluminam o rosto), bloom baixo (0,15) nas cenas de fogo.
