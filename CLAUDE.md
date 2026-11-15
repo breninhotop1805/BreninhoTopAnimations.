@@ -74,6 +74,18 @@ headless), sincronizada com a narração do usuário. Cada projeto é uma pasta 
 - Checar oclusão: câmera não pode ficar atrás de cadeira/mesa/parede no começo do movimento.
 - Props apoiados em algo (ex.: bolo em cima de uma mesa, nunca flutuando).
 
+## Lições do Iceberg (vídeo longo) — aplicar sempre
+- **Sincronia:** uma cena por ideia falada; cortar no início exato da palavra-chave; nenhuma cena com mais de ~3 s
+  sem um novo corte ou ação marcante; a ação principal da cena (soco, olho acendendo, porta batendo) acontece
+  **na sílaba** que a descreve. Conferir a sincronia assistindo a prévia com o áudio, não só pelo roteiro.
+- **Movimento/atuação:** personagens sempre atuando (andar, gesticular, reagir, virar a cabeça), nunca só "idle";
+  câmera sempre se movendo. Evitar poses rígidas de braço esticado.
+- **Contact sheet em 3 momentos por cena** (~15%, 50%, 90%), não só 60% — pega flashes cinzas, personagem cortado,
+  câmera nas costas do personagem e quadros vazios.
+- Bugs vistos: câmera nas costas/nuca do personagem, rosto estourado por luz perto (key/fill fortes), flash em fundo
+  preto vira quadro cinza (flash máx ~0.05 em cena escura), fantasmas com opacidade < 0.5 sumiam (alphaTest do
+  makeGhost agora 0.02), cenas subaquáticas com a câmera dentro dos blocos (sempre deixar água aberta no quadro).
+
 ## Processo de qualidade
 1. Testar modelos (lineup claro, frente e lado) antes das cenas.
 2. Contact sheet de todas as cenas (frame a ~60% de cada cena) e corrigir enquadramento/luz/colisão.
