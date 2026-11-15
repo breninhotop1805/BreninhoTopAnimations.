@@ -86,6 +86,26 @@ headless), sincronizada com a narração do usuário. Cada projeto é uma pasta 
   preto vira quadro cinza (flash máx ~0.05 em cena escura), fantasmas com opacidade < 0.5 sumiam (alphaTest do
   makeGhost agora 0.02), cenas subaquáticas com a câmera dentro dos blocos (sempre deixar água aberta no quadro).
 
+## Pedido dele depois do Iceberg — REGRAS FIXAS pra todos os próximos vídeos (prompt anotado)
+"Nos próximos shorts, deixe tudo impecável. Tudo isso e as coisas passadas. Quero animações fluidas e bonitas."
+1. **Cabeça "bugando" no começo da cena:** nada de pose que pula nos primeiros quadros. A cabeça/corpo já começam
+   na pose certa no quadro 0 (nada de `lookAtCam`/rotação entrando com rampa curta a partir de L=0; se for virar,
+   transição suave de ≥0.4 s). Conferir os 3 primeiros quadros de cada cena.
+2. **Tamanhos fixos por categoria — nunca aumentar nem diminuir por cena** (não passar escala extra no `put`):
+   todos os animatrônicos com a mesma escala (diferença só se o personagem for canonicamente maior, ex. Baby/Mimic,
+   definida uma vez no main.js); todas as crianças com a mesma escala; todos os adultos com a mesma escala.
+   Plushies/miniaturas são o único caso de tamanho diferente.
+3. **Almas/fantasmas entrando em algo:** nunca "só some". Animar de verdade: a alma voa até o alvo, encolhe/afunila
+   pra dentro dele com rastro de partículas e um brilho/flash de luz no alvo (olhos acendendo). E **nada some do nada**
+   (`visible=false` seco é proibido): sair de cena com fade, dissolve, encolher, sair do quadro ou corte de câmera.
+4. **Andar/correr não pode parar de repente:** ao chegar, a passada desacelera e termina em pose neutra (amplitude
+   da caminhada vai a zero junto com a velocidade, com 1–2 passos de desaceleração). Quem anda até o fim da cena
+   continua andando. Nenhuma peça ou personagem atravessando outro (checar braços/mãos em `aim`, máscaras, props,
+   personagens próximos).
+5. **Sincronia impecável** (o erro clássico): cortar e executar a ação exatamente na palavra; cenas curtas; assistir
+   a prévia com áudio antes de entregar e corrigir qualquer atraso.
+- Somam-se a todas as regras anteriores deste arquivo. Animações fluidas e bonitas acima de tudo.
+
 ## Processo de qualidade
 1. Testar modelos (lineup claro, frente e lado) antes das cenas.
 2. Contact sheet de todas as cenas (frame a ~60% de cada cena) e corrigir enquadramento/luz/colisão.
