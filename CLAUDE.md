@@ -123,9 +123,6 @@ Analisado quadro a quadro (4 fps) nos vídeos de referência:
   - Respiração/idle sutil sempre; ninguém parado como estátua.
 - **Elementos de apoio:** balão "?" / "!" que pulam sobre a cabeça em dúvida/surpresa (pop com overshoot);
   personagens de frente pra câmera quando falam/reagem; dois personagens interagindo no mesmo quadro.
-- **Modelos novos (lab_modelos/):** animatrônicos no estilo desse canal (blocos com quinas em pixel, cabeça cúbica
-  grande, olhos de pixel art, focinho saltado, juntas de cotovelo/joelho) — aguardando o "pode salvar" dele para
-  substituir os antigos. A pasta está no .git/info/exclude até ele aprovar.
 
 ## Processo de qualidade
 1. Testar modelos (lineup claro, frente e lado) antes das cenas.
@@ -144,8 +141,10 @@ Analisado quadro a quadro (4 fps) nos vídeos de referência:
 - **Iluminação vem do ambiente** (lâmpadas penduradas, spot do palco, luzes coloridas, janelas, telas, fogo): nada de luz
   "de estúdio" presa na câmera nem fill genérico que deixa tudo chapado. Ambiente/hemisfério fraco, sombras reais, cada
   luz com uma fonte visível ou plausível no cenário.
-- **Humanos no estilo dos animatrônicos novos** (`lab_modelos/src/humans.js`, referência: guarda do @lukskk): cabeça
-  cúbica grande, rosto chapado (sobrancelha fina, olhos quadrados pequenos, nariz 3D saltado, boca em linha), uniforme em
-  blocos, mãos com dedos. **Cabelo em voxel 3D** (franja em mechas de alturas diferentes, laterais e nuca), nunca pintado
-  chapado nem "capacete"/caixa; quepe do guarda desce até a testa (nada de "testudo"). Rosto atua: piscar, sobrancelha,
-  boca abrindo. Escalas fixas: adultos 1.0, crianças 0.74 (HUMAN_SCALE).
+
+## Decisão final sobre modelos (depois do remake do Springtrap)
+- Os modelos "novos" (lab_modelos/, estilo @lukskk, humanos de cabeça cúbica) foram **REPROVADOS**: "ficou feio, preferi as
+  antigas de Mine". **Usar SEMPRE os bonecos de Minecraft antigos (skins + skin.js)**. Não propor trocar de modelo de novo.
+- O que ele quer agora: **animações dos bonecos de Minecraft MAIS BONITAS e COM EMOÇÃO** (estavam "muito feias e sem
+  emoção"). Manter o visual Minecraft; melhorar a atuação: expressões no rosto, poses e gestos fortes com antecipação e
+  overshoot, caminhada com peso, reações exageradas, respiração, cabeça viva.
