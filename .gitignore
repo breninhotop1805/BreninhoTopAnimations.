@@ -1,0 +1,5 @@
+node_modules/
+minecraft/render/parts/
+*.pyc
+__pycache__/
+minecraft/audio/n16.wav
