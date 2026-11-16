@@ -3,7 +3,7 @@
 set -e
 cd "$(dirname "$0")/.."
 NAME="ELE_PERDEU_TUDO_NO_MINECRAFT"
-printf "file '%s'\n" render/parts/a.mp4 render/parts/b.mp4 render/parts/c.mp4 > render/parts/list.txt
+printf "file '%s'\n" a.mp4 b.mp4 c.mp4 > render/parts/list.txt
 ffmpeg -v error -y -f concat -safe 0 -i render/parts/list.txt -c copy render/parts/video.mp4
 python3 audio/sfx.py
 for v in "completo:$NAME" "so_narracao:${NAME}_SO_NARRACAO"; do
