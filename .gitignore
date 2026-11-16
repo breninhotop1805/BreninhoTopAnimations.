@@ -3,3 +3,5 @@ minecraft/render/parts/
 *.pyc
 __pycache__/
 minecraft/audio/n16.wav
+minecraft/audio/*.wav
+minecraft/render/parts/
