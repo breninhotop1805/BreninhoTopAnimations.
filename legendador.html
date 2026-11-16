@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>Legendador</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: mesa de edição — palco do vídeo à esquerda, lista de legendas (a "timeline") à direita, exportação embaixo. */
+:root {
+  --bg: #f3f2ee;
+  --panel: #ffffff;
+  --ink: #1b1a17;
+  --muted: #6b675d;
+  --line: #dedbd2;
+  --accent: #e0a800;      /* amarelo clássico de legenda */
+  --accent-ink: #1b1a17;
+  --stage: #121110;
+  --rec: #d6402c;
+  --active: #fff4cc;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #161513; --panel: #1f1e1b; --ink: #ecebe6; --muted: #a29d90; --line: #34322d;
+  --accent: #f5c518; --accent-ink: #161513; --stage: #0a0a09; --rec: #ef5a45; --active: #3a3317; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #161513; --panel: #1f1e1b; --ink: #ecebe6; --muted: #a29d90; --line: #34322d;
+  --accent: #f5c518; --accent-ink: #161513; --stage: #0a0a09; --rec: #ef5a45; --active: #3a3317; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; }
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 20px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 20px; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: 28px; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+h1 span { background: var(--accent); color: var(--accent-ink); padding: 0 6px; border-radius: 3px; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: 15px; margin: 0; letter-spacing: 0.01em; }
+.hint { color: var(--muted); font-size: 13px; }
+.label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+kbd { font-family: var(--font-mono); font-size: 11px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; background: var(--panel); color: var(--muted); }
+
+.main { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 900px) { .main { grid-template-columns: minmax(0, 1fr); } }
+.col { display: grid; gap: 14px; min-width: 0; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 12px; min-width: 0; }
+
+/* Palco */
+.stage { position: relative; background: var(--stage); border-radius: 10px; overflow: hidden; aspect-ratio: 16 / 9; max-width: 100%; container-type: inline-size; }
+.stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
+.drop { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; text-align: center; color: #cfcbc0; padding: 20px; }
+.drop.over { outline: 3px dashed var(--accent); outline-offset: -10px; }
+.drop strong { font-family: var(--font-display); font-size: 20px; color: #fff; }
+.sub { position: absolute; left: 5%; right: 5%; text-align: center; pointer-events: none; display: flex; justify-content: center; }
+.sub.bottom { bottom: 7%; } .sub.top { top: 7%; } .sub.middle { top: 50%; transform: translateY(-50%); }
+.sub span { white-space: pre-wrap; font-weight: 700; line-height: 1.25; padding: 0.15em 0.45em; border-radius: 0.2em; font-size: calc(var(--sub-size, 4) * 1cqw); font-family: var(--sub-font, var(--font-body)); }
+
+/* Transporte */
+.transport { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.tc { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 15px; font-weight: 600; padding: 6px 10px; border-radius: 6px; background: var(--bg); border: 1px solid var(--line); }
+.scrub { width: 100%; accent-color: var(--accent); }
+button, .btn { font: inherit; font-weight: 600; font-size: 13px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 7px; padding: 7px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+button:hover, .btn:hover { border-color: var(--muted); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .btn:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.rec { border-color: var(--rec); color: var(--rec); }
+button.rec.on { background: var(--rec); color: #fff; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+button.icon { padding: 5px 8px; }
+.spacer { flex: 1; }
+.capture { display: flex; gap: 8px; flex-wrap: wrap; }
+.capture input { flex: 1 1 220px; min-width: 0; }
+input[type="text"], textarea, select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px; }
+.pending { font-family: var(--font-mono); font-size: 12px; color: var(--rec); }
+
+.styles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px 14px; }
+.styles label { display: grid; gap: 4px; }
+.styles input[type="range"] { accent-color: var(--accent); width: 100%; }
+.styles input[type="color"] { width: 100%; height: 32px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); padding: 2px; }
+
+/* Lista */
+.listhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.cues { display: grid; gap: 8px; max-height: 640px; overflow-y: auto; padding-right: 2px; }
+.cue { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; align-items: start; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+.cue.active { background: var(--active); border-color: var(--accent); }
+.cue .n { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding-top: 6px; text-align: right; }
+.cue .body { display: grid; gap: 6px; min-width: 0; }
+.cue .times { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.cue .times input { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 12px; width: 112px; padding: 4px 6px; }
+.cue .times input.bad { border-color: var(--rec); }
+.cue .dur { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.cue textarea { width: 100%; resize: vertical; min-height: 38px; font-size: 14px; }
+.cue .acts { display: grid; gap: 4px; }
+.empty { text-align: center; color: var(--muted); padding: 24px 10px; border: 1px dashed var(--line); border-radius: 8px; }
+.badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: var(--active); color: var(--ink); border: 1px solid var(--accent); }
+
+/* Exportação */
+.export textarea { width: 100%; min-height: 180px; font-family: var(--font-mono); font-size: 12px; resize: vertical; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.toast { font-size: 13px; font-weight: 600; color: var(--muted); }
+.btn input[type="file"] { display: none; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><span>Legend</span>ador</h1>
+    <div class="hint">Atalhos: <kbd>Espaço</kbd> tocar/pausar · <kbd>I</kbd> início · <kbd>O</kbd> fim · <kbd>←</kbd><kbd>→</kbd> 1 s</div>
+  </header>
+
+  <div class="main">
+    <div class="col">
+      <div class="stage" id="stage">
+        <video id="video" playsinline hidden></video>
+        <div class="drop" id="drop">
+          <strong>Escolha o seu vídeo</strong>
+          <div>Arraste o arquivo para cá ou clique no botão. O vídeo fica só no seu aparelho.</div>
+          <div><label class="btn primary" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent)">Abrir vídeo<input type="file" id="videoFile" accept="video/*"></label></div>
+        </div>
+        <div class="sub bottom" id="sub"><span id="subText"></span></div>
+      </div>
+
+      <div class="panel">
+        <input type="range" class="scrub" id="scrub" min="0" max="0" step="0.01" value="0" aria-label="Posição do vídeo">
+        <div class="transport">
+          <button id="play" class="primary" disabled>▶ Tocar</button>
+          <button id="back" class="icon" disabled title="Voltar 1 segundo">−1s</button>
+          <button id="fwd" class="icon" disabled title="Avançar 1 segundo">+1s</button>
+          <span class="tc" id="tc">00:00:00,000</span>
+          <span class="spacer"></span>
+          <label class="hint">Velocidade
+            <select id="rate"><option value="0.5">0,5×</option><option value="0.75">0,75×</option><option value="1" selected>1×</option><option value="1.25">1,25×</option><option value="1.5">1,5×</option></select>
+          </label>
+        </div>
+        <div class="capture">
+          <input type="text" id="nextText" placeholder="Texto da legenda (pode deixar vazio e escrever depois)">
+          <button id="markIn" class="rec">● Início <kbd>I</kbd></button>
+          <button id="markOut" disabled>■ Fim <kbd>O</kbd></button>
+          <button id="addHere">+ Adicionar aqui</button>
+        </div>
+        <div class="hint" id="captureHint">Toque o vídeo, aperte <b>Início</b> quando a fala começar e <b>Fim</b> quando terminar. A legenda é criada com o texto acima.</div>
+      </div>
+
+      <div class="panel">
+        <h2>Aparência</h2>
+        <div class="styles">
+          <label><span class="label">Tamanho</span><input type="range" id="sSize" min="2" max="8" step="0.25" value="4"></label>
+          <label><span class="label">Posição</span>
+            <select id="sPos"><option value="bottom">Embaixo</option><option value="middle">Meio</option><option value="top">Em cima</option></select></label>
+          <label><span class="label">Fonte</span>
+            <select id="sFont"><option value="Inter, system-ui, sans-serif">Padrão</option><option value="Archivo, Arial, sans-serif">Larga</option><option value="Georgia, serif">Clássica</option><option value="'Comic Sans MS', 'Comic Neue', cursive">Divertida</option></select></label>
+          <label><span class="label">Cor do texto</span><input type="color" id="sColor" value="#ffffff"></label>
+          <label><span class="label">Fundo</span>
+            <select id="sBg"><option value="box">Caixa escura</option><option value="outline">Contorno</option><option value="none">Nenhum</option></select></label>
+        </div>
+        <div class="hint">A aparência aparece aqui na prévia. Arquivos .srt e .vtt guardam só o texto e os tempos; quem define o visual é o player ou o editor onde você usar.</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="panel">
+        <div class="listhead">
+          <h2>Legendas <span class="hint" id="count"></span></h2>
+          <div class="row">
+            <span class="badge" id="exampleBadge" hidden>Exemplo</span>
+            <button id="clearAll">Limpar tudo</button>
+          </div>
+        </div>
+        <div class="cues" id="cues"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel export">
+    <div class="listhead">
+      <h2>Exportar e importar</h2>
+      <div class="row">
+        <label class="hint">Formato
+          <select id="fmt"><option value="srt">SRT (.srt)</option><option value="vtt">WebVTT (.vtt)</option></select>
+        </label>
+      </div>
+    </div>
+    <textarea id="out" readonly aria-label="Arquivo de legenda gerado"></textarea>
+    <div class="row">
+      <button id="copy" class="primary">Copiar texto</button>
+      <button id="download" hidden>Baixar arquivo</button>
+      <label class="btn">Importar .srt / .vtt<input type="file" id="subFile" accept=".srt,.vtt,text/plain"></label>
+      <span class="toast" id="toast" role="status"></span>
+    </div>
+    <div class="hint" id="saveHint">Para salvar: copie o texto, cole num editor de texto (Bloco de Notas, por exemplo) e salve como <b>legendas.srt</b>. Coloque o arquivo com o mesmo nome do vídeo (ex.: <b>meuvideo.mp4</b> + <b>meuvideo.srt</b>) e os players mostram a legenda.</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const video = $('video'), stage = $('stage'), drop = $('drop');
+  const STORE = 'legendador.v1';
+  const EXAMPLE = [
+    { start: 0.5, end: 2.8, text: 'Fala, galera! Bem-vindos ao canal.' },
+    { start: 3.0, end: 5.6, text: 'Hoje eu vou mostrar uma animação nova.' },
+    { start: 6.0, end: 9.0, text: 'Deixa o like e se inscreve!' }
+  ];
+  let cues = [], isExample = false, pendingStart = null, activeIdx = -1, toastTimer;
+
+  // ---------- tempo ----------
+  function fmt(t, sep = ',') {
+    t = Math.max(0, t || 0);
+    let ms = Math.round(t * 1000);
+    const h = Math.floor(ms / 3600000); ms -= h * 3600000;
+    const m = Math.floor(ms / 60000); ms -= m * 60000;
+    const s = Math.floor(ms / 1000); ms -= s * 1000;
+    const p = (n, l = 2) => String(n).padStart(l, '0');
+    return `${p(h)}:${p(m)}:${p(s)}${sep}${p(ms, 3)}`;
+  }
+  function parseTime(str) {
+    str = String(str).trim().replace(',', '.');
+    if (/^\d+(\.\d+)?$/.test(str)) return parseFloat(str);
+    const m = str.match(/^(?:(\d+):)?(\d{1,2}):(\d{1,2}(?:\.\d+)?)$/);
+    if (!m) return NaN;
+    return (parseInt(m[1] || '0', 10) * 3600) + parseInt(m[2], 10) * 60 + parseFloat(m[3]);
+  }
+
+  // ---------- armazenamento local ----------
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify({ cues, isExample, style: readStyle() })); } catch (e) {}
+  }
+  function load() {
+    try {
+      const d = JSON.parse(localStorage.getItem(STORE) || 'null');
+      if (d && Array.isArray(d.cues)) { cues = d.cues; isExample = !!d.isExample; if (d.style) applyStyleInputs(d.style); return; }
+    } catch (e) {}
+    cues = EXAMPLE.map(c => ({ ...c })); isExample = true;
+  }
+  function leaveExample() { if (isExample) { cues = []; isExample = false; } }
+
+  // ---------- lista ----------
+  function sortCues() { cues.sort((a, b) => a.start - b.start); }
+  function render() {
+    const box = $('cues');
+    box.innerHTML = '';
+    $('exampleBadge').hidden = !isExample;
+    $('count').textContent = cues.length ? `(${cues.length})` : '';
+    if (!cues.length) {
+      box.innerHTML = '<div class="empty">Nenhuma legenda ainda.<br>Toque o vídeo e use <b>Início</b> e <b>Fim</b>, ou <b>+ Adicionar aqui</b>.</div>';
+    }
+    cues.forEach((c, i) => {
+      const el = document.createElement('div');
+      el.className = 'cue' + (i === activeIdx ? ' active' : '');
+      el.dataset.i = i;
+      el.innerHTML = `
+        <div class="n">${i + 1}</div>
+        <div class="body">
+          <div class="times">
+            <input type="text" id="cs${i}" aria-label="Início da legenda ${i + 1}" value="${fmt(c.start)}">
+            <span class="hint">→</span>
+            <input type="text" id="ce${i}" aria-label="Fim da legenda ${i + 1}" value="${fmt(c.end)}">
+            <span class="dur">${(c.end - c.start).toFixed(1).replace('.', ',')} s</span>
+          </div>
+          <textarea id="ct${i}" rows="2" aria-label="Texto da legenda ${i + 1}" placeholder="Escreva a legenda…"></textarea>
+        </div>
+        <div class="acts">
+          <button class="icon" data-act="go" title="Ir para esta legenda">▶</button>
+          <button class="icon" data-act="setStart" title="Usar o tempo atual como início">⇤</button>
+          <button class="icon" data-act="setEnd" title="Usar o tempo atual como fim">⇥</button>
+          <button class="icon" data-act="del" title="Apagar">✕</button>
+        </div>`;
+      el.querySelector('textarea').value = c.text;
+      box.appendChild(el);
+    });
+    renderOut();
+  }
+  $('cues').addEventListener('input', e => {
+    const el = e.target.closest('.cue'); if (!el || e.target.tagName !== 'TEXTAREA') return;
+    const i = +el.dataset.i; cues[i].text = e.target.value; isExample = false; $('exampleBadge').hidden = true;
+    renderOut(); updateSub(); save();
+  });
+  $('cues').addEventListener('change', e => {
+    const el = e.target.closest('.cue'); if (!el || e.target.tagName !== 'INPUT') return;
+    const i = +el.dataset.i, v = parseTime(e.target.value);
+    if (isNaN(v)) { e.target.classList.add('bad'); toast('Use o formato 00:00:01,500'); return; }
+    if (e.target.id.startsWith('cs')) cues[i].start = v; else cues[i].end = v;
+    if (cues[i].end < cues[i].start) cues[i].end = cues[i].start + 1;
+    isExample = false; sortCues(); render(); updateSub(); save();
+  });
+  $('cues').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const i = +b.closest('.cue').dataset.i, c = cues[i], now = video.currentTime || 0;
+    if (b.dataset.act === 'go') { seek(c.start); }
+    if (b.dataset.act === 'del') { cues.splice(i, 1); }
+    if (b.dataset.act === 'setStart') { c.start = now; if (c.end < c.start) c.end = c.start + 1; }
+    if (b.dataset.act === 'setEnd') { c.end = Math.max(now, c.start + 0.1); }
+    if (b.dataset.act !== 'go') { isExample = false; sortCues(); activeIdx = -1; render(); updateSub(); save(); }
+  });
+  $('clearAll').addEventListener('click', () => {
+    const b = $('clearAll');
+    if (!cues.length) return;
+    if (b.dataset.confirm !== '1') { b.dataset.confirm = '1'; b.textContent = 'Clique de novo para apagar'; setTimeout(() => { b.dataset.confirm = ''; b.textContent = 'Limpar tudo'; }, 3000); return; }
+    b.dataset.confirm = ''; b.textContent = 'Limpar tudo';
+    cues = []; isExample = false; activeIdx = -1; render(); updateSub(); save(); toast('Legendas apagadas');
+  });
+
+  // ---------- captura ----------
+  function markIn() {
+    leaveExample();
+    pendingStart = video.currentTime || 0;
+    $('markIn').classList.add('on'); $('markOut').disabled = false;
+    $('captureHint').innerHTML = `<span class="pending">Gravando desde ${fmt(pendingStart)}</span> — aperte <b>Fim</b> (<kbd>O</kbd>) quando a fala terminar.`;
+  }
+  function markOut() {
+    if (pendingStart == null) return;
+    const end = Math.max(video.currentTime || 0, pendingStart + 0.3);
+    addCue(pendingStart, end, $('nextText').value);
+    $('nextText').value = '';
+    pendingStart = null; $('markIn').classList.remove('on'); $('markOut').disabled = true;
+    $('captureHint').innerHTML = 'Legenda criada. Aperte <b>Início</b> de novo para a próxima.';
+  }
+  function addCue(start, end, text) {
+    leaveExample();
+    cues.push({ start, end, text: text || '' }); sortCues(); activeIdx = -1; render(); updateSub(); save();
+    const i = cues.findIndex(c => c.start === start && c.end === end);
+    const el = $('cues').children[i]; if (el) el.scrollIntoView({ block: 'nearest' });
+  }
+  $('markIn').addEventListener('click', markIn);
+  $('markOut').addEventListener('click', markOut);
+  $('addHere').addEventListener('click', () => { const t = video.currentTime || 0; addCue(t, t + 2, $('nextText').value); $('nextText').value = ''; });
+  $('nextText').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); pendingStart == null ? markIn() : markOut(); } });
+
+  // ---------- vídeo ----------
+  function openVideo(file) {
+    if (!file || !file.type.startsWith('video')) { toast('Esse arquivo não é um vídeo'); return; }
+    video.src = URL.createObjectURL(file);
+    video.hidden = false; drop.hidden = true;
+    ['play', 'back', 'fwd'].forEach(id => $(id).disabled = false);
+    toast(`Vídeo aberto: ${file.name}`);
+  }
+  $('videoFile').addEventListener('change', e => openVideo(e.target.files[0]));
+  ['dragenter', 'dragover'].forEach(t => stage.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(t => stage.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  stage.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) openVideo(f); });
+  video.addEventListener('loadedmetadata', () => {
+    $('scrub').max = video.duration || 0;
+    if (video.videoWidth) stage.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
+  });
+  function togglePlay() { if (video.hidden) return; video.paused ? video.play() : video.pause(); }
+  function seek(t) { if (video.hidden) return; video.currentTime = Math.max(0, Math.min(t, video.duration || t)); tick(); }
+  $('play').addEventListener('click', togglePlay);
+  $('back').addEventListener('click', () => seek(video.currentTime - 1));
+  $('fwd').addEventListener('click', () => seek(video.currentTime + 1));
+  $('rate').addEventListener('change', e => video.playbackRate = +e.target.value);
+  $('scrub').addEventListener('input', e => seek(+e.target.value));
+  stage.addEventListener('click', e => { if (!video.hidden && e.target === video) togglePlay(); });
+  video.addEventListener('play', () => { $('play').textContent = '❚❚ Pausar'; loop(); });
+  video.addEventListener('pause', () => { $('play').textContent = '▶ Tocar'; tick(); });
+  video.addEventListener('seeked', tick);
+  function loop() { tick(); if (!video.paused) requestAnimationFrame(loop); }
+  function tick() {
+    const t = video.currentTime || 0;
+    $('tc').textContent = fmt(t);
+    if (document.activeElement !== $('scrub')) $('scrub').value = t;
+    updateSub();
+  }
+  function updateSub() {
+    let idx;
+    if (video.hidden) idx = cues.length ? 0 : -1;    // sem vídeo: mostra a primeira como prévia
+    else { const t = video.currentTime; idx = cues.findIndex(c => t >= c.start && t < c.end); }
+    const span = $('subText');
+    span.textContent = idx >= 0 ? cues[idx].text : '';
+    span.style.visibility = idx >= 0 && cues[idx].text.trim() ? 'visible' : 'hidden';
+    if (idx !== activeIdx) {
+      const box = $('cues');
+      box.children[activeIdx]?.classList.remove('active');
+      activeIdx = idx;
+      const el = box.children[idx];
+      if (el && el.classList.contains('cue')) { el.classList.add('active'); if (!video.paused) el.scrollIntoView({ block: 'nearest' }); }
+    }
+  }
+
+  // ---------- atalhos ----------
+  document.addEventListener('keydown', e => {
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'textarea' || (tag === 'input' && e.target.type === 'text') || tag === 'select') return;
+    if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+    else if (e.key === 'i' || e.key === 'I') markIn();
+    else if (e.key === 'o' || e.key === 'O') markOut();
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); seek(video.currentTime - 1); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); seek(video.currentTime + 1); }
+  });
+
+  // ---------- aparência ----------
+  function readStyle() { return { size: $('sSize').value, pos: $('sPos').value, font: $('sFont').value, color: $('sColor').value, bg: $('sBg').value }; }
+  function applyStyleInputs(s) { if (s.size) $('sSize').value = s.size; if (s.pos) $('sPos').value = s.pos; if (s.font) $('sFont').value = s.font; if (s.color) $('sColor').value = s.color; if (s.bg) $('sBg').value = s.bg; }
+  function applyStyle() {
+    const s = readStyle(), span = $('subText'), sub = $('sub');
+    sub.className = 'sub ' + s.pos;
+    stage.style.setProperty('--sub-size', s.size);
+    stage.style.setProperty('--sub-font', s.font);
+    span.style.color = s.color;
+    span.style.background = s.bg === 'box' ? 'rgba(0,0,0,0.72)' : 'transparent';
+    span.style.textShadow = s.bg === 'outline' ? '0 0 3px #000, 0 0 3px #000, 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000' : (s.bg === 'none' ? '0 1px 3px rgba(0,0,0,0.6)' : 'none');
+  }
+  ['sSize', 'sPos', 'sFont', 'sColor', 'sBg'].forEach(id => $(id).addEventListener('input', () => { applyStyle(); save(); }));
+
+  // ---------- exportar / importar ----------
+  function build(kind) {
+    const list = cues.filter(c => c.text.trim());
+    if (kind === 'vtt') return 'WEBVTT\n\n' + list.map((c, i) => `${i + 1}\n${fmt(c.start, '.')} --> ${fmt(c.end, '.')}\n${c.text.trim()}\n`).join('\n');
+    return list.map((c, i) => `${i + 1}\n${fmt(c.start)} --> ${fmt(c.end)}\n${c.text.trim()}\n`).join('\n');
+  }
+  function renderOut() { $('out').value = build($('fmt').value); }
+  $('fmt').addEventListener('change', renderOut);
+  $('copy').addEventListener('click', () => {
+    const txt = $('out').value;
+    if (!txt.trim()) { toast('Escreva o texto de pelo menos uma legenda antes de copiar'); return; }
+    navigator.clipboard.writeText(txt).then(() => toast('Copiado! Cole num editor de texto e salve.'))
+      .catch(() => { $('out').focus(); $('out').select(); toast('Texto selecionado: aperte Ctrl+C (ou Cmd+C) para copiar'); });
+  });
+  // Download funciona quando o app é aberto como arquivo no computador (fora da página do Claude).
+  let framed = true; try { framed = window.self !== window.top; } catch (e) {}
+  let dl = null;
+  if (!framed) { $('download').hidden = false; $('saveHint').innerHTML = 'Clique em <b>Baixar arquivo</b>. Coloque o arquivo com o mesmo nome do vídeo (ex.: <b>meuvideo.mp4</b> + <b>meuvideo.srt</b>) e os players mostram a legenda.'; }
+  else if (window.claude && window.claude.use) {
+    window.claude.use('downloads').then(d => {
+      if (!d) return;
+      dl = d; $('download').hidden = false;
+      $('saveHint').innerHTML = 'Clique em <b>Baixar arquivo</b>: ele vem como <b>legendas.txt</b>. Renomeie para <b>meuvideo.srt</b> (ou .vtt), com o mesmo nome do vídeo, e os players mostram a legenda. Ou copie o texto e salve num editor.';
+    }).catch(() => {});
+  }
+  $('download').addEventListener('click', () => {
+    const kind = $('fmt').value, txt = $('out').value;
+    if (!txt.trim()) { toast('Escreva o texto de pelo menos uma legenda antes de baixar'); return; }
+    if (dl) {
+      dl.save({ filename: 'legendas.txt', data: txt }).then(() => toast('Baixado! Renomeie para .' + kind))
+        .catch(err => { if (err && err.code === 'declined') return; if (err && err.code === 'rate_limited') toast('Espere um pouco e tente de novo'); else toast('Não deu para baixar aqui. Use Copiar texto.'); });
+      return;
+    }
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'legendas.' + kind; a.click();
+  });
+  function parseSubs(text) {
+    const out = [];
+    text.replace(/\r/g, '').replace(/^﻿/, '').split(/\n\s*\n/).forEach(block => {
+      const lines = block.split('\n'); const li = lines.findIndex(l => l.includes('-->'));
+      if (li < 0) return;
+      const [a, b] = lines[li].split('-->').map(s => s.trim().split(/\s+/)[0]);
+      const start = parseTime(a), end = parseTime(b);
+      if (isNaN(start) || isNaN(end)) return;
+      out.push({ start, end, text: lines.slice(li + 1).join('\n').replace(/<[^>]+>/g, '').trim() });
+    });
+    return out;
+  }
+  $('subFile').addEventListener('change', e => {
+    const f = e.target.files[0]; if (!f) return;
+    f.text().then(t => {
+      const list = parseSubs(t);
+      if (!list.length) { toast('Não encontrei legendas nesse arquivo. Ele precisa estar no formato .srt ou .vtt.'); return; }
+      cues = list; isExample = false; sortCues(); activeIdx = -1; render(); updateSub(); save();
+      toast(`${list.length} legendas importadas`);
+    });
+    e.target.value = '';
+  });
+
+  function toast(msg) { clearTimeout(toastTimer); $('toast').textContent = msg; toastTimer = setTimeout(() => $('toast').textContent = '', 4000); }
+
+  load(); applyStyle(); render(); updateSub();
+})();
+</script>
+
+</body>
+</html>
