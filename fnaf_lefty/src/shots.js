@@ -203,7 +203,7 @@ function lefty(x, s, px, py, pz, ry) { const c = put(x, 'lefty', s, px, py, pz, 
 // mic-hold pose (left arm forward so the mic stands upright, ball on top)
 function micHold(c, k = 1) { c.armL.piv.rotation.x += -1.05 * k; c.armL.piv.rotation.z += 0.12 * k; }
 function stageSet(x) { const s = x.S.stage; x.out.scene = s; x.S.stageSpot.intensity = 46; x.post.vig.value = 0.9; return s; }
-function wordUI(x, i) { x.out.ui = { type: 'word', txt: ['ATRAIR', 'PRENDER', 'FUNDIR', 'TRANSPORTAR', 'EXTRAIR'][i], k: back(seg(x.L, 0, 0.22)), a: Math.min(1, x.L / 0.08) }; }
+function wordUI(x, i) { const c = x.C.lefty; const p = proj(x, new V3(...headTop(c, 0.95))); x.out.ui = { type: 'word', txt: ['ATRAIR', 'PRENDER', 'FUNDIR', 'TRANSPORTAR', 'EXTRAIR'][i], k: back(seg(x.L, 0, 0.22)), a: Math.min(1, x.L / 0.08), u: Math.min(0.72, Math.max(0.28, p[0])), v: Math.max(0.09, Math.min(0.4, p[1])) }; }
 function bigLetter(x, s, i, p, a0, glow = 1) { const L = x.L; if (L < a0) return; const g = x.BIGL[i]; s.add(g); const k = back(seg(L, a0, a0 + 0.3)); g.position.copy(p); g.position.y += 0.04 * Math.sin(L * 5); g.quaternion.copy(x.camera.quaternion); g.scale.setScalar(Math.max(0.001, k)); g.userData.mat.color.setRGB(0.85 + 0.15 * glow, 0.9 + 0.1 * glow, 1); }
 function bpOn(x, s, p, ry = 0, lit = 0) { const b = x.BP; s.add(b); b.position.copy(p); b.rotation.set(-0.15, ry, 0); b.userData.letters.forEach((l, i) => l.userData.mat.color.set(i < lit ? '#ffffff' : '#6f85b8')); return b; }
 
@@ -270,9 +270,9 @@ at(27.72, 'letters', x => {
 });
 // 30.34 "atrair" — L: Lefty sings into the mic, sound waves; the Puppet drifts towards him (kept well apart)
 at(30.34, 'lure', x => {
-  const s = voidMood(x, '#a05aff', 44); const L = x.L; const c = lefty(x, s, -0.85, 0, 0, 0.35); alive(c, x.t, 1); micHold(c); c.jaw.rotation.x = 0.25 * Math.abs(Math.sin(x.t * 9)); c.setFace({ lidR: 0, lidL: 0.4 });
-  const p = put(x, 'puppet', s, 0, 0, 0, -1.2); walkPath(p, L, 0, 0.84, [1.6, 0.4], [1.0, 0.25], { stride: 1.4, face: false }); p.root.rotation.y = -1.25; p.head.rotation.x = 0.2;
-  waves(x, s, c.handL.getWorldPosition(new V3()).add(new V3(0.25, 0.3, 0.1)), 1.5, '#d8b0ff'); cam(x, [0.1, 1.9, 4.6 - 0.4 * x.u], [0.1, 1.6, 0], 46); wordUI(x, 0);
+  const s = voidMood(x, '#a05aff', 44); const L = x.L; const c = lefty(x, s, -0.6, 0, 0, 0.35); alive(c, x.t, 1); micHold(c); c.jaw.rotation.x = 0.25 * Math.abs(Math.sin(x.t * 9)); c.setFace({ lidR: 0, lidL: 0.4 });
+  const p = put(x, 'puppet', s, 0, 0, 0, -1.2); walkPath(p, L, -0.3, 0.84, [1.55, 0.4], [1.0, 0.25], { stride: 1.4, face: false }); p.root.rotation.y = -1.25; p.head.rotation.x = 0.2;
+  waves(x, s, c.handL.getWorldPosition(new V3()).add(new V3(0.25, 0.3, 0.1)), 1.5, '#d8b0ff'); cam(x, [0.25, 1.95, 5.9 - 0.5 * x.u], [0.25, 1.55, 0], 48); wordUI(x, 0);
 });
 // 31.18 "prender" — E: arms close in, a cage-like hug
 at(31.18, 'trap', x => {

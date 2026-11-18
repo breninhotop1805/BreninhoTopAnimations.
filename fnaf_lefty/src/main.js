@@ -159,8 +159,8 @@ function drawUI(spec, t) {
     if (blink) { ui.fillStyle = '#ff2a2a'; ui.beginPath(); ui.arc(m + 50 * s, m + 56 * s, 18 * s, 0, 7); ui.fill(); }
     ui.fillStyle = 'rgba(255,255,255,0.95)'; ui.textAlign = 'right'; ui.textBaseline = 'bottom'; ui.fillText(spec, W - m - 30 * s, H - m - 30 * s); ui.textAlign = 'left';
   } else if (spec.type === 'word') { // one Portuguese word on top, pops with overshoot exactly on the spoken word
-    const k = spec.k, a = spec.a; ui.save(); ui.globalAlpha = a; ui.translate(W / 2, H * 0.16); ui.scale(k, k);
-    ui.font = `900 ${118 * s}px "DejaVu Sans", sans-serif`; ui.textAlign = 'center'; ui.textBaseline = 'middle'; ui.lineJoin = 'round';
+    const k = spec.k, a = spec.a; ui.save(); ui.globalAlpha = a; ui.translate(W * (spec.u ?? 0.5), H * (spec.v ?? 0.16)); ui.scale(k, k);
+    ui.font = `900 ${(spec.txt.length > 8 ? 92 : 112) * s}px "DejaVu Sans", sans-serif`; ui.textAlign = 'center'; ui.textBaseline = 'middle'; ui.lineJoin = 'round';
     ui.shadowColor = 'rgba(0,0,0,0.85)'; ui.shadowBlur = 24 * s; ui.shadowOffsetY = 8 * s; ui.lineWidth = 18 * s; ui.strokeStyle = '#000000'; ui.strokeText(spec.txt, 0, 0);
     ui.shadowColor = 'transparent'; ui.fillStyle = '#ffffff'; ui.fillText(spec.txt, 0, 0); ui.restore();
   } else if (spec.type === 'endcard') { // the full video's thumbnail with a small bouncing arrow above and below, both pointing down
