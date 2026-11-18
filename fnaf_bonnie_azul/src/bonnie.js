@@ -50,9 +50,12 @@ export function buildWitheredBonnie(canvas) {
 }
 
 // red flying-V guitar held across the body (Bonnie)
-export function guitar(ch) { const g = new THREE.Group(); g.position.set(0.5 * U, 5.6 * U, 3.0 * U); g.rotation.z = 0.55; ch.torso.add(g); ch.guitar = g;
-  const red = '#c2202a', wh = '#f2f2f2'; bx(4.2, 2.6, 0.8, red, -1.6, 0, 0, g); bx(2.6, 0.9, 0.8, red, -3.6, 1.2, 0, g); bx(2.6, 0.9, 0.8, red, -3.6, -1.2, 0, g); bx(1.0, 2.0, 0.85, wh, -1.4, 0, 0.05, g);
-  bx(7.0, 0.7, 0.6, '#3a2414', 3.6, 0, 0, g); bx(1.4, 1.0, 0.6, red, 7.6, 0, 0, g); return g; }
+export function guitar(ch) { // flying-V held across the belly: body on his right hip, neck rising to his left hand, flush on the suit
+  const g = new THREE.Group(); g.position.set(-1.4 * U, 4.6 * U, 2.55 * U); g.rotation.z = 0.42; ch.torso.add(g); ch.guitar = g;
+  const red = '#c2202a', wh = '#f2f2f2';
+  bx(3.2, 2.4, 0.9, red, -1.0, 0, 0, g); bx(2.2, 0.8, 0.9, red, -2.8, 1.0, 0, g); bx(2.2, 0.8, 0.9, red, -2.8, -1.0, 0, g); bx(0.9, 1.8, 0.95, wh, -0.9, 0, 0.05, g);
+  bx(5.2, 0.6, 0.7, '#3a2414', 3.0, 0, 0, g); bx(1.2, 0.9, 0.7, red, 6.1, 0, 0, g);
+  return g; }
 
 // FNAF 1 "CELEBRATE!" poster: the user's high-quality image in a real 3D frame. A second layer (same image with the
 // purple pixels shifted to Bonnie blue) fades in under white light -> smooth, no swap.

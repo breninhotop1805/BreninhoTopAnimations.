@@ -44,7 +44,7 @@ for (let i = 0; i < 4; i++) { C['kid' + i] = new Character('kid' + i, recolorChi
 C.guard = new Character('guard', sk.guard);
 C.mimic = buildMimicV2(sk.mimic); C.mimic.baseScale = 1.15; C.edwin = new Character('edwin', sk.edwin); C.cassie = buildCassie(sk.cassie); C.cassie.baseScale = 0.88;
 const BL = { b: '#3a62c8', l: '#5a82e0', d: '#24408a', w: '#c8d4f6', p: '#f2a7c3' };
-C.bonnie = buildBonnie(toBlue(sk.bonnie_classic), { name: 'bonnie', palette: BL }); guitar(C.bonnie); C.bonnie.baseScale = 1.15;
+C.bonnie = buildBonnie(toBlue(sk.bonnie_classic), { name: 'bonnie', palette: BL }); C.bonnie.baseScale = 1.15;
 C.toybonnie = buildBonnie(sk.toybonnie, { name: 'toybonnie' }); C.toybonnie.baseScale = 1.15;
 C.gbonnie = buildGBonnie(sk.gbonnie); C.gbonnie.baseScale = 1.15; C.wbonnie = buildWitheredBonnie(sk.wbonnie); C.wbonnie.baseScale = 1.15;
 C.scott = new Character('scott', sk.scott);

@@ -184,7 +184,7 @@ let WHYL = null;
 function stageLit(x, k, I = 46) { if (WHYL) WHYL.intensity = 0; const s = x.S.stage; x.out.scene = s; x.post.vig.value = 0.9; x.S.stageSpot.color.copy(WHITE).lerp(PURPLE, cl(k)); x.S.stageSpot.intensity = I; return s; }
 function bonnieOn(x, s, px, py, pz, ry = 0) { const b = put(x, 'bonnie', s, px, py, pz, ry); return b; }
 // strum: right hand bobs on the guitar
-function strum(c, t, k = 1) { c.armR.piv.rotation.x += (-0.75 + 0.12 * Math.sin(t * 16)) * k; c.armR.piv.rotation.z += -0.12 * k; c.armL.piv.rotation.x += -0.55 * k; c.armL.piv.rotation.z += 0.15 * k; }
+function strum(c, t, k = 1) { c.head.rotation.x += 0.06 * Math.sin(t * 6.5) * k; c.torso.rotation.z += 0.03 * Math.sin(t * 3.2) * k; c.armR.piv.rotation.z += -0.06 * k; c.armL.piv.rotation.z += 0.06 * k; } // groove to the music (no prop)
 function hall(x, purple = 1) { const s = x.S.office1; x.out.scene = s; x.post.vig.value = 0.95; x.S.west.forEach((l, i) => { l.color.copy(WHITE).lerp(PURPLE, purple); l.intensity = 6 * flicker(x.t, i * 2); }); x.S.office1Lamp.intensity = 2; return s; }
 
 // 0.00 "Qual é a verdadeira cor do Bonnie em FNAF?" — lights slam on the stage; Bonnie strums; his colour shimmers purple<->blue on "cor"; "?" on "FNAF"
