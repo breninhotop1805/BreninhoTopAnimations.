@@ -203,22 +203,23 @@ function lefty(x, s, px, py, pz, ry) { const c = put(x, 'lefty', s, px, py, pz, 
 // mic-hold pose (left arm forward so the mic stands upright, ball on top)
 function micHold(c, k = 1) { c.armL.piv.rotation.x += -1.05 * k; c.armL.piv.rotation.z += 0.12 * k; }
 function stageSet(x) { const s = x.S.stage; x.out.scene = s; x.S.stageSpot.intensity = 46; x.post.vig.value = 0.9; return s; }
+function wordUI(x, i) { x.out.ui = { type: 'word', txt: ['ATRAIR', 'PRENDER', 'FUNDIR', 'TRANSPORTAR', 'EXTRAIR'][i], k: back(seg(x.L, 0, 0.22)), a: Math.min(1, x.L / 0.08) }; }
 function bigLetter(x, s, i, p, a0, glow = 1) { const L = x.L; if (L < a0) return; const g = x.BIGL[i]; s.add(g); const k = back(seg(L, a0, a0 + 0.3)); g.position.copy(p); g.position.y += 0.04 * Math.sin(L * 5); g.quaternion.copy(x.camera.quaternion); g.scale.setScalar(Math.max(0.001, k)); g.userData.mat.color.setRGB(0.85 + 0.15 * glow, 0.9 + 0.1 * glow, 1); }
 function bpOn(x, s, p, ry = 0, lit = 0) { const b = x.BP; s.add(b); b.position.copy(p); b.rotation.set(-0.15, ry, 0); b.userData.letters.forEach((l, i) => l.userData.mat.color.set(i < lit ? '#ffffff' : '#6f85b8')); return b; }
 
 // 0.00 "O nome Lefty não tem nada a ver com ele ser canhoto" — Lefty on the dark stage, shakes his head on "não", lifts the mic on "canhoto"
 at(0.00, 'intro', x => {
   const s = stageSet(x); const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, 0); alive(c, x.t, 1); micHold(c, 0.6 + 0.4 * gestW(L, 1.98, 9)); lookAtCam(x, c, 0.7); headShake(c, L, 0.62, 2, 0.28);
-  c.setFace({ lidR: 0.15, lidL: 1 }); staticIn(x, 0.15); closeOn(x, c, 3.8, 3.0, 0.2, -0.3, 46, eio); punch(x, 0.32, 0.15);
+  c.setFace({ lidL: 0.15, lidR: 0 }); staticIn(x, 0.15); closeOn(x, c, 3.8, 3.0, 0.2, -0.3, 46, eio); punch(x, 0.32, 0.15);
 });
 // 2.50 "você foi enganado pela própria aparência do robô" — face close, "!" on "enganado", tilt down the body on "aparência"
 at(2.50, 'fooled', x => {
-  const s = stageSet(x); const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, 0); alive(c, x.t, 1); micHold(c); lookAtCam(x, c, 0.8); c.setFace({ lidL: 1, lidR: 0.1 }); c.jaw.rotation.x = 0.15 * Math.max(0, Math.sin(L * 6)) * (L < 1.3 ? 1 : 0);
+  const s = stageSet(x); const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, 0); alive(c, x.t, 1); micHold(c); lookAtCam(x, c, 0.8); c.setFace({ lidR: 0, lidL: 0.1 }); c.jaw.rotation.x = 0.15 * Math.max(0, Math.sin(L * 6)) * (L < 1.3 ? 1 : 0);
   const h = hp(c, 3); const k = eio(seg(L, 1.25, 2.2)); cam(x, [h.x + 0.35, h.y - 0.2 - 0.9 * k, h.z + mix(2.1, 2.7, k)], [h.x, h.y - 0.25 - 0.9 * k, h.z], 44); pop(x, x.FX.ex1, s, headTop(c, 0.55), 0.42, 0.6); punch(x, 0.4, 0.14);
 });
 // 4.86 "Quando você olha para aquele urso preto em FNAF 6" — slow orbit around him on stage, punch on "urso preto"
 at(4.86, 'orbit', x => {
-  const s = stageSet(x); const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, 0); alive(c, x.t, 1); micHold(c); lookAtCam(x, c, 0.5); c.setFace({ lidL: 1 });
+  const s = stageSet(x); const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, 0); alive(c, x.t, 1); micHold(c); lookAtCam(x, c, 0.5); c.setFace({ lidR: 0 });
   const a = -0.6 + 1.0 * eio(x.u); const h = hp(c, 0); cam(x, [Math.sin(a) * 3.4, h.y - 0.5, -1.5 + Math.cos(a) * 3.4], [0, h.y - 0.7, -1.5], 46); punch(x, 0.96, 0.15);
 });
 // 7.16 "tudo parece fazer sentido na hora" — the night guard thinks and nods
@@ -228,13 +229,13 @@ at(7.16, 'sense', x => {
 });
 // 9.30 "Ele segura o microfone com a mão esquerda" — close on the left hand raising the mic, punch on "esquerda"
 at(9.30, 'mic', x => {
-  const s = stageSet(x); const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, 0.2); alive(c, x.t, 1); micHold(c, 0.55 + 0.45 * springE(seg(L, 0.5, 0.95))); lookAt(c, c.handL.getWorldPosition(new V3()), 0.5); c.setFace({ lidL: 1 });
+  const s = stageSet(x); const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, 0.2); alive(c, x.t, 1); micHold(c, 0.55 + 0.45 * springE(seg(L, 0.5, 0.95))); lookAt(c, c.handL.getWorldPosition(new V3()), 0.5); c.setFace({ lidR: 0 });
   c.root.updateMatrixWorld(true); const hpos = c.handL.getWorldPosition(new V3()); camMove(x, [hpos.x + 1.4, hpos.y + 0.2, hpos.z + 1.9], [hpos.x, hpos.y + 0.15, hpos.z], [hpos.x + 1.0, hpos.y + 0.15, hpos.z + 1.4], [hpos.x, hpos.y + 0.2, hpos.z], eo, 44); punch(x, 1.4, 0.15);
 });
 // 11.32 "tem o olho esquerdo totalmente apagado" — face close: the right eye glows, the left eye shuts dark on "apagado"
 at(11.32, 'eye', x => {
   const s = stageSet(x); x.S.stageSpot.intensity = 30; const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, 0); alive(c, x.t, 0.6); micHold(c); lookAtCam(x, c, 0.85);
-  const k = eo(seg(L, 1.1, 1.3)); c.setFace({ lidL: mix(0.5, 1, k), lidR: 0, slope: 0 }); const h = hp(c, 4); cam(x, [h.x + 0.1, h.y, h.z + mix(1.9, 1.5, eio(x.u))], [h.x + 0.05, h.y + 0.02, h.z], 40); punch(x, 1.14, 0.12);
+  const k = eo(seg(L, 1.1, 1.3)); c.setFace({ lidR: 0, lidL: 0, slope: 0 }); const h = hp(c, 4); cam(x, [h.x + 0.1, h.y, h.z + mix(1.9, 1.5, eio(x.u))], [h.x + 0.05, h.y + 0.02, h.z], 40); punch(x, 1.14, 0.12);
 });
 // 13.06 "e não custa quase nada no catálogo da loja" — the FNAF 6 catalog on a real monitor; the price drops to $5 on "nada"
 at(13.06, 'catalog', x => {
@@ -269,32 +270,32 @@ at(27.72, 'letters', x => {
 });
 // 30.34 "atrair" — L: Lefty sings into the mic, sound waves; the Puppet drifts towards him (kept well apart)
 at(30.34, 'lure', x => {
-  const s = voidMood(x, '#a05aff', 44); const L = x.L; const c = lefty(x, s, -0.85, 0, 0, 0.35); alive(c, x.t, 1); micHold(c); c.jaw.rotation.x = 0.25 * Math.abs(Math.sin(x.t * 9)); c.setFace({ lidL: 1, lidR: 0.4 });
+  const s = voidMood(x, '#a05aff', 44); const L = x.L; const c = lefty(x, s, -0.85, 0, 0, 0.35); alive(c, x.t, 1); micHold(c); c.jaw.rotation.x = 0.25 * Math.abs(Math.sin(x.t * 9)); c.setFace({ lidR: 0, lidL: 0.4 });
   const p = put(x, 'puppet', s, 0, 0, 0, -1.2); walkPath(p, L, 0, 0.84, [1.6, 0.4], [1.0, 0.25], { stride: 1.4, face: false }); p.root.rotation.y = -1.25; p.head.rotation.x = 0.2;
-  waves(x, s, c.handL.getWorldPosition(new V3()).add(new V3(0.25, 0.3, 0.1)), 1.5, '#d8b0ff'); cam(x, [0.1, 1.9, 4.6 - 0.4 * x.u], [0.1, 1.6, 0], 46); bigLetter(x, s, 0, new V3(-0.1, 3.0, 0.3), 0.0);
+  waves(x, s, c.handL.getWorldPosition(new V3()).add(new V3(0.25, 0.3, 0.1)), 1.5, '#d8b0ff'); cam(x, [0.1, 1.9, 4.6 - 0.4 * x.u], [0.1, 1.6, 0], 46); wordUI(x, 0);
 });
 // 31.18 "prender" — E: arms close in, a cage-like hug
 at(31.18, 'trap', x => {
-  const s = voidMood(x, '#a05aff', 44); const L = x.L; const c = lefty(x, s, 0, 0, 0, 0); alive(c, x.t, 1); lookAtCam(x, c, 0.7); gesture(c, 'reach', L, 0, 9, 1, { face: false }); c.setFace({ lidL: 1, lidR: 0.5, slope: 1 });
-  closeOn(x, c, 3.9, 3.4, 0.15, -0.3, 46); bigLetter(x, s, 1, hp(c, 18).add(new V3(0.0, 0.35, 0)), 0.0);
+  const s = voidMood(x, '#a05aff', 44); const L = x.L; const c = lefty(x, s, 0, 0, 0, 0); alive(c, x.t, 1); lookAtCam(x, c, 0.7); gesture(c, 'reach', L, 0, 9, 1, { face: false }); c.setFace({ lidR: 0, lidL: 0.5, slope: 1 });
+  closeOn(x, c, 3.9, 3.4, 0.15, -0.3, 46); wordUI(x, 1);
 });
 // 31.82 "fundir" — F: the Puppet's soul spirals into his chest, shrinking, with a flash in the eye
 at(31.82, 'fuse', x => {
-  const s = voidMood(x, '#a05aff', 44); const L = x.L; const c = lefty(x, s, 0, 0, 0, 0); alive(c, x.t, 1); micHold(c, 0.5); c.setFace({ lidL: 1, lidR: 0.2 * (1 - sm(seg(L, 0.4, 0.5))) }); const ch = tp(c, 'torso', [0, 6, 2]);
+  const s = voidMood(x, '#a05aff', 44); const L = x.L; const c = lefty(x, s, 0, 0, 0, 0); alive(c, x.t, 1); micHold(c, 0.5); c.setFace({ lidR: 0, lidL: 0.2 * (1 - sm(seg(L, 0.4, 0.5))) }); const ch = tp(c, 'torso', [0, 6, 2]);
   const k = eio(seg(L, 0, 0.45)); const a = k * 9; orbAt(x, 0, s, new V3(ch.x + Math.cos(a) * 0.9 * (1 - k), ch.y + 0.6 * (1 - k), ch.z + 0.3 + Math.sin(a) * 0.9 * (1 - k)), 0.32 * (1 - sm(seg(L, 0.38, 0.5))));
-  sparkles(x, s, ch.toArray(), 0.4, 6, 0.6 * sm(seg(L, 0.35, 0.5))); if (L > 0.44 && L < 0.5) x.post.flash.value = 0.04; closeOn(x, c, 3.5, 3.1, -0.15, -0.35, 46); bigLetter(x, s, 2, hp(c, 18).add(new V3(0.0, 0.35, 0)), 0.0);
+  sparkles(x, s, ch.toArray(), 0.4, 6, 0.6 * sm(seg(L, 0.35, 0.5))); if (L > 0.44 && L < 0.5) x.post.flash.value = 0.04; closeOn(x, c, 3.5, 3.1, -0.15, -0.35, 46); wordUI(x, 2);
 });
 // 32.40 "transportar" — T: he walks, carrying her inside
 at(32.40, 'carry', x => {
   const s = x.S.hall; x.out.scene = s; const L = x.L; x.post.vig.value = 0.9; x.S.hallLamps.forEach((l, i) => { l.intensity = 8 * flicker(x.t, i); l.color.set('#ffd8c0'); });
-  const c = lefty(x, s, 0, 0, 0, 0); walkPath(c, L, -0.4, 1.2, [0.1, -7.0], [0.1, -4.6], { stride: 1.0 }); micHold(c, 0.6); c.setFace({ lidL: 1 });
-  camMove(x, [0.7, 1.4, -1.6], [0, 1.6, -6], [0.5, 1.45, -2.0], [0, 1.65, -5.5], (u) => u, 50); bigLetter(x, s, 3, new V3(0.1, 3.0, -5.2), 0.0);
+  const c = lefty(x, s, 0, 0, 0, 0); walkPath(c, L, -0.4, 1.2, [0.1, -7.0], [0.1, -4.6], { stride: 1.0 }); micHold(c, 0.6); c.setFace({ lidR: 0 });
+  camMove(x, [0.7, 1.4, -1.6], [0, 1.6, -6], [0.5, 1.45, -2.0], [0, 1.65, -5.5], (u) => u, 50); wordUI(x, 3);
 });
 // 33.22 "extrair" — E: a light is pulled out of his chest
 at(33.22, 'extract', x => {
-  const s = voidMood(x, '#3ad8ff', 44); const L = x.L; const c = lefty(x, s, 0, 0, 0, 0); alive(c, x.t, 1); lookAtCam(x, c, 0.6); c.setFace({ lidL: 1 }); const ch = tp(c, 'torso', [0, 6, 2]);
+  const s = voidMood(x, '#3ad8ff', 44); const L = x.L; const c = lefty(x, s, 0, 0, 0, 0); alive(c, x.t, 1); lookAtCam(x, c, 0.6); c.setFace({ lidR: 0 }); const ch = tp(c, 'torso', [0, 6, 2]);
   const k = eo(seg(L, 0.05, 0.6)); orbAt(x, 0, s, new V3(ch.x, ch.y + 0.9 * k, ch.z + 0.6 * k), 0.12 + 0.25 * k); gesture(c, 'agony', L, 0.05, 9, 0.6, { face: false });
-  closeOn(x, c, 3.8, 3.3, 0, -0.3, 46); bigLetter(x, s, 4, hp(c, 18).add(new V3(0.0, 0.35, 0)), 0.0); x.post.tint.value.set(0.9, 1.0, 1.1);
+  closeOn(x, c, 3.8, 3.3, 0, -0.3, 46); wordUI(x, 4); x.post.tint.value.set(0.9, 1.0, 1.1);
 });
 // 33.98 "O que faz total sentido pro seu único objetivo" — Henry, determined, nods
 at(33.98, 'goal', x => {
@@ -303,7 +304,7 @@ at(33.98, 'goal', x => {
 });
 // 36.54 "capturar a Puppet sem destruir" — Lefty in the dark, the Puppet's glow inside his chest
 at(36.54, 'capture', x => {
-  const s = voidMood(x, '#a05aff', 34); const L = x.L; const c = lefty(x, s, 0, 0, 0, 0); alive(c, x.t, 0.8); micHold(c); lookAtCam(x, c, 0.75); c.setFace({ lidL: 1, lidR: 0.3, slope: 1 }); x.setXray && 0;
+  const s = voidMood(x, '#a05aff', 34); const L = x.L; const c = lefty(x, s, 0, 0, 0, 0); alive(c, x.t, 0.8); micHold(c); lookAtCam(x, c, 0.75); c.setFace({ lidR: 0, lidL: 0.3, slope: 1 }); x.setXray && 0;
   const ch = tp(c, 'torso', [0, 6, 2.6]); orbAt(x, 0, s, ch, 0.16 * (1 + 0.2 * Math.sin(x.t * 6))); c.setStripes(0.6, 0.5); closeOn(x, c, 4.0, 3.2, 0.2, -0.4, 46, eio); punch(x, 0.6, 0.12);
 });
 // 38.36 "para finalmente libertar a alma da própria filha" — the burning maze: Charlotte's soul rises free from Lefty on "alma"
@@ -320,23 +321,23 @@ at(40.62, 'fire', x => {
 });
 // 41.70 "E se você olhar bem de perto para os braços do robô no jogo" — slow push onto his right arm, punch on "braços"
 at(41.70, 'arms', x => {
-  const s = stageSet(x); x.S.stageSpot.intensity = 52; const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, -0.35); alive(c, x.t, 0.7); micHold(c); c.setFace({ lidL: 1 }); c.setStripes(0.3);
-  c.root.updateMatrixWorld(true); const a = c.armR.piv.localToWorld(new V3(0, -5.6 / 16, 0)); const k = eio(x.u); const cp = rootPt(c, mix(-1.2, -1.3, k), mix(2.0, 1.4, k), mix(3.4, 2.4, k)); cam(x, cp.toArray(), [mix(hp(c, 0).x, a.x, k), mix(hp(c, 0).y - 0.7, a.y, k), a.z], 46); punch(x, 1.62, 0.15);
+  const s = stageSet(x); x.S.stageSpot.intensity = 52; const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, -0.35); alive(c, x.t, 0.7); micHold(c); c.setFace({ lidR: 0 }); c.setStripes(0.3);
+  c.root.updateMatrixWorld(true); const a = c.armR.piv.localToWorld(new V3(0, -1.0 / 16, 0)); const k = eio(x.u); const cp = rootPt(c, mix(-1.2, -1.3, k), mix(2.0, 1.4, k), mix(3.4, 2.4, k)); cam(x, cp.toArray(), [mix(hp(c, 0).x, a.x, k), mix(hp(c, 0).y - 0.7, a.y, k), a.z], 46); punch(x, 1.62, 0.15);
 });
 // 44.36 "dá até para ver as listras da Puppet presa lá dentro" — the stripes show and glow in the seam on "listras"
 at(44.36, 'stripes', x => {
-  const s = stageSet(x); x.S.stageSpot.intensity = 52; const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, -0.35); alive(c, x.t, 0.5); micHold(c); c.setFace({ lidL: 1 });
+  const s = stageSet(x); x.S.stageSpot.intensity = 52; const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, -0.35); alive(c, x.t, 0.5); micHold(c); c.setFace({ lidR: 0 });
   const k = springE(seg(L, 0.84, 1.2)); c.setStripes(0.3 + 0.9 * k, k); if (L > 1.8) { c.armR.piv.rotation.z += 0.03 * Math.sin(x.t * 30) * (1 - seg(L, 1.8, 2.3)); }
-  c.root.updateMatrixWorld(true); const a = c.armR.piv.localToWorld(new V3(0, -5.6 / 16, 0)); const cp = rootPt(c, -1.35, 1.35, mix(2.3, 2.0, eio(x.u))); cam(x, cp.toArray(), a.toArray(), 42); punch(x, 0.84, 0.15);
+  c.root.updateMatrixWorld(true); const a = c.armR.piv.localToWorld(new V3(0, -1.0 / 16, 0)); const cp = rootPt(c, -1.35, 1.35, mix(2.3, 2.0, eio(x.u))); cam(x, cp.toArray(), a.toArray(), 42); punch(x, 0.84, 0.15);
 });
 // 47.34 "Você já tinha reparado nisso?" — he leans his head towards us, "?"
 at(47.34, 'noticed', x => {
-  const s = stageSet(x); const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, 0); alive(c, x.t, 1); micHold(c); lookAtCam(x, c, 0.85); c.head.rotation.z += 0.24 * springE(seg(L, 0.5, 0.9)); c.setFace({ lidL: 1 });
+  const s = stageSet(x); const L = x.L; const c = lefty(x, s, 0, 0.65, -1.5, 0); alive(c, x.t, 1); micHold(c); lookAtCam(x, c, 0.85); c.head.rotation.z += 0.24 * springE(seg(L, 0.5, 0.9)); c.setFace({ lidR: 0 });
   closeOn(x, c, 2.9, 2.4, 0.15, -0.2, 44); pop(x, x.FX.q1, s, headTop(c, 0.55), 0.98, 0.6);
 });
 // 48.82 "Comenta aí e me segue para mais mistérios" — Lefty and the Puppet wave with their OUTER arms, well apart
 at(48.82, 'outro', x => {
-  const s = stageSet(x); const L = x.L; const c = lefty(x, s, -0.85, 0.65, -1.5, 0.2); alive(c, x.t, 1); lookAtCam(x, c, 0.6); c.setFace({ lidL: 1 }); micHold(c, 0.8);
+  const s = stageSet(x); const L = x.L; const c = lefty(x, s, -0.85, 0.65, -1.5, 0.2); alive(c, x.t, 1); lookAtCam(x, c, 0.6); c.setFace({ lidR: 0 }); micHold(c, 0.8);
   const p = put(x, 'puppet', s, 0.95, 0.65, -1.5, -0.2); alive(p, x.t, 1, 2); lookAtCam(x, p, 0.6); wave(c, 'R', L, 0.05, 9, x.t); wave(p, 'L', L, 0.15, 9, x.t + 0.4);
   camMove(x, [0, 2.0, 3.9], [0, 1.75, -1.5], [0, 2.0, 3.3], [0, 1.8, -1.5], eo, 50);
 });

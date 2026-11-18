@@ -54,8 +54,8 @@ export function buildLefty(canvas) {
   const stripeT = (() => { const c = document.createElement('canvas'); c.width = 4; c.height = 4; const g = c.getContext('2d'); for (let y = 0; y < 4; y++) { g.fillStyle = y % 2 ? '#141414' : '#f2eee2'; g.fillRect(0, y, 4, 1); } return pixelTexture(c); })();
   ch.stripes = [];
   for (const A2 of [ch.armR, ch.armL]) { const band = new THREE.Mesh(new THREE.BoxGeometry(4.6 * U, 2.4 * U, 4.6 * U), new THREE.MeshStandardMaterial({ map: stripeT, emissiveMap: stripeT, roughness: 0.7, emissive: '#ffffff', emissiveIntensity: 0 }));
-    band.position.y = -5.6 * U; band.castShadow = true; A2.piv.add(band); ch.stripes.push(band);
-    const seam = new THREE.Mesh(new THREE.BoxGeometry(4.15 * U, 0.35 * U, 4.15 * U), new THREE.MeshStandardMaterial({ color: '#0a0a0a', roughness: 0.9 })); seam.position.y = -5.6 * U; A2.piv.add(seam); }
+    band.position.y = -1.0 * U; band.castShadow = true; A2.piv.add(band); ch.stripes.push(band);
+    const seam = new THREE.Mesh(new THREE.BoxGeometry(4.15 * U, 0.35 * U, 4.15 * U), new THREE.MeshStandardMaterial({ color: '#0a0a0a', roughness: 0.9 })); seam.position.y = -1.0 * U; A2.piv.add(seam); }
   ch.setStripes = (v, glow = 0) => ch.stripes.forEach(b => { b.scale.set(1, Math.max(0.001, v), 1); b.material.emissiveIntensity = 0.15 + 0.6 * glow; b.visible = v > 0.01; });
   ch.setStripes(0.3);
   ch.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
