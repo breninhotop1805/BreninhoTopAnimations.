@@ -65,7 +65,7 @@ export function holdPose(c, name, t, amt = 1) { const P = POSES[name]; addPose(c
   if (c.setFace && FACE[name]) { const f = FACE[name]; c.face.lid = Math.max(c.face.lid, (f.lid || 0) * amt); if (f.slope) c.face.slope = f.slope; c.face.mouth = Math.max(c.face.mouth, (f.mouth || 0) * amt); } }
 
 // waving: arm up (outer arm!) with a rocking hand on a curve
-export function wave(c, side, L, a, b, t) { const w = gestW(L, a, b, 0.35, 0.35); if (w === 0) return; const A = side === 'R' ? c.armR : c.armL, s = side === 'R' ? -1 : 1;
+export function wave(c, side, L, a, b, t) { const w = Math.max(0, gestW(L, a, b, 0.35, 0.35)); if (w === 0) return; const A = side === 'R' ? c.armR : c.armL, s = side === 'R' ? -1 : 1;
   A.piv.rotation.z += s * 2.45 * w; A.piv.rotation.x += -0.25 * w; A.piv.rotation.z += s * 0.28 * Math.sin(t * 9) * cl(w); A.piv.rotation.x += 0.12 * Math.cos(t * 9) * cl(w); c.head.rotation.z += -s * 0.1 * w; }
 
 // laugh: shoulders bounce + head back + mouth chatter
