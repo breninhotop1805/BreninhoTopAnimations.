@@ -158,14 +158,19 @@ function drawUI(spec, t) {
     ui.font = `bold ${52 * s}px "DejaVu Sans Mono", monospace`; ui.fillStyle = 'rgba(255,255,255,0.95)'; ui.textBaseline = 'top'; ui.fillText('REC', m + 85 * s, m + 30 * s);
     if (blink) { ui.fillStyle = '#ff2a2a'; ui.beginPath(); ui.arc(m + 50 * s, m + 56 * s, 18 * s, 0, 7); ui.fill(); }
     ui.fillStyle = 'rgba(255,255,255,0.95)'; ui.textAlign = 'right'; ui.textBaseline = 'bottom'; ui.fillText(spec, W - m - 30 * s, H - m - 30 * s); ui.textAlign = 'left';
-  } else if (spec.type === 'word') { // glowing word that follows Lefty's head, centred on him, no outline
-    const k = spec.k, a = spec.a; const fs = (spec.txt.length > 8 ? 86 : 104) * s; ui.font = `900 ${fs}px "DejaVu Sans", sans-serif`;
-    const tw = ui.measureText(spec.txt).width * Math.max(1, k); const half = tw / 2 + 24 * s; const cx = Math.min(W - half, Math.max(half, W * spec.u)), cy = H * spec.v;
-    ui.save(); ui.translate(cx, cy); ui.scale(k, k); ui.textAlign = 'center'; ui.textBaseline = 'middle'; ui.globalCompositeOperation = 'lighter';
-    const pulse = 0.85 + 0.15 * Math.sin(t * 7);
-    for (const [blur, al] of [[60 * s, 0.55], [30 * s, 0.7], [12 * s, 0.9]]) { ui.globalAlpha = a * al * pulse; ui.shadowColor = '#b48cff'; ui.shadowBlur = blur; ui.fillStyle = '#b48cff'; ui.fillText(spec.txt, 0, 0); }
-    ui.globalCompositeOperation = 'source-over'; ui.shadowBlur = 8 * s; ui.shadowColor = '#ffffff'; ui.globalAlpha = a;
-    const gr = ui.createLinearGradient(0, -fs / 2, 0, fs / 2); gr.addColorStop(0, '#ffffff'); gr.addColorStop(1, '#e6d8ff'); ui.fillStyle = gr; ui.fillText(spec.txt, 0, 0); ui.restore();
+  } else if (spec.type === 'word') { // pixel-font word (Minecraft style): blocky glyphs with a darker 3D side, soft glow; follows Lefty's head
+    const G = { A: ['01110', '10001', '10001', '11111', '10001', '10001', '10001'], T: ['11111', '00100', '00100', '00100', '00100', '00100', '00100'], R: ['11110', '10001', '10001', '11110', '10100', '10010', '10001'],
+      I: ['111', '010', '010', '010', '010', '010', '111'], P: ['11110', '10001', '10001', '11110', '10000', '10000', '10000'], E: ['11111', '10000', '10000', '11110', '10000', '10000', '11111'],
+      N: ['10001', '11001', '10101', '10011', '10001', '10001', '10001'], D: ['11110', '10001', '10001', '10001', '10001', '10001', '11110'], F: ['11111', '10000', '10000', '11110', '10000', '10000', '10000'],
+      U: ['10001', '10001', '10001', '10001', '10001', '10001', '01110'], S: ['01111', '10000', '10000', '01110', '00001', '00001', '11110'], O: ['01110', '10001', '10001', '10001', '10001', '10001', '01110'], X: ['10001', '10001', '01010', '00100', '01010', '10001', '10001'] };
+    const chars = [...spec.txt]; const cols = chars.reduce((n, c) => n + G[c][0].length + 1, -1); const px = Math.min(15 * s, (W * 0.86) / cols); const tw = cols * px, th = 7 * px;
+    const half = tw / 2 + 20 * s; const cx = Math.min(W - half, Math.max(half, W * spec.u)), cy = H * spec.v; const k = spec.k;
+    ui.save(); ui.translate(cx, cy); ui.scale(k, k); ui.translate(-tw / 2, -th / 2); ui.globalAlpha = spec.a;
+    const each = fn => { let x0 = 0; for (const c of chars) { const g = G[c]; g.forEach((row, y) => [...row].forEach((b, x) => { if (b === '1') fn((x0 + x) * px, y * px); })); x0 += g[0].length + 1; } };
+    ui.shadowColor = 'rgba(170,120,255,0.95)'; ui.shadowBlur = 34 * s; ui.fillStyle = 'rgba(150,100,255,0.55)'; each((x, y) => ui.fillRect(x - 2 * s, y - 2 * s, px + 4 * s, px + 4 * s)); ui.shadowBlur = 0;
+    const d = Math.round(px * 0.35); ui.fillStyle = '#4a2a8a'; each((x, y) => ui.fillRect(x + d, y + d, px, px));          // 3D side
+    const pulse = 0.92 + 0.08 * Math.sin(t * 7); each((x, y) => { ui.fillStyle = `rgba(255,255,255,${pulse})`; ui.fillRect(x, y, px, px); ui.fillStyle = 'rgba(220,205,255,0.9)'; ui.fillRect(x, y + px * 0.62, px, px * 0.38); });
+    ui.restore();
   } else if (spec.type === 'endcard') { // the full video's thumbnail with a small bouncing arrow above and below, both pointing down
     const k = spec.k, a = spec.a ?? 1; const tw = W * 0.84 * k, th = tw * THUMB.height / THUMB.width; const cx = W / 2, cy = H * 0.47; const x0 = cx - tw / 2, y0 = cy - th / 2; const rr = 26 * s * k;
     ui.globalAlpha = a; const rnd = (x, y, w, h, r) => { ui.beginPath(); ui.moveTo(x + r, y); ui.arcTo(x + w, y, x + w, y + h, r); ui.arcTo(x + w, y + h, x, y + h, r); ui.arcTo(x, y + h, x, y, r); ui.arcTo(x, y, x + w, y, r); ui.closePath(); };
