@@ -270,7 +270,7 @@ at(32.94, 'why', x => {
 // 36.08 "O próprio criador do jogo, Scott Cawthon" — Scott walks on stage under the spotlight
 at(36.08, 'scott', x => {
   const s = stageLit(x, 0, 40); const L = x.L; const sc = put(x, 'scott', s, 0, 0.65, 0, 0); walkPath(sc, L, -0.3, 1.3, [1.1, -1.5], [0.0, -1.1], { stride: 0.75 }); if (L > 1.15) sc.root.rotation.y = mix(sc.root.rotation.y, 0, eio(seg(L, 1.15, 1.6)));
-  sc.root.position.y = 0.65; lookAtCam(x, sc, 0.6 * eio(seg(L, 1.0, 1.4))); gesture(sc, 'chest', L, 1.32, 9, 0.9, { face: false }); sc.setFace({ mouth: L > 1.3 ? 0.5 * Math.abs(Math.sin(x.t * 13)) : 0 });
+  sc.root.position.y = 0.65; lookAtCam(x, sc, 0.6 * eio(seg(L, 1.0, 1.4))); { const r = gestW(L, 1.32, 9); sc.armR.piv.rotation.x += -1.15 * r; sc.armR.piv.rotation.z += -0.25 * r; } sc.setFace({ mouth: L > 1.3 ? 0.5 * Math.abs(Math.sin(x.t * 13)) : 0 });
   camMove(x, [0.6, 1.9, 2.6], [0.4, 1.6, -1.3], [0.35, 1.9, 1.8], [0.1, 1.65, -1.1], eo, 46); punch(x, 1.32, 0.12);
 });
 // 38.24 "teve que vir a público acabar com essa confusão e confirmar a verdade" — calming hands, then a firm nod on "verdade"

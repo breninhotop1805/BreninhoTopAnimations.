@@ -175,3 +175,7 @@ Analisado quadro a quadro (4 fps) nos vídeos de referência:
   voz): dá pra ouvir cada efeito sem abafar a narração. Sempre MEDIR (volumedetect) o barramento de efeitos e a voz antes
   de entregar: média dos efeitos 14–18 dB abaixo da média da voz. Os brutos (fogo, estrondo, estática) continuam com
   ganho baixo no sfx.py.
+
+## Props (correção no vídeo do Bonnie azul)
+- Objeto que o personagem não segura de verdade com as mãos NÃO entra (a guitarra do Bonnie ficou "voando na barriga").
+  Só usar prop se as mãos estiverem posicionadas nele em todos os quadros; senão, tirar — o roteiro manda.
