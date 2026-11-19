@@ -22,3 +22,16 @@ Pasta própria: `mc_gta6/`. Nada aqui altera os projetos `fnaf_*`.
   nuvens planas, grama verde-limão sem variação, água azul forte), refs/vicecity_ocean_drive.webp (prédio art déco rosa
   com placa vertical neon, palmeiras, postes, luz azul/rosa à noite).
 - Falta (ele vai mandar): áudio da narração, logos, vídeo de referência.
+
+## Correções pedidas depois da 1ª prévia (aplicadas na v2)
+- Steves estavam invertidos: **steve_b.png = Steve de hoje** (C.steve), **steve_a.png = Steve de 2009** (C.oldsteve).
+- Cidade "feia, parece png colado": refeita 100% em geometria 3D (sem textura de fachada): prédios art déco com janelas
+  emolduradas recuadas, marquises, pilastras, torre de canto arredondada, coroa escalonada, placa neon vertical em tubos 3D,
+  terraço com parapeito/ar-condicionado/caixa d'água, lojas iluminadas, toldos; asfalto molhado com reflexo (environment
+  do céu), faixas e faixa de pedestre; postes curvos com luz; calçadão com mureta e corrimão; praia com guarda-vidas,
+  guarda-sóis e espreguiçadeiras; mar com ondas e espuma; trânsito andando; skyline atrás.
+- Grama demais no mundo do GTA: a chuva de blocos e a pilha na praia saíram. Agora os "212 Minecrafts" e os "200 mil"
+  acontecem DENTRO DO SSD do PS5 (salão escuro com grid neon, 212 pedestais com mini-mundos, campo infinito de micro-mundos).
+- Mais cenários e vida: rua, terraço com neon, conversível andando (Jason dirigindo, Lucia com a mão no vento), calçadão no
+  pôr do sol, SSD, Minecraft de hoje, Minecraft Classic (os dois Steves juntos).
+- Câmera nunca na faixa do trânsito com carros passando (trânsito escondido só quando a câmera está na pista e de costas pra ele).

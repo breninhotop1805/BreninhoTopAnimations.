@@ -7,8 +7,8 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { loadImage, imgToCanvas, imgCopy, Character, U } from './skin.js';
 import { addFace, blinkAt } from './face.js';
 import { collisionCheck } from './act.js';
-import { buildWorld, loadTextures, modernWorld, classicWorld, block, blockRain, updateRain, particles, TEX } from './mc.js';
-import { buildCity, buildPS5, drawBoard } from './city.js';
+import { buildWorld, blockMats, loadTextures, modernWorld, classicWorld, block, blockRain, updateRain, particles, TEX } from './mc.js';
+import { buildCity, buildPS5, drawBoard, buildSSD, car } from './city.js';
 import { SHOTS, DURATION } from './shots.js';
 
 const q = new URLSearchParams(location.search); const W = +q.get('w') || 540, H = +q.get('h') || 960;
@@ -21,20 +21,21 @@ const camera = new THREE.PerspectiveCamera(42, W / H, 0.05, 600);
 await loadTextures();
 const sk = {}; for (const n of ['steve_a', 'steve_b', 'lucia', 'jason']) sk[n] = imgToCanvas(await loadImage(`/skins/${n}.png`));
 const LOGO = { gta: await loadImage('/assets/gta6_logo.png'), mc: await loadImage('/assets/minecraft_logo.png') };
-const S = {}; buildCity(S); buildPS5(S, S.city.children[0]); S.ps5.position.set(-3.6, 0.2, 8.3); S.board.position.set(3.8, 0, 8.6); S.ps5.visible = S.board.visible = false;
-modernWorld(S); classicWorld(S);
+const S = {}; buildCity(S); buildPS5(S, S.city.children[0]); S.ps5.position.set(-3.6, 0.2, 10.8); S.board.position.set(3.8, 0, 11.1); S.conv = car(S.city.children[0], -200, -0.9, 0, '#ff5aa8', '#ff5aa8', 'convertible'); S.ps5.visible = S.board.visible = false;
+modernWorld(S); classicWorld(S); buildSSD(S, blockMats);
+{ const pm = new THREE.PMREMGenerator(renderer); const es = new THREE.Scene(); es.add(S.skyMesh.clone()); S.city.environment = pm.fromScene(es, 0.02).texture; S.city.environmentIntensity = 0.6; }
 
 // ---------- characters (Minecraft skins). Adults all scale 1. ----------
 const C = {};
-C.steve = new Character('steve', sk.steve_a);
-C.oldsteve = new Character('oldsteve', sk.steve_b);
+C.steve = new Character('steve', sk.steve_b);      // modern Steve (today)
+C.oldsteve = new Character('oldsteve', sk.steve_a); // 2009 Steve
 C.lucia = new Character('lucia', sk.lucia);
 { // Jason: backwards cap -> painted brim line on the hat layer erased, real 3D brim at the BACK of the head
   const A = imgCopy(sk.jason); A.getContext('2d').clearRect(56, 12, 8, 2); C.jason = new Character('jason', A);
   const capM = new THREE.MeshStandardMaterial({ color: '#4f462b', roughness: 0.8 }); const brim = new THREE.Mesh(new THREE.BoxGeometry(7.2 * U, 0.55 * U, 3.0 * U), capM);
   brim.position.set(0, 4.6 * U, -5.4 * U); brim.rotation.x = -0.12; brim.castShadow = true; C.jason.head.add(brim);
   const strap = new THREE.Mesh(new THREE.BoxGeometry(7.4 * U, 0.6 * U, 0.3 * U), capM); strap.position.set(0, 4.85 * U, -4.15 * U); C.jason.head.add(strap); }
-addFace(C.steve, { eyes: [[1, 4, 2, 1], [5, 4, 2, 1]], lid: '#b4846d', lash: '#2b1e0d', mouth: { row: 6, x0: 3, x1: 4, max: 1, dark: '#3a1a10', paint: true } });
+addFace(C.steve, { eyes: [[1, 4, 2, 1], [5, 4, 2, 1]], lid: '#aa7259', lash: '#2b1e0d', mouth: { row: 6, x0: 3, x1: 4, max: 1, dark: '#3a1a10', paint: true } });
 addFace(C.lucia, { eyes: [[1, 4, 2, 3], [5, 4, 2, 3]], lid: '#c28f82', lash: '#160f0d', mouth: { row: 7, x0: 3, x1: 4, max: 1, dark: '#5a2020', paint: true } });
 addFace(C.jason, { eyes: [[1, 4, 2, 3], [5, 4, 2, 3]], lid: '#e8b085', lash: '#221c15', mouth: { row: 7, x0: 3, x1: 4, max: 1, dark: '#4a1a10', paint: true } });
 const BLINKERS = new Set(['steve', 'lucia', 'jason']);
@@ -99,10 +100,11 @@ function drawUI(spec, t) { ui.clearRect(0, 0, W, H); if (!spec) { uiTex.needsUpd
 // ---------- frame ----------
 const allChars = Object.values(C);
 const ctx = { THREE, C, S, FX, camera, U, updateRain, drawBoard, TEX };
+S.conv.visible = false;
 function resetWorld() {
   for (const c of allChars) { c.reset(); c.root.visible = true; c.root.scale.setScalar(c.baseScale); c.root.position.set(0, 0, 0); c.root.rotation.set(0, 0, 0); c.root.removeFromParent(); c.noBlink = false; }
   for (const o of [FX.pyr, FX.block, FX.stone, FX.parts, FX.parts2, FX.rainCity, FX.rainMany, FX.pile, FX.gold, FX.q, FX.ex, FX.sparks]) { o.removeFromParent(); o.visible = true; o.scale.setScalar(1); o.rotation.set(0, 0, 0); }
-  S.ps5.visible = S.board.visible = false; camera.fov = 42; camera.up.set(0, 1, 0);
+  S.ps5.visible = S.board.visible = false; S.conv.visible = false; S.conv.position.set(-200, 0, -0.9); S.traffic.forEach(c => c.visible = true); camera.fov = 42; camera.up.set(0, 1, 0);
   const P = post.uniforms; P.vig.value = 0.5; P.grain.value = 0.02; P.glitch.value = 0; P.flash.value = 0; P.fade.value = 0; P.chroma.value = 0;  P.blur.value = 0; P.tint.value.set(1, 1, 1); bloom.strength = 0.45;
 }
 function renderAt(t) {
@@ -111,7 +113,9 @@ function renderAt(t) {
   run(); const cp = camera.position.clone(), cq = camera.quaternion.clone(), cf = camera.fov; const { out, live } = run(); camera.position.copy(cp); camera.quaternion.copy(cq); camera.fov = cf;
   for (const c of allChars) { if (!c.applyFace) continue; if (BLINKERS.has(c.name) && c.face.lid < 0.05 && !c.noBlink) c.face.lid = blinkAt(t, c.name.length); c.applyFace(); }
   collisionCheck(t, live);
-  if (S.ferris) S.ferris.rotation.z = t * 0.12;
+  if (S.ferris) S.ferris.rotation.z = t * 0.12; S.updateTraffic(t); S.foam.material.opacity = 0.55 + 0.3 * Math.sin(t * 1.3); S.foam.position.z = 29.4 + 0.5 * Math.sin(t * 1.3);
+  { const a = S.sea.geometry.attributes.position, b = S.seaBase; for (let i = 0; i < a.count; i++) { const X = b[i * 3], Y = b[i * 3 + 1]; a.array[i * 3 + 2] = 0.12 * Math.sin(X * 0.3 + t * 1.6) + 0.08 * Math.sin(Y * 0.45 - t * 1.1); } a.needsUpdate = true; S.sea.geometry.computeVertexNormals(); }
   camera.aspect = W / H; camera.updateProjectionMatrix(); renderPass.scene = out.scene; drawUI(out.ui, t); uiPass.uniforms.uiOn.value = out.ui ? 1 : 0; post.uniforms.time.value = t; composer.render();
 }
+if (q.get('view')) { const v = q.get('view').split(',').map(Number); window.VIEW = t => { camera.position.set(v[0], v[1], v[2]); camera.lookAt(v[3], v[4], v[5]); camera.fov = v[6] || 50; camera.aspect = W / H; camera.updateProjectionMatrix(); S.updateTraffic(t); renderPass.scene = { city: S.city, ssd: S.ssd, mc: S.mc }[q.get('sc') || 'city']; if (S.updateSSD) { S.updateSSD(0.6); S.updateField(0.5); } drawUI(null); uiPass.uniforms.uiOn.value = 0; composer.render(); }; }
 window.APP = { ready: true, duration: DURATION, renderAt, shots: SHOTS.map(s => [s.t, s.name]) };
