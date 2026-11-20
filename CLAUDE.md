@@ -229,3 +229,9 @@ Freddy feia**, **começo do vídeo mostrando o teto** (a lâmpada). Regras:
 - **Almas/fantasmas de personagens conhecidos (Golden Freddy):** modelo completo e reconhecível, com transparência
   bonita, sem as partes internas aparecendo nem cores lavadas. Fazer um close de teste e só usar se ficar bonito.
 - Assistir ao vídeo final inteiro com áudio, como espectador, perguntando em cada corte "isso faz sentido com a fala?".
+- (Rockstar v3) Pedidos dele: **NADA de cofre** (porta redonda bugava) — moedas caídas/montanhas de moedas podem; **nunca mais
+  "olho vermelho"** pra indicar algo sombrio — usar luz (lâmpada falhando, ele aparecendo mais perto no escuro, luz fria de tela).
+  Almas de animatrônico (Golden Freddy) = modelo SÓLIDO (buildGolden em rockstar.js) aparecendo com flicker/fade, nunca fantasma
+  transparente aditivo (fica feio).
+- Contact sheet em cena escura engana (fundo escuro parece "cabeça cortada"): conferir frames duvidosos em escala 0.4.
+- Tela/monitor numa mesa = com pé/base apoiado na mesa; nunca flutuando na frente do personagem.

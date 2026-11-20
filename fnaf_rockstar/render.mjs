@@ -14,7 +14,7 @@ const page = await browser.newPage({ viewport: { width: Math.round(W * scale), h
 page.on('console', m => { if (m.type() === 'error' || m.text().startsWith('LOG')) console.log('[page]', m.text()); });
 page.on('pageerror', e => { console.log('[pageerror]', e.message); process.exit(3); });
 await page.goto(`http://localhost:${port}/${process.env.PAGE||'index.html'}?${process.env.QX||''}&w=${Math.round(W * scale)}&h=${Math.round(H * scale)}`);
-await page.waitForFunction(() => window.APP && window.APP.ready, null, { timeout: 120000 });
+await page.waitForFunction(() => window.APP && window.APP.ready, null, { timeout: 120000 }); if (process.env.DBG) await page.evaluate(() => window.DBG = 1);
 const FPS = 30;
 async function grab(t) { await page.evaluate(t => window.APP.renderAt(t), t); return page.screenshot({ type: 'jpeg', quality: 95 }); }
 if (mode === 'stills') {

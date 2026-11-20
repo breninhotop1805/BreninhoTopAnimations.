@@ -2,7 +2,7 @@
 // top hat, ears, muzzle (same pixels as the skin), purple bowtie, the raised coin box on the chest (same pixels) with a
 // 3D gold star and a real coin slot. Microphone held in his right hand, always ball-up.
 import * as THREE from 'three';
-import { Character, U, imgCopy, voxelArt, vbox, avgColor, recolorWhere, eraseRect } from './skin.js';
+import { Character, U, imgCopy, voxelArt, vbox, avgColor, recolorWhere, eraseRect, buildFreddy } from './skin.js';
 import { region, solidify, slab } from './sb.js';
 
 export function star(r, depth, col, em = '#000', ei = 0) { const s = new THREE.Shape(); for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2 + Math.PI / 2, rr = i % 2 ? r * 0.45 : r; const x = Math.cos(a) * rr, y = Math.sin(a) * rr; i ? s.lineTo(x, y) : s.moveTo(x, y); }
@@ -23,7 +23,7 @@ export function buildRockstar(canvas) {
   const muz = solidify(region(A, 9.5, 12, 5, 2, 41.5, 12));                     // muzzle (nose + snout) -> 3D, same pixels
   const bow = solidify(region(A, 21.5, 36, 5, 2.5)); eraseRect(A, 20, 36, 8, 2.5); // purple bowtie -> 3D
   const box = solidify(region(A, 21, 22.5, 6, 6.5, 21, 38.5));                   // coin box panel (base + overlay) -> raised 3D plate
-  eraseRect(A, 21, 38.5, 6, 6.5);
+  eraseRect(A, 21, 38.5, 6, 6.5); recolorWhere(A, 21, 22.5, 6, 6.5, (r, g, b) => r > 190 && g > 150 && b < 90, '#a86d3c');   // no painted star left under the 3D one
   { const g = box.getContext('2d'); const d = g.getImageData(0, 0, box.width, box.height); for (let i = 0; i < d.data.length; i += 4) { const r = d.data[i], gg = d.data[i + 1], b = d.data[i + 2]; if (r > 190 && gg > 150 && b < 90) d.data.set([0xa8, 0x6d, 0x3c, 255], i); } g.putImageData(d, 0, 0); } // painted star removed (the 3D star replaces it)
   const ch = new Character('rockstar', A); const H = ch.head; const s = A.width / 64;
   const m = slab(muz, s, 1.3, 0.55); m.position.set(0, (16 - 13) * U, (4 + 0.65) * U); H.add(m); ch.muzzle = m;
@@ -51,3 +51,18 @@ export function buildRockstar(canvas) {
   for (const sx of [-1, 1]) { const p = new THREE.Mesh(new THREE.BoxGeometry(0.55 * U, 0.9 * U, 0.06 * U), em); p.position.set(sx * 2.25 * U, 4.5 * U, 4.04 * U); H.add(p); const hh = new THREE.Mesh(new THREE.CircleGeometry(0.6 * U, 16), halo); hh.position.set(sx * 2.25 * U, 4.5 * U, 4.09 * U); H.add(hh); }
   ch.eyeRed = k => { k = Math.max(0, Math.min(1, k)); em.opacity = k; halo.opacity = 0.22 * k; };
   ch.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } }); ch.baseScale = 1.35; return ch; }
+
+// Golden Freddy, SOLID (never a see-through ghost): painted purple shading/hat on the head recoloured to fur, the hat layer's
+// muzzle becomes a real 3D slab (same pixels, teeth included), small black top hat, gold 3D ears. ch.fadeIn(k) for appearing.
+export function buildGolden(canvas) { const A = imgCopy(canvas); const fur = '#907600'; const isPur = (r, g, b) => b > g + 10;
+  recolorWhere(A, 0, 0, 32, 16, isPur, fur); 
+  const muz = solidify(region(A, 9, 12, 6, 2, 41, 12)); eraseRect(A, 32, 0, 32, 16);
+  const ch = new Character('golden', A); const H = ch.head; const s = A.width / 64;
+  const m = slab(muz, s, 1.2, 0.55); m.position.set(0, (16 - 13) * U, (4 + 0.6) * U); H.add(m); ch.muzzle = m;
+  const hat = new THREE.Group(); vbox(5.0, 0.45, 5.0, '#0c0c10', 0, 0.22, 0, hat, 0.35); vbox(3.4, 2.8, 3.4, '#121216', 0, 1.85, 0, hat, 0.35);
+  hat.position.set(-0.4 * U, 8 * U, 0.2 * U); hat.rotation.z = 0.1; H.add(hat);
+  const P = { o: '#a88a10', d: '#6a5208' }; const ear = () => voxelArt(['.oooo.', 'oddddo', 'oddddo', 'oddddo', '.oooo.'], P, 0.6 * U, 1.2 * U);
+  for (const sx of [-1, 1]) { const e = ear(); e.position.set(sx * 3.6 * U, (8 + 1.4) * U, -0.8 * U); e.rotation.z = -sx * 0.25; H.add(e); }
+  const mats = new Set(); ch.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; (Array.isArray(o.material) ? o.material : [o.material]).forEach(mm => mats.add(mm)); } });
+  ch.fadeIn = k => { k = Math.max(0, Math.min(1, k)); for (const mm of mats) { mm.transparent = k < 1; mm.opacity = k; mm.depthWrite = true; } ch.root.visible = k > 0.001; };
+  ch.baseScale = 1.35; return ch; }

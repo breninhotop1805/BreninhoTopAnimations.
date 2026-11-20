@@ -12,7 +12,7 @@ const hazardTex = () => cvTex(32, 8, (g, w, h) => { g.fillStyle = '#e8b818'; g.f
 function hazardFrame(p, w, h, x, y, z, ry, th = 0.14) { const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = ry; p.add(g); const t = hazardTex(); const mk = (len, rot) => { const tt = t.clone(); tt.needsUpdate = true; tt.repeat.set(len / 0.5, 1); return std({ map: tt, roughness: 0.6 }); };
   box(th, h, 0.06, mk(h, 1), -w / 2, h / 2, 0, g).rotation.z = 0; box(th, h, 0.06, mk(h, 1), w / 2, h / 2, 0, g); box(w + th, th, 0.06, mk(w, 0), 0, h, 0, g); return g; }
 // voxel letters (5x5 font) for signs: EXIT, 25¢
-const FONT = { E: ['111', '100', '110', '100', '111'], X: ['101', '101', '010', '101', '101'], I: ['1', '1', '1', '1', '1'], T: ['111', '010', '010', '010', '010'], 2: ['111', '001', '111', '100', '111'], 5: ['111', '100', '111', '001', '111'], c: ['000', '011', '100', '100', '011'], '!': ['1', '1', '1', '0', '1'] };
+const FONT = { F: ['111', '100', '110', '100', '100'], A: ['010', '101', '111', '101', '101'], Z: ['111', '001', '010', '100', '111'], B: ['110', '101', '110', '101', '110'], R: ['110', '101', '110', '101', '101'], N: ['1001', '1101', '1011', '1001', '1001'], M: ['10001', '11011', '10101', '10001', '10001'], E: ['111', '100', '110', '100', '111'], X: ['101', '101', '010', '101', '101'], I: ['1', '1', '1', '1', '1'], T: ['111', '010', '010', '010', '010'], 2: ['111', '001', '111', '100', '111'], 5: ['111', '100', '111', '001', '111'], c: ['000', '011', '100', '100', '011'], '!': ['1', '1', '1', '0', '1'] };
 export function voxText(txt, col, px, depth, emissive = true) { const g = new THREE.Group(); const m = emissive ? glow(col) : std({ color: col }); let x0 = 0; const geo = new THREE.BoxGeometry(px * 0.92, px * 0.92, depth);
   for (const ch of txt) { const F = FONT[ch]; if (!F) { x0 += 2; continue; } F.forEach((r, y) => [...r].forEach((b, x) => { if (b === '1') { const v = new THREE.Mesh(geo, m); v.position.set((x0 + x) * px, (4 - y) * px, 0); g.add(v); } })); x0 += F[0].length + 1; }
   g.children.forEach(v => v.position.x -= (x0 - 1) * px / 2); return g; }
@@ -59,7 +59,7 @@ export function buildOffice(S) {
     const cup = new THREE.Group(); cup.position.set(1.0, 0.98, Z0 + 0.75); g.add(cup); cyl(0.07, 0.06, std({ color: '#3ab8d8' }), 0, 0.03, 0, cup); const ck = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), std({ color: '#ff6ab0' })); ck.position.y = 0.06; cup.add(ck);
     cyl(0.006, 0.06, std({ color: '#f2f2f2' }), 0, 0.17, 0, cup); const fl = new THREE.Mesh(new THREE.ConeGeometry(0.012, 0.03, 6), glow('#ffb040')); fl.position.y = 0.215; cup.add(fl); }
   // hanging lamp, star string lights, big ducts with red rings
-  { const lamp = new THREE.Group(); lamp.position.set(0, Hh, -1.6); g.add(lamp); cyl(0.01, 0.5, std({ color: '#111' }), 0, -0.25, 0, lamp, 6); const sh = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.32, 0.18, 18, 1, true), std({ color: '#1a1a1a', side: THREE.DoubleSide })); sh.position.y = -0.55; lamp.add(sh);
+  { const lamp = new THREE.Group(); lamp.position.set(0, Hh, -1.6); g.add(lamp); S.lamp = lamp; cyl(0.01, 0.5, std({ color: '#111' }), 0, -0.25, 0, lamp, 6); const sh = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.32, 0.18, 18, 1, true), std({ color: '#1a1a1a', side: THREE.DoubleSide })); sh.position.y = -0.55; lamp.add(sh);
     const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 8), glow('#ffd890')); bulb.position.y = -0.62; lamp.add(bulb); S.lampBulb = bulb;
     const key = new THREE.SpotLight('#ffcf8a', 46, 12, 0.75, 0.6, 1.3); key.position.set(0, Hh - 0.5, 0.9); key.target.position.set(0, 1.3, -0.9); key.castShadow = true; key.shadow.mapSize.set(1024, 1024); s.add(key, key.target); S.officeKey = key;
     const sm = new THREE.MeshBasicMaterial({ color: '#f0f0f6', toneMapped: false }); for (let i = 0; i < 26; i++) { const k = i / 25; const x = -4.3 + k * 8.6; const y = Hh - 0.35 - Math.sin(k * Math.PI * 2) * 0.12 - 0.15 * Math.sin(k * Math.PI); const st = star(0.05, 0.01, '#f0f0f6', '#f0f0f6', 1.2); st.position.set(x, y, Z0 + 0.4); g.add(st); }
@@ -92,7 +92,7 @@ export function buildOffice(S) {
     const cp = cyl(0.07, 0.24, std({ map: stripe }), 1.15, 1.14, 0.1, fd, 14); cyl(0.004, 0.18, std({ color: '#f2f2f2' }), 1.17, 1.32, 0.1, fd, 6); }
   // the monitor/tablet with the system panel (UCN-style UI drawn on its screen), in a real frame
   { const tg = new THREE.Group(); g.add(tg); S.tablet = tg; tg.visible = false; const c = document.createElement('canvas'); c.width = 640; c.height = 360; const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; S.panelCanvas = c; S.panelTex = tex;
-    box(0.7, 0.43, 0.04, std({ color: '#1a1a1c', roughness: 0.5 }), 0, 0, -0.02, tg); const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.64, 0.36), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false })); scr.position.z = 0.002; tg.add(scr); const L = new THREE.PointLight('#8ad8ff', 0.6, 2.5, 2); L.position.z = 0.4; tg.add(L); }
+    box(0.7, 0.43, 0.04, std({ color: '#1a1a1c', roughness: 0.5 }), 0, 0, -0.02, tg); box(0.06, 0.24, 0.04, std({ color: '#1a1a1c', roughness: 0.5 }), 0, -0.33, -0.05, tg); box(0.34, 0.03, 0.22, std({ color: '#1a1a1c', roughness: 0.5 }), 0, -0.44, -0.02, tg); const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.64, 0.36), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false })); scr.position.z = 0.002; tg.add(scr); const L = new THREE.PointLight('#8ad8ff', 0.6, 2.5, 2); L.position.z = 0.4; tg.add(L); }
   // lights: hanging lamp key (above), dim ambience, monitor glow, EXIT glow
   s.add(new THREE.HemisphereLight('#6a5a68', '#100c0a', 1.1)); const wash = new THREE.SpotLight('#ffcf8a', 45, 10, 1.0, 0.7, 1.2); wash.position.set(0, Hh - 0.7, -1.6); wash.target.position.set(0, 2.2, Z0); s.add(wash, wash.target); S.officeWash = wash;
   for (const sx of [-1, 1]) { const sl = new THREE.PointLight('#ffb070', 6, 6, 1.5); sl.position.set(sx * 3.2, 3.2, -2.4); s.add(sl); }
@@ -128,7 +128,7 @@ export function buildStage6(S) {
     for (const [hx, hz] of [[-0.25, 0.1], [0.2, -0.15]]) { const h = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.22, 12), std({ color: hx < 0 ? '#e83a8a' : '#3ab8e8' })); h.position.set(hx, 0.92, hz); t.add(h); } }
   const key = new THREE.SpotLight('#fff0d8', 80, 16, 0.42, 0.5, 1.2); key.position.set(0, 7, 3); key.target.position.set(0, 1.5, -4); key.castShadow = true; key.shadow.mapSize.set(1024, 1024); s.add(key, key.target); S.stageKey = key;
   for (const [x, c] of [[-3, '#ff4fd0'], [3, '#4fc8ff']]) { const sp = new THREE.SpotLight(c, 40, 14, 0.3, 0.5, 1.2); sp.position.set(x, 6.5, 0); sp.target.position.set(0, 1.5, -4); s.add(sp, sp.target); }
-  const house = new THREE.PointLight('#ffe0c0', 14, 10, 1.4); house.position.set(0, 3.6, 2.2); s.add(house); const lampG = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), glow('#ffe8c0')); lampG.position.set(0, 4.2, 2.2); g.add(lampG); cyl(0.01, 1.6, std({ color: '#111' }), 0, 5.0, 2.2, g, 6);
+  const spill = new THREE.PointLight('#ffd0a0', 0, 7, 1.5); spill.position.set(0, 1.9, -2.0); s.add(spill); S.stageSpill = spill; const house = new THREE.PointLight('#ffe0c0', 14, 10, 1.4); house.position.set(0, 3.6, 2.2); s.add(house); const lampG = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), glow('#ffe8c0')); lampG.position.set(0, 4.2, 2.2); g.add(lampG); cyl(0.01, 1.6, std({ color: '#111' }), 0, 5.0, 2.2, g, 6);
   s.add(new THREE.HemisphereLight('#4a3a6a', '#0a0608', 0.5)); S.stage6 = s; return s; }
 
 // the burning room (FNAF 6 ending): dark, scorched walls, embers; the fire FX is added by the shots
@@ -181,4 +181,49 @@ export function buildNightmare(S) {
     S.tvs.forEach(tv => { const u = tv.userData; const a = u.a + t * u.sp; tv.position.set(center.x + Math.cos(a) * u.r, u.y + 0.15 * Math.sin(t * 1.3 + u.a * 3), center.z + Math.sin(a) * u.r); tv.lookAt(center.x, u.y, center.z); tv.rotation.z += 0.2 * Math.sin(t + u.a); }); };
   const rim = new THREE.SpotLight('#ff2a2a', 60, 14, 0.5, 0.6, 1.3); rim.position.set(0, 5, -4); rim.target.position.set(0, 1, 0); s.add(rim, rim.target); S.nmRim = rim;
   const key = new THREE.SpotLight('#9ab0ff', 70, 14, 0.55, 0.6, 1.3); key.position.set(1.5, 5, 4); key.target.position.set(0, 1.2, 0); s.add(key, key.target); S.nmKey = key;
-  s.add(new THREE.HemisphereLight('#2a2040', '#000', 0.4)); S.nightmare = s; return s; }
+  const gl = new THREE.PointLight('#ffd060', 0, 5, 1.5); s.add(gl); S.nmGold = gl; s.add(new THREE.HemisphereLight('#2a2040', '#000', 0.4)); S.nightmare = s; return s; }
+
+// per-letter voxel word: every letter has its own material so the sign can light up letter by letter (S.signOn(k))
+function voxWord(txt, px, depth, list) { const g = new THREE.Group(); let x0 = 0; const geo = new THREE.BoxGeometry(px * 0.9, px * 0.9, depth); const letters = [];
+  for (const ch of txt) { const F = FONT[ch]; if (!F) { x0 += 2; continue; } const m = new THREE.MeshBasicMaterial({ color: '#3a2a08', toneMapped: false }); const lg = new THREE.Group(); g.add(lg); letters.push(m);
+    F.forEach((r, y) => [...r].forEach((b, x) => { if (b === '1') { const v = new THREE.Mesh(geo, m); v.position.set((x0 + x) * px, (4 - y) * px, 0); lg.add(v); } })); x0 += F[0].length + 1; }
+  g.children.forEach(l => l.children.forEach(v => v.position.x -= (x0 - 1) * px / 2)); list.push(...letters); return g; }
+
+// ===================== Fazbear Entertainment: the company's greed (voxel sign + mountains of Faz-Coins that can rise) =====================
+export function buildCorp(S) {
+  const s = new THREE.Scene(); s.background = new THREE.Color('#040302'); s.fog = new THREE.Fog('#060403', 9, 22); const g = new THREE.Group(); s.add(g); const r = rng(33);
+  const fl = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), std({ color: '#141010', metalness: 0.75, roughness: 0.22 })); fl.rotation.x = -Math.PI / 2; fl.receiveShadow = true; g.add(fl);
+  const wall = std({ color: '#1a1210', roughness: 0.7 }); box(18, 8, 0.3, wall, 0, 4, -7, g); for (const sx of [-1, 1]) box(0.3, 8, 16, wall, sx * 7, 4, 0, g);
+  for (let i = -3; i <= 3; i++) { box(0.35, 8, 0.35, std({ color: '#2a1c14', roughness: 0.5 }), i * 2.2, 4, -6.75, g); }
+  // the sign: FAZBEAR / ENTERTAINMENT in voxels, gold, mounted on a dark frame
+  const letters = []; const w1 = voxWord('FAZBEAR', 0.16, 0.12, letters); w1.position.set(0, 4.7, -6.5); g.add(w1); const w2 = voxWord('ENTERTAINMENT', 0.075, 0.08, letters); w2.position.set(0, 3.85, -6.5); g.add(w2);
+  box(6.6, 2.1, 0.12, std({ color: '#0a0806', roughness: 0.4, metalness: 0.5 }), 0, 4.75, -6.62, g); S.signLetters = letters;
+  S.signOn = k => { const n = letters.length; letters.forEach((m, i) => { const a = Math.max(0, Math.min(1, k * (n + 3) - i)); m.color.setRGB(0.23 + 1.6 * a, 0.16 + 1.15 * a, 0.03 + 0.25 * a); }); };
+  const signL = new THREE.PointLight('#ffc040', 0, 9, 1.4); signL.position.set(0, 4.4, -5.6); s.add(signL); S.signLight = signL;
+  // mountains of coins (instanced), leaving the centre aisle free for the characters; S.corpPile.position.y < 0 = still "low"
+  const pile = new THREE.Group(); g.add(pile); S.corpPile = pile;
+  const gold = new THREE.MeshStandardMaterial({ color: '#e8b830', metalness: 0.9, roughness: 0.28, emissive: '#3a2400', emissiveIntensity: 0.3 });
+  const N = 5000; const im = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.1, 0.1, 0.02, 14), gold, N); im.castShadow = im.receiveShadow = true; const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
+  const mounds = [[-3.1, -2.6, 2.1, 2.4], [3.1, -2.9, 2.2, 2.7], [0, -5.0, 2.3, 2.0], [-3.8, 1.4, 1.6, 1.4], [3.8, 1.2, 1.7, 1.5]]; let i = 0;
+  for (const [cx, cz, rad, h] of mounds) for (let k = 0; k < N / mounds.length; k++) { const a = r() * Math.PI * 2, d = Math.sqrt(r()) * rad; const y = Math.max(0.01, h * (1 - d / rad)) * (0.7 + 0.3 * r()); e.set(r() * 0.8 - 0.4, r() * 6, r() * 0.8 - 0.4); q.setFromEuler(e); m4.compose(new THREE.Vector3(cx + Math.cos(a) * d, y, cz + Math.sin(a) * d), q, new THREE.Vector3(1, 1, 1)); if (i < N) im.setMatrixAt(i++, m4); }
+  pile.add(im);
+  // a few loose coins on the aisle floor
+  for (let k = 0; k < 60; k++) { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.02, 14), gold); c.position.set((r() - 0.5) * 3.2, 0.012, -3 + r() * 5); c.rotation.set(r() * 0.2, r() * 6, r() * 0.2); c.receiveShadow = true; pile.add(c); }
+  const key = new THREE.SpotLight('#ffd890', 130, 18, 0.7, 0.5, 1.2); key.position.set(0.5, 7, 3.5); key.target.position.set(0, 1, -1.5); key.castShadow = true; key.shadow.mapSize.set(1024, 1024); s.add(key, key.target); S.corpKey = key;
+  for (const [x, z] of [[-3.2, -2.6], [3.2, -2.9]]) { const sp = new THREE.SpotLight('#ffcf60', 45, 11, 0.55, 0.6, 1.3); sp.position.set(x, 6.4, z + 1.5); sp.target.position.set(x, 0.8, z); s.add(sp, sp.target); }
+  s.add(new THREE.HemisphereLight('#6a5a40', '#080604', 0.6)); S.corp = s; return s; }
+
+// ===================== the void (for "the five children" and "connecting the dots") =====================
+export function buildVoid(S) {
+  const s = new THREE.Scene(); s.background = new THREE.Color('#030208'); s.fog = new THREE.FogExp2('#05040c', 0.06); const g = new THREE.Group(); s.add(g); const r = rng(9);
+  const dm = new THREE.MeshBasicMaterial({ color: '#8a8ac8', transparent: true, opacity: 0.5, depthWrite: false }); S.dust = [];
+  for (let i = 0; i < 90; i++) { const d = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, 0.02), dm); d.userData = [(r() - 0.5) * 8, r() * 4, -4 + r() * 6, r() * 6]; g.add(d); S.dust.push(d); }
+  S.voidDust = t => S.dust.forEach(d => { const [x, y, z, p] = d.userData; d.position.set(x + 0.2 * Math.sin(t * 0.3 + p), (y + t * 0.08) % 4, z); });
+  const L = new THREE.PointLight('#ffd890', 6, 8, 1.6); L.position.set(0, 2.2, 1.5); s.add(L); S.voidLight = L;
+  s.add(new THREE.HemisphereLight('#3a3a6a', '#000', 0.5)); S.void = s; return s; }
+
+// the "code" running on the office CRT (green pixel lines scrolling + a blinking coin + "5"): it is a SCREEN, inside a real CRT
+export function officeCode(S, t) { const c = S.officeStatic; const g = c.getContext('2d'); g.fillStyle = '#031006'; g.fillRect(0, 0, 48, 36); const r = rng(7); const sc = Math.floor(t * 9);
+  for (let row = 0; row < 9; row++) { const rr = rng(row + sc * 3 + 11); let x = 2 + Math.floor(rr() * 4); const y = 2 + row * 4 - 0; while (x < 30) { const w = 2 + Math.floor(rr() * 6); g.fillStyle = rr() > 0.75 ? '#e8d040' : '#3ae86a'; g.fillRect(x, y, w, 2); x += w + 2; } }
+  const on = Math.floor(t * 3) % 2; g.fillStyle = on ? '#e8b830' : '#a07818'; g.beginPath(); g.arc(40, 11, 5, 0, 7); g.fill(); g.fillStyle = '#fff2b0'; g.fillRect(39, 8, 3, 1); g.fillRect(39, 8, 1, 6); g.fillRect(39, 10, 2, 1);
+  g.fillStyle = '#ffffff'; [[1, 1, 1], [1, 0, 0], [1, 1, 1], [0, 0, 1], [1, 1, 1]].forEach((rw, j) => rw.forEach((b, i) => { if (b) g.fillRect(37 + i * 2, 20 + j * 2, 2, 2); })); S.officeStaticTex.needsUpdate = true; }

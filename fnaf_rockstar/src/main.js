@@ -7,8 +7,8 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { loadImage, imgToCanvas, Character, U, buildWilliam, buildSpring, addEndo, buildFreddy, makeGhost, recolorChild } from './skin.js';
 import { addFace, blinkAt, FACES } from './face.js';
 import { collisionCheck } from './act.js';
-import { buildRockstar, fazCoin } from './rockstar.js';
-import { buildOffice, buildStage6, buildFireRoom, buildVault, buildNightmare, drawPanel, rng } from './ucn.js';
+import { buildRockstar, fazCoin, buildGolden } from './rockstar.js';
+import { buildOffice, buildStage6, buildFireRoom, buildCorp, buildVoid, buildNightmare, drawPanel, rng } from './ucn.js';
 import { SHOTS, DURATION } from './shots.js';
 
 const q = new URLSearchParams(location.search); const W = +q.get('w') || 540, H = +q.get('h') || 960;
@@ -19,16 +19,17 @@ const camera = new THREE.PerspectiveCamera(42, W / H, 0.03, 80);
 
 // ---------- assets ----------
 const sk = {}; for (const n of ['rockstar', 'william', 'springtrap', 'child', 'goldenfreddy']) sk[n] = imgToCanvas(await loadImage(`/skins/${n}.png`));
-const S = {}; buildOffice(S); buildStage6(S); buildFireRoom(S); buildVault(S); buildNightmare(S);
+const S = {}; buildOffice(S); buildStage6(S); buildFireRoom(S); buildCorp(S); buildVoid(S); buildNightmare(S);
 
 // ---------- characters: animatronics 1.35, William 1.0 (adult), kids 0.74 (ghosts) ----------
 const KIDPAL = [{ shirt: '#d84a6a', accent: '#f2c230', pants: '#2a4a9a', hair: '#5a3a1a' }, { shirt: '#3a7ae8', accent: '#ffffff', pants: '#3a3a3a', hair: '#2a1a0a' }, { shirt: '#36c04a', accent: '#f2f2f2', pants: '#5a3a22', hair: '#c8902a' }, { shirt: '#f0a020', accent: '#ffffff', pants: '#3a2a5a', hair: '#7a3a1a' }, { shirt: '#9a5ad8', accent: '#ffffff', pants: '#2a2a2a', hair: '#3a2a1a' }];
 const C = { rockstar: buildRockstar(sk.rockstar), william: buildWilliam(sk.william), spring: addEndo(buildSpring(sk.springtrap, 'springtrap', { bent: true, endo: true, clearJunk: true })),
-  golden: makeGhost(buildFreddy(sk.goldenfreddy, { name: 'golden' }), '#ffd860') };
-C.golden.name = 'golden'; C.william.baseScale = 1.0; C.spring.baseScale = 1.35; C.golden.baseScale = 1.35; C.golden.ghostMat.opacity = 0.55;
+  golden: buildGolden(sk.goldenfreddy) };
+C.william.baseScale = 1.0; C.spring.baseScale = 1.35; C.golden.baseScale = 1.35;
+for (let i = 0; i < 3; i++) { C['kid' + i] = new Character('kid' + i, recolorChild(sk.child, KIDPAL[[0, 1, 3][i]])); C['kid' + i].baseScale = 0.74; addFace(C['kid' + i], FACES.child); }
 for (let i = 0; i < 5; i++) { C['soul' + i] = makeGhost(new Character('soul' + i, recolorChild(sk.child, KIDPAL[i])), ['#bfe8ff', '#ffd0e8', '#d0ffd8', '#fff0c0', '#e0d0ff'][i]); C['soul' + i].baseScale = 0.74; C['soul' + i].ghostMat.opacity = 0.6; }
 addFace(C.william, FACES.william); addFace(C.spring, FACES.springtrap);
-const BLINKERS = new Set(['william']);
+const BLINKERS = new Set(['william', 'kid0', 'kid1', 'kid2']);
 for (const c of Object.values(C)) if (!c.baseScale) c.baseScale = 1;
 
 // ---------- FX ----------
@@ -39,6 +40,12 @@ FX.q = bubbleSprite('?'); FX.ex = bubbleSprite('!');
 function bubbleSprite(sym) { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); g.fillStyle = '#fff'; g.beginPath(); g.arc(32, 28, 24, 0, 7); g.fill(); g.beginPath(); g.moveTo(26, 48); g.lineTo(22, 62); g.lineTo(38, 50); g.fill();
   g.fillStyle = '#1a1a2a'; g.font = 'bold 34px "DejaVu Sans", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(sym, 32, 30); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
   const m = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.42), new THREE.MeshBasicMaterial({ map: t, color: '#9a9aa4', transparent: true, toneMapped: false, depthTest: false })); m.renderOrder = 10; return m; }
+FX.stream = (() => { const g = new THREE.Group(); const m = new THREE.MeshBasicMaterial({ color: '#ffd860', transparent: true, opacity: 0.9, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending });
+  for (let i = 0; i < 46; i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.035, 0.035), m); b.userData.ph = (i * 0.618) % 1; b.userData.w = [Math.sin(i * 7.1), Math.cos(i * 3.3), Math.sin(i * 1.7)]; g.add(b); }
+  g.userData.update = (a, b, t, alpha) => { m.opacity = 0.9 * alpha; const mid = a.clone().lerp(b, 0.5); mid.y += 0.25; g.children.forEach(c => { const u = (c.userData.ph + t * 1.6) % 1; const w = c.userData.w;
+    const p = a.clone().multiplyScalar((1 - u) * (1 - u)).add(mid.clone().multiplyScalar(2 * u * (1 - u))).add(b.clone().multiplyScalar(u * u)); const sp = 0.05 * Math.sin(u * Math.PI); c.position.set(p.x + w[0] * sp, p.y + w[1] * sp, p.z + w[2] * sp); c.scale.setScalar(0.6 + 0.8 * Math.sin(u * Math.PI)); c.rotation.set(t * 4 + w[0], t * 3, 0); }); }; return g; })();
+FX.lines = (() => { const g = new THREE.Group(); const m = new THREE.MeshBasicMaterial({ color: '#ffe080', toneMapped: false }); for (let i = 0; i < 5; i++) { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 1, 10), m); g.add(c); }
+  g.userData.update = (pts, k) => { g.children.forEach((c, i) => { const a = pts[i], b = pts[(i + 1) % 5]; const f = Math.max(0, Math.min(1, k - i)); c.visible = f > 0.001; const e = a.clone().lerp(b, f); const d = e.clone().sub(a); c.scale.set(1, Math.max(0.0001, d.length()), 1); c.position.copy(a).addScaledVector(d, 0.5); c.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.lengthSq() > 0 ? d.clone().normalize() : new THREE.Vector3(0, 1, 0)); }); }; return g; })();
 FX.coins = []; for (let i = 0; i < 5; i++) FX['coin' + i] = fazCoin();
 FX.rain = (() => { const g = new THREE.Group(); for (let i = 0; i < 40; i++) { const c = fazCoin(); c.userData.p = [Math.sin(i * 12.9) * 0.5 + 0.5, Math.sin(i * 7.3) * 0.5 + 0.5, Math.sin(i * 3.1) * 0.5 + 0.5]; g.add(c); } return g; })();
 FX.fire = (() => { const g = new THREE.Group(); const r = rng(55); const fm = ['#ffd040', '#ff6a10', '#ff2a08'].map(c => new THREE.MeshBasicMaterial({ color: c, toneMapped: false, transparent: true, opacity: 0.9, depthWrite: false, blending: THREE.AdditiveBlending }));
@@ -82,9 +89,9 @@ function drawUI(spec, t) { ui.clearRect(0, 0, W, H); if (!spec) { uiTex.needsUpd
 const allChars = Object.values(C);
 const ctx = { THREE, C, S, FX, camera, U };
 function resetWorld() {
-  for (const c of allChars) { c.reset(); c.root.visible = true; c.root.scale.setScalar(c.baseScale); c.root.position.set(0, 0, 0); c.root.rotation.set(0, 0, 0); c.root.removeFromParent(); c.noBlink = false; if (c.setFace) c.setFace({ lid: 0, slope: 0, mouth: 0 }); if (c.ghostMat) c.ghostMat.opacity = c.name === 'golden' ? 0.55 : 0.6; }
+  for (const c of allChars) { c.reset(); c.root.visible = true; c.root.scale.setScalar(c.baseScale); c.root.position.set(0, 0, 0); c.root.rotation.set(0, 0, 0); c.root.removeFromParent(); c.noBlink = false; if (c.setFace) c.setFace({ lid: 0, slope: 0, mouth: 0 }); if (c.ghostMat) c.ghostMat.opacity = 0.6; if (c.fadeIn) c.fadeIn(1); }
   for (const o of Object.values(FX)) { if (!o || !o.isObject3D) continue; o.removeFromParent(); o.visible = true; o.scale.setScalar(1); o.rotation.set(0, 0, 0); }
-  S.tablet.visible = false; S.officeKey.intensity = 46; S.officeKey.color.set('#ffcf8a'); S.officeKey.position.set(0, 3.8, 0.9); S.officeWash.intensity = 45; S.lampBulb.visible = true; C.rockstar.star.material.emissiveIntensity = 0.35; for (let i = 0; i < 5; i++) FX['coin' + i].children[0].material.emissiveIntensity = 0.3; S.vaultDoor.rotation.y = 0.85; S.deskLight.color.set('#ffc890'); S.deskLight.intensity = 9; S.officeFill.intensity = 3; if (C.rockstar.eyeRed) C.rockstar.eyeRed(0); camera.fov = 42; camera.up.set(0, 1, 0);
+  S.tablet.visible = false; S.officeKey.intensity = 46; S.officeKey.color.set('#ffcf8a'); S.officeKey.position.set(0, 3.8, 0.9); S.officeWash.intensity = 45; S.lampBulb.visible = true; C.rockstar.star.material.emissiveIntensity = 0.35; for (let i = 0; i < 5; i++) FX['coin' + i].children[0].material.emissiveIntensity = 0.3; S.corpPile.position.y = 0; S.lamp.rotation.set(0, 0, 0); S.fan.visible = true; S.nmGold.intensity = 0; S.deskLight.position.set(-0.9, 2.6, 0.9); S.stageSpill.intensity = 0; S.stageKey.intensity = 80; S.signOn(1); S.signLight.intensity = 8; C.rockstar.coinBox.scale.setScalar(1); C.rockstar.star.rotation.set(0, 0, 0); S.lampBulb.material.color.set('#ffd890'); S.deskLight.color.set('#ffc890'); S.deskLight.intensity = 9; S.officeFill.intensity = 3; if (C.rockstar.eyeRed) C.rockstar.eyeRed(0); camera.fov = 42; camera.up.set(0, 1, 0);
   const P = post.uniforms; P.vig.value = 0.6; P.grain.value = 0.03; P.glitch.value = 0; P.flash.value = 0; P.fade.value = 0; P.chroma.value = 0; P.blur.value = 0; P.tint.value.set(1, 1, 1); bloom.strength = 0.35;
 }
 function renderAt(t) {
@@ -92,7 +99,7 @@ function renderAt(t) {
   const run = () => { resetWorld(); const out = { scene: S.bedroom, ui: null }; const live = []; shot.fn(Object.assign(ctx, { t, L, d, u: Math.min(1, L / d), out, live, post: post.uniforms, bloom })); return { out, live }; };
   run(); const cp = camera.position.clone(), cq = camera.quaternion.clone(), cf = camera.fov; const { out, live } = run(); camera.position.copy(cp); camera.quaternion.copy(cq); camera.fov = cf;
   for (const c of allChars) { if (!c.applyFace) continue; if (BLINKERS.has(c.name) && c.face.lid < 0.05 && !c.noBlink) c.face.lid = blinkAt(t, c.name.length); c.applyFace(); }
-  collisionCheck(t, live);
+  collisionCheck(t, live); if (window.DBG) { const w = C.rockstar; w.root.updateMatrixWorld(true); console.log("LOGDBG cam", camera.position.toArray().map(v=>v.toFixed(2)).join(","), "fov", camera.fov.toFixed(1), "whead", w.head.localToWorld(new THREE.Vector3(0,0.25,0)).toArray().map(v=>v.toFixed(2)).join(",")); }
   if (S.fanBlades) S.fanBlades.rotation.z = -t * 16; C.rockstar.micUp();
   camera.aspect = W / H; camera.updateProjectionMatrix(); renderPass.scene = out.scene; drawUI(out.ui, t); uiPass.uniforms.uiOn.value = out.ui ? 1 : 0; post.uniforms.time.value = t; composer.render();
 }
