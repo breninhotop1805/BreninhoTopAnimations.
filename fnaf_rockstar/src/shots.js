@@ -43,7 +43,7 @@ function sing(r, w, t) { w = cl(w); r.armR.piv.rotation.x += -0.6 * w; r.armR.pi
 function palmOut(r, L, a, amt = 1) { const w = Math.max(0, gestW(L, a, 9)) * amt; r.armL.piv.rotation.x += -1.35 * w; r.armL.piv.rotation.z += -0.1 * w; r.head.rotation.z += 0.16 * w; r.torso.rotation.x += 0.06 * w; return w; }
 function tapFoot(r, t, w) { r.legL.piv.rotation.x += -0.22 * Math.max(0, Math.sin(t * 11)) * w; }
 function cheer(r, L, a) { const w = Math.max(0, gestW(L, a, 9)); r.armL.piv.rotation.z += 2.5 * w; r.armL.piv.rotation.x += -0.25 * w; sing(r, w, 0); r.head.rotation.x += -0.15 * w; return w; }
-function fanSelf(r, t, w) { r.armL.piv.rotation.x += -1.55 * w; r.armL.piv.rotation.z += (0.55 + 0.3 * Math.sin(t * 16)) * w * -1; r.head.rotation.x += -0.1 * w; r.torso.rotation.x += -0.05 * w; }
+function fanSelf(r, t, w) { r.armL.piv.rotation.x += -1.55 * w; r.armL.piv.rotation.z += (0.55 + 0.3 * Math.sin(t * 16)) * w * w * w * -1; r.head.rotation.x += -0.1 * w; r.torso.rotation.x += -0.05 * w; }
 function bounceWalk(r, t, w) { r.torso.rotation.z += 0.06 * Math.sin(t * 7) * w; r.head.rotation.z += 0.08 * Math.sin(t * 7 + 0.5) * w; }
 const DESK_Y = 1.03, DESK_Z = 1.7;
 const coinX = i => -1.75 + i * 0.62;
@@ -73,8 +73,8 @@ const shots = []; const at = (t, name, fn) => shots.push({ t, name, fn });
 at(0.00, 'lampada', x => { const s = office(x, 0.95); const L = x.L; const fl = L < 0.3 ? (Math.sin(L * 70) > 0.2 ? 1 : 0.05) : 1; x.S.officeKey.intensity = 46 * fl; x.S.officeWash.intensity = 45 * fl; x.S.lampBulb.visible = fl > 0.5;
   const sw = 0.25 * Math.sin(x.t * 3); cam(x, [0.3 + sw, 0.35, 0.6], [0.1, 3.9, -1.6], 70); x.camera.rotateZ(0.15); });
 // 0.48 "Rockstar Freddy" — he steps into the light singing into the mic; low dolly-in, punch on "Freddy"
-at(0.48, 'entra', x => { const s = office(x); const L = x.L; const r = rock(x, s, 0, 0, -0.7); walkPath(r, L, -0.35, 0.45, [-1.0, -1.1], [0, -0.7], { stride: 0.8 }); sing(r, 1, x.t); bounceWalk(r, x.t, 1);
-  const k = eo(x.u); cam(x, [mix(1.2, 0.6, k), mix(0.7, 0.95, k), mix(1.0, 0.7, k)], [0, 2.1, -0.8], 60); punch(x, 0.3, 0.14); });
+at(0.48, 'entra', x => { const s = office(x); const L = x.L; const r = rock(x, s, 0, 0, -0.7); walkPath(r, L, -0.35, 0.5, [0, -1.7], [0, -0.7], { stride: 0.8 }); sing(r, 1, x.t); bounceWalk(r, x.t, 1);
+  const k = eo(x.u); cam(x, [mix(-0.9, -0.4, k), mix(1.7, 1.85, k), mix(3.4, 3.0, k)], [-0.2, 1.9, -0.8], 50); punch(x, 0.3, 0.14); });
 // 1.12 "pede" — palm out, head tilted: "pay up"
 at(1.12, 'pede', x => { const s = office(x); const L = x.L; const r = rock(x, s, 0, 0, -0.7); palmOut(r, L, 0.0); lookCam(x, r, 0.8); const h = hp(r);
   cam(x, [h.x - 0.9, h.y - 0.55, h.z + mix(2.4, 2.0, eo(x.u))], [h.x - 0.25, h.y - 0.6, h.z], 46); });
@@ -206,7 +206,7 @@ at(48.24, 'acabou', x => { const s = scene(x, 'fireRoom', 0.95); const L = x.L; 
   const h = hp(sp); cam(x, [h.x + 0.4, h.y + 0.2, h.z + mix(2.2, 1.7, eo(x.u))], [h.x, h.y - 0.2, h.z], 46); });
 // ===== 13. ENDING =====
 // 49.32 "Você já tinha ligado esses pontos?" — the office glows red-hot: Rockstar fans himself, sweating, and storms out; "?"
-at(49.32, 'calor', x => { const s = office(x, 0.85); const L = x.L; const r = rock(x, s, 0, 0, -0.7); fanSelf(r, x.t, eo(seg(L, 0.0, 0.3)) * (1 - seg(L, 1.2, 1.5))); walkPath(r, L, 1.1, 1.82, [0, -0.7], [-2.6, -1.1], { stride: 0.9 }); x.S.officeKey.color.set('#ff7a40');
+at(49.32, 'calor', x => { const s = office(x, 0.85); const L = x.L; const r = rock(x, s, 0, 0, -0.7); fanSelf(r, x.t, eo(seg(L, 0.0, 0.3)) * (1 - sm(seg(L, 0.85, 1.1)))); walkPath(r, L, 1.12, 1.82, [0, -0.7], [-2.6, -1.1], { stride: 0.9 }); x.S.officeKey.color.set('#ff7a40');
   x.post.tint.value.set(1.15, 0.92, 0.82); bubble(x, 'q', s, r, 0.25); camMove(x, [0.4, 1.9, 2.6], [0, 2.1, -0.7], [0.0, 1.9, 2.4], [-1.4, 2.0, -0.9], eo, 50); });
 // 51.14 "Comenta aí e me segue pra mais mistérios" — back on the FNAF 6 stage: he sings, coins rain, waves goodbye; crane out
 at(51.14, 'final', x => { const s = stage6(x); const L = x.L; const r = rock(x, s, 0, 1.0, -4.0); sing(r, 1, x.t); wave(r, 'L', L, 0.2, 9, x.t); lookCam(x, r, 0.7); rainCoins(x, s, 0, -3.6, 6, 2.5, 0.8);
