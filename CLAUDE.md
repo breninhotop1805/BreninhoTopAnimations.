@@ -179,3 +179,17 @@ Analisado quadro a quadro (4 fps) nos vídeos de referência:
 ## Props (correção no vídeo do Bonnie azul)
 - Objeto que o personagem não segura de verdade com as mãos NÃO entra (a guitarra do Bonnie ficou "voando na barriga").
   Só usar prop se as mãos estiverem posicionadas nele em todos os quadros; senão, tirar — o roteiro manda.
+
+## Cobrança depois do vídeo do Nightmare Foxy (FNAF 4) — vale pra TODOS os próximos
+Ele aceitou o vídeo mas apontou de novo erros "que já falamos demais": **focinho bugado, partes atravessando outras partes**
+e a **máscara 3D do Michael não satisfatória**. Regras:
+- **A checagem automática NÃO cobre tudo**: ela só testa braços/cabeça. Toda peça 3D extra (focinho, mandíbula aberta, dentes,
+  gancho, máscara, orelhas, props) precisa ser conferida VISUALMENTE em close e em movimento: nada entrando no peito/pescoço
+  quando a mandíbula abre, focinho alinhado ao rosto (sem "degrau" ou buraco preto entre focinho e cabeça), dentes saindo da
+  boca e não do meio da cara, gancho/mão sem entrar no corpo. Fazer contact sheet de CLOSES de cada modelo (frente, 3/4,
+  perfil, boca aberta/fechada) ANTES das cenas e mandar pra ele se tiver peça nova.
+- Mandíbula aberta: a parte de baixo nunca pode atravessar o torso — limitar o ângulo e/ou recuar a mandíbula; conferir de perfil.
+- Peça que passa por cima da cabeça (máscara, capacete): modelar com qualidade (formato fiel, olhos/focinho/orelhas bem
+  feitos, encaixe justo na cabeça, sem ficar "caixa grande"); as mãos seguram pelas laterais sem atravessar a peça nem a cabeça.
+- Pelúcia/versão mini de personagem que tem modelo 3D: usar o modelo 3D completo (focinho, orelhas, gancho…), nunca só a skin.
+- Exposição: lanterna/spot perto de rosto claro estoura — intensidade baixa e conferir em cada close.
