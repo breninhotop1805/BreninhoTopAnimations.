@@ -51,7 +51,7 @@ function hugKnees(c) { sitPose(c); c.armR.piv.rotation.set(-1.35, 0, 0.22); c.ar
 const game = (x, o) => { x.out.ui = [Object.assign({ type: 'game', L: x.L }, o)]; x.post.vig.value = 0; x.post.grain.value = 0.015; };
 // mask held/raised/worn: P = where the mask's pivot (the head pivot) is, in world space
 function maskAt(x, m, s, P) { const M = m.mask; M.removeFromParent(); s.add(M); M.position.copy(P); M.rotation.set(0, m.root.rotation.y, 0); M.scale.setScalar(m.root.scale.x);
-  const c = P.clone().add(new V3(0, 0.27, 0)); for (const [A, sx] of [[m.armR, -1], [m.armL, 1]]) aimArm(m, A, c.clone().add(new V3(sx * 0.33, 0, 0)), 1); }
+  const c = P.clone().add(new V3(0, 0.27, 0)); for (const [A, sx] of [[m.armR, -1], [m.armL, 1]]) aimArm(m, A, c.clone().add(new V3(sx * 0.46, 0, 0)), 1); }
 const bedY = (x, c) => x.S.bedTop + (2 - 12) / 16 * c.baseScale + 0.01;
 
 const shots = []; const at = (t, name, fn) => shots.push({ t, name, fn });
@@ -111,7 +111,7 @@ at(11.30, 'freddy', x => {
 at(12.02, 'invadir', x => {
   const s = bedroom(x); const L = x.L; const c = put(x, 'cchild', s, -1.6, 0, 1.4, -Math.PI / 2); alive(c, x.t, 1); const b = put(x, 'nbonnie', s, -5.2, 0, 1.4, Math.PI / 2);
   walkPath(b, L, 0.2, 1.3, [-6.2, 1.4], [-4.75, 1.4], { stride: 0.7 }); b.root.rotation.y = Math.PI / 2; alive(b, x.t, 0.6); b.jawOpen(eo(seg(L, 1.4, 1.6)) * 0.9); eyes(b, 1); lookAt(b, hp(c), 0.7);
-  torch(x, c, new V3(-4.6, 1.5, 1.4)); lookAt(c, new V3(-4.6, 2.2, 1.4), 0.8); moonOn(x, c, 6); if (L > 1.5) { startle(c, L, 1.5, 0.8); c.setFace({ mouth: 1, lid: 0 }); c.noBlink = true; }
+  torch(x, c, new V3(-4.6, mix(1.5, 0.8, eo(seg(L, 1.45, 1.7))), mix(1.0, 0.5, eo(seg(L, 1.45, 1.7))))); lookAt(c, new V3(-4.6, 2.2, 1.4), 0.6); moonOn(x, c, 6); if (L > 1.5) { startle(c, L, 1.5, 0.8); c.setFace({ mouth: 1, lid: 0 }); c.noBlink = true; }
   camMove(x, [0.7, 1.6, 2.0], [-4.5, 1.9, 1.2], [0.4, 1.6, 1.8], [-4.5, 2.0, 1.25], eo, 46); if (L > 1.5 && L < 1.8) shake(x, 0.2);
 });
 // 14.06 "Foxy já tá lá dentro" — slow push into the closet slit; his eyes light up on "dentro"
