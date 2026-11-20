@@ -34,7 +34,7 @@ function aimArm(c, A, P, w = 1) { c.root.updateMatrixWorld(true); const sh = A.p
 
 const scene = (x, n, vig = 0.65) => { const s = x.S[n]; x.out.scene = s; x.post.vig.value = vig; return s; };
 const office = (x, vig = 0.7) => scene(x, 'office', vig);
-const hud = (x, txt, a0, v = 0.13) => { if (x.L < a0) return null; return { type: 'coins', txt, u: 0.55, v, k: back(seg(x.L, a0, a0 + 0.3)), a: Math.min(1, (x.L - a0) / 0.06) }; };
+const hud = (x, txt, a0, v = 0.075) => { if (x.L < a0) return null; return { type: 'coins', txt, u: 0.3, v, k: back(seg(x.L, a0, a0 + 0.3)), a: Math.min(1, (x.L - a0) / 0.06) }; };
 const ui = (x, ...it) => { const a = it.filter(Boolean); x.out.ui = a.length ? a : null; };
 // Rockstar always holds the mic in his right hand (forearm forward) — the mic is kept ball-up in main.js
 function rock(x, s, px, py, pz, ry = 0) { const r = put(x, 'rockstar', s, px, py, pz, ry); alive(r, x.t, 0.9); r.armR.piv.rotation.x += -0.95; r.armR.piv.rotation.z += 0.08; return r; }
@@ -125,11 +125,11 @@ at(33.70, 'tortura', x => { const s = office(x, 1.0); const L = x.L; const r = r
 // 35.46 "O assassino é obrigado a pagar exatamente cinco" — five coins pop onto the desk one by one; the counter counts down on "5"
 at(35.46, 'pagar', x => { const s = office(x); const L = x.L; const w = put(x, 'william', s, WX, 0, WZ, Math.PI); alive(w, x.t, 1); w.setFace({ lid: 0.3, slope: -0.8 }); lookAt(w, new V3(-1.0, 1.0, 1.7), 0.7);
   for (let i = 0; i < 5; i++) coinOnDesk(x, s, i, seg(L, 0.3 + i * 0.25, 0.55 + i * 0.25)); camMove(x, [-0.4, 1.55, -0.2], [-1.0, 1.35, 2.0], [-0.5, 1.5, 0.1], [-1.0, 1.35, 2.0], eo, 50);
-  ui(x, L > 0.3 ? { type: 'coins', txt: String(Math.min(5, Math.floor((L - 0.3) / 0.25) + 1)), u: 0.55, v: 0.13, k: 1, a: 1 } : null); });
+  ui(x, L > 0.3 ? { type: 'coins', txt: String(Math.min(5, Math.floor((L - 0.3) / 0.25) + 1)), u: 0.3, v: 0.075, k: 1, a: 1 } : null); });
 // 37.30 "moedas" — they fly from the desk, one after another, edge-on INTO the slot under the star
 at(37.30, 'paga', x => { const s = office(x); const L = x.L; const r = rock(x, s, 0, 0, -0.7); lookAt(r, new V3(-1, 1.1, 1.7), 0.5);
   for (let i = 0; i < 5; i++) { const k = seg(L, i * 0.13, i * 0.13 + 0.55); if (k <= 0) coinOnDesk(x, s, i, 1); else coinToSlot(x, s, i, r, k); }
-  const p = r.slotPt(); cam(x, [-1.8, 1.7, 2.4], [p.x - 0.4, p.y - 0.1, p.z + 0.8], 54); ui(x, { type: 'coins', txt: String(Math.max(0, 5 - Math.floor(L / 0.13 + 0.01) )), u: 0.55, v: 0.13, k: 1, a: 1 }); });
+  const p = r.slotPt(); cam(x, [-1.8, 1.7, 2.4], [p.x - 0.4, p.y - 0.1, p.z + 0.8], 54); ui(x, { type: 'coins', txt: String(Math.max(0, 5 - Math.floor(L / 0.13 + 0.01) )), u: 0.3, v: 0.075, k: 1, a: 1 }); });
 // 38.40 "para comprar mais alguns minutos de vida" — he nods, satisfied, and walks out through the right door; William breathes out
 at(38.40, 'vida', x => { const s = office(x); const L = x.L; const r = rock(x, s, 0, 0, -0.7); nod(r, L, 0.1, 1, 0.15); walkPath(r, L, 0.5, 2.2, [0, -0.7], [3.4, -1.2], { stride: 0.85, linear: true }); r.armR.piv.rotation.x += -0.95; lookCam(x, r, 0.4 * (1 - seg(L, 0.5, 0.8)));
   camMove(x, [-0.6, 1.8, 3.2], [0.6, 1.8, -0.8], [-0.5, 1.8, 3.0], [1.6, 1.8, -1.0], eo, 52); });
@@ -157,7 +157,7 @@ at(49.32, 'ligado', x => { const s = office(x, 0.85); const L = x.L; const r = r
   x.post.tint.value.set(1.15, 0.9, 0.8); bubble(x, 'q', s, r, 0.2); camMove(x, [-0.4, 1.8, 3.0], [-0.4, 1.9, -1], [-0.5, 1.8, 2.6], [-1.0, 1.9, -1], eo, 50); });
 // 51.14 "Comenta aí e me segue pra mais mistérios" — Rockstar waves with his free arm, counter "5"
 at(51.14, 'comenta', x => { const s = office(x); const L = x.L; x.S.officeKey.color.set('#ffcf8a'); const r = rock(x, s, 0, 0, -0.7); lookCam(x, r, 0.8); wave(r, 'L', L, 0.1, 9, x.t);
-  camMove(x, [-0.4, 1.8, 2.8], [0, 2.0, -0.7], [-0.3, 1.85, 2.3], [0, 2.05, -0.7], eo, 50); ui(x, hud(x, '5', 0.3, 0.13)); });
+  camMove(x, [-0.4, 1.8, 2.8], [0, 2.0, -0.7], [-0.3, 1.85, 2.3], [0, 2.05, -0.7], eo, 50); ui(x, hud(x, '5', 0.3)); });
 
 export const SHOTS = shots;
 export const DURATION = 53.11;

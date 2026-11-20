@@ -39,9 +39,14 @@ export function buildRockstar(canvas) {
   vbox(1.3, 2.0, 0.3, '#5a5e68', 0, -1.75, 0.8, cb, 0.25); const slot = vbox(0.55, 1.5, 0.3, '#020203', 0, -1.75, 0.86, cb, 0.9); ch.slot = slot;
   ch.slotPt = () => { ch.root.updateMatrixWorld(true); return cb.localToWorld(new THREE.Vector3(0, -1.75 * U, 1.0 * U)); };
   // microphone (handle + mesh ball) in the right hand; kept vertical (ball up) each frame by ch.micUp()
-  const mic = new THREE.Group(); ch.handR.add(mic); ch.mic = mic; const mh = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.02, 0.26, 10), new THREE.MeshStandardMaterial({ color: '#1a1a20', roughness: 0.4 })); mh.position.y = 0.06; mic.add(mh);
-  const ball = new THREE.Mesh(new THREE.SphereGeometry(0.055, 14, 10), new THREE.MeshStandardMaterial({ color: '#c8ccd4', metalness: 0.8, roughness: 0.35 })); ball.position.y = 0.21; mic.add(ball);
-  ch.micUp = () => { ch.root.updateMatrixWorld(true); const q = new THREE.Quaternion(); ch.handR.getWorldQuaternion(q); mic.quaternion.copy(q.invert()); mic.scale.setScalar(1 / ch.root.scale.x); };
+  const mic = new THREE.Group(); ch.handR.add(mic); ch.mic = mic;
+  const mh = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.038, 0.42, 14), new THREE.MeshStandardMaterial({ color: '#16161c', roughness: 0.35, metalness: 0.3 })); mh.position.y = 0.0; mic.add(mh);
+  const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.055, 0.05, 16), new THREE.MeshStandardMaterial({ color: '#2a2a32', metalness: 0.7, roughness: 0.3 })); rim.position.y = 0.23; mic.add(rim);
+  const ball = new THREE.Mesh(new THREE.SphereGeometry(0.11, 18, 14), new THREE.MeshStandardMaterial({ color: '#b8bcc6', metalness: 0.85, roughness: 0.4 })); ball.position.y = 0.33; mic.add(ball);
+  const grill = new THREE.Mesh(new THREE.SphereGeometry(0.112, 10, 8), new THREE.MeshBasicMaterial({ color: '#30323a', wireframe: true })); grill.position.y = 0.33; mic.add(grill);
+  // world-sized, always ball-up, held IN FRONT of the fist (never inside the arm)
+  ch.micUp = () => { ch.root.updateMatrixWorld(true); const q = new THREE.Quaternion(); ch.handR.getWorldQuaternion(q); const qi = q.clone().invert(); mic.quaternion.copy(qi); const sc = 1 / ch.root.scale.x; mic.scale.setScalar(sc);
+    const fw = new THREE.Vector3(Math.sin(ch.root.rotation.y), 0, Math.cos(ch.root.rotation.y)); const off = fw.multiplyScalar(0.17).add(new THREE.Vector3(0, 0.04, 0)).applyQuaternion(qi).multiplyScalar(sc); mic.position.copy(off); };
   // angry red eyes (UCN): emissive plates over the painted eyes, faded in by k
   const em = new THREE.MeshBasicMaterial({ color: '#ff1a1a', toneMapped: false, transparent: true, opacity: 0 }); for (const sx of [-1, 1]) { const e = new THREE.Mesh(new THREE.BoxGeometry(1.7 * U, 1.0 * U, 0.08 * U), em); e.position.set(sx * 2.0 * U, 5.0 * U, 4.06 * U); H.add(e); }
   ch.eyeRed = k => { em.opacity = Math.max(0, Math.min(1, k)); };
