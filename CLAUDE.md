@@ -216,3 +216,16 @@ REGRAS a partir daqui:
 - **Olhos brilhando**: pupila acesa pequena/glow suave sobre o pixel do olho — nunca retângulo de cor chapada cobrindo o olho.
 - **Vários personagens/almas no quadro**: espaçados na tela (sem sobreposição visual), entrando um de cada vez.
 - **Objetos de cenário em close** (pelúcias, brinquedos): modelar com cuidado (personagem reconhecível) ou deixar fora do close.
+
+## Segunda reprovação do Rockstar (remake) — "só um pouco melhor, aceitável"
+O que ele apontou no remake: **cenas sem sentido** (imagem não ilustra a frase), **porta do cofre bugada**, **alma do Golden
+Freddy feia**, **começo do vídeo mostrando o teto** (a lâmpada). Regras:
+- **Cada cena ilustra literalmente a frase falada.** Antes de animar, escrever ao lado de cada trecho da transcrição "o que o
+  espectador vê e por quê". Se não dá pra justificar em uma linha, a cena muda. Nada de cena "de enfeite".
+- **O primeiro quadro é o personagem principal**, grande, de frente e bem iluminado, já em ação. Nunca teto, lâmpada,
+  chão ou cenário vazio no começo.
+- **Peças mecânicas animadas (portas, cofres, gavetas):** pivô no lugar certo (dobradiça), sem atravessar a parede ou o
+  batente. Conferir abrindo em close e de lado antes do render.
+- **Almas/fantasmas de personagens conhecidos (Golden Freddy):** modelo completo e reconhecível, com transparência
+  bonita, sem as partes internas aparecendo nem cores lavadas. Fazer um close de teste e só usar se ficar bonito.
+- Assistir ao vídeo final inteiro com áudio, como espectador, perguntando em cada corte "isso faz sentido com a fala?".
