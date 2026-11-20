@@ -50,13 +50,12 @@ export function buildOffice(S) {
     const ti = new THREE.Shape(); ti.moveTo(-0.17, 0.04); ti.lineTo(0.17, 0.04); ti.lineTo(0, 0.33); ti.lineTo(-0.17, 0.04); const tw = new THREE.Mesh(new THREE.ShapeGeometry(ti), std({ color: '#f0ece4' })); tw.position.set(1.6, 3.35, Z0 + 0.1); g.add(tw); const ex = voxText('!', '#141414', 0.035, 0.02, false); ex.position.set(1.6, 3.4, Z0 + 0.11); g.add(ex); }
   // back desk with CRTs, cups, papers, plush toys, cupcake
   { const dk = std({ color: '#1a1c22', roughness: 0.5, metalness: 0.3 }); box(2.8, 0.06, 0.9, dk, 0, 0.95, Z0 + 0.55, g); for (const sx of [-1, 1]) box(0.06, 0.95, 0.85, dk, sx * 1.37, 0.475, Z0 + 0.55, g); box(1.0, 0.8, 0.85, dk, -0.85, 0.5, Z0 + 0.55, g); for (const y of [0.3, 0.65]) box(0.9, 0.3, 0.02, std({ color: '#262a32' }), -0.85, y, Z0 + 0.985, g);
-    const crt = (x, y, sc) => { const cg = new THREE.Group(); cg.position.set(x, y, Z0 + 0.5); cg.scale.setScalar(sc); g.add(cg); box(0.5, 0.42, 0.45, std({ color: '#2a2a2e', roughness: 0.5 }), 0, 0.21, 0, cg); box(0.4, 0.32, 0.02, std({ color: '#0c1418', emissive: '#0a1a20', emissiveIntensity: 0.6, roughness: 0.2 }), 0, 0.23, 0.23, cg); };
+    const sc0 = document.createElement('canvas'); sc0.width = 48; sc0.height = 36; const stT = new THREE.CanvasTexture(sc0); S.officeStatic = sc0; S.officeStaticTex = stT; const stM = new THREE.MeshBasicMaterial({ map: stT, toneMapped: false, color: '#8a9aa8' });
+    const crt = (x, y, sc) => { const cg = new THREE.Group(); cg.position.set(x, y, Z0 + 0.5); cg.scale.setScalar(sc); g.add(cg); box(0.5, 0.42, 0.45, std({ color: '#2a2a2e', roughness: 0.5 }), 0, 0.21, 0, cg); const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.32), stM); scr.position.set(0, 0.23, 0.226); cg.add(scr); };
     crt(-0.9, 0.98, 1.0); crt(-0.35, 0.98, 0.8); crt(-0.4, 1.32, 0.75); crt(0.6, 0.98, 0.9); crt(0.95, 1.36, 0.65);
     const stripe = cvTex(16, 16, (c) => { for (let i = 0; i < 16; i += 4) { c.fillStyle = '#c81818'; c.fillRect(i, 0, 2, 16); c.fillStyle = '#f2f2f2'; c.fillRect(i + 2, 0, 2, 16); } }, [3, 1], true);
     for (const [x, col] of [[0.0, 0], [1.25, 1]]) { const cup = cyl(0.06, 0.2, std({ map: stripe }), x, 1.08, Z0 + 0.7, g, 14); }
     for (const [x, z] of [[-0.15, 0.75], [0.25, 0.8], [0.9, 0.85]]) { const p = new THREE.Mesh(new THREE.IcosahedronGeometry(0.06, 0), std({ color: '#e8e8ec', roughness: 0.9 })); p.position.set(x, 1.02, Z0 + z); g.add(p); }
-    // little plush toys on the desk (voxel): Bonnie, Freddy, Chica, a green toy
-    [[0.35, '#4a5ac8'], [0.55, '#8a5a2a'], [0.75, '#e8c818'], [0.15, '#3ac83a']].forEach(([x, c], i) => { const t = voxelArt(['.c.c.', 'ccccc', 'cwcwc', 'ccccc', '.ccc.', 'cc.cc'], { c, w: '#f2f2f2' }, 0.025, 0.08); t.position.set(x, 1.06, Z0 + 0.85); g.add(t); });
     const cup = new THREE.Group(); cup.position.set(1.0, 0.98, Z0 + 0.75); g.add(cup); cyl(0.07, 0.06, std({ color: '#3ab8d8' }), 0, 0.03, 0, cup); const ck = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), std({ color: '#ff6ab0' })); ck.position.y = 0.06; cup.add(ck);
     cyl(0.006, 0.06, std({ color: '#f2f2f2' }), 0, 0.17, 0, cup); const fl = new THREE.Mesh(new THREE.ConeGeometry(0.012, 0.03, 6), glow('#ffb040')); fl.position.y = 0.215; cup.add(fl); }
   // hanging lamp, star string lights, big ducts with red rings
@@ -82,11 +81,10 @@ export function buildOffice(S) {
     box(0.55, 0.65, 0.1, std({ color: '#1a1a1c' }), 2.6, 2.7, Z0 + 0.07, g); for (let i = 0; i < 4; i++) { const rg = new THREE.Mesh(new THREE.TorusGeometry(0.06 + i * 0.05, 0.008, 4, 20), std({ color: '#3a3a3e' })); rg.position.set(2.6, 2.7, Z0 + 0.13); g.add(rg); } }
   // FRONT desk (the player's): big black desk fan, Freddy plush, crumpled paper, microphone, striped cup, papers
   { const fd = new THREE.Group(); fd.position.set(0, 0, 1.7); g.add(fd); S.frontDesk = fd; const dm = std({ color: '#141418', roughness: 0.4, metalness: 0.3 }); box(3.6, 0.08, 1.0, dm, 0, 0.98, 0, fd); box(3.6, 0.94, 0.06, dm, 0, 0.47, 0.47, fd);
-    const fan = new THREE.Group(); fan.position.set(1.15, 1.02, -0.1); fd.add(fan); S.fan = fan; cyl(0.2, 0.05, dm, 0, 0.025, 0, fan, 20); cyl(0.04, 0.4, dm, 0, 0.22, 0, fan, 10); const head = new THREE.Group(); head.position.y = 0.72; fan.add(head);
+    const fan = new THREE.Group(); fan.position.set(1.4, 1.02, -0.1); fd.add(fan); S.fan = fan; cyl(0.2, 0.05, dm, 0, 0.025, 0, fan, 20); cyl(0.04, 0.4, dm, 0, 0.22, 0, fan, 10); const head = new THREE.Group(); head.position.y = 0.72; fan.add(head);
     const cage = std({ color: '#0e0e10', metalness: 0.6, roughness: 0.4 }); head.add(new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.015, 6, 36), cage)); for (let i = 0; i < 14; i++) { const sp = box(0.008, 0.68, 0.008, cage, 0, 0, 0.04, head); sp.rotation.z = i / 14 * Math.PI; }
     for (const rr of [0.12, 0.24]) head.add(new THREE.Mesh(new THREE.TorusGeometry(rr, 0.006, 4, 30), cage)); cyl(0.06, 0.12, cage, 0, 0, -0.06, head, 12, Math.PI / 2); const bl = new THREE.Group(); head.add(bl); S.fanBlades = bl;
     for (let i = 0; i < 4; i++) { const pv = new THREE.Group(); pv.rotation.z = i * Math.PI / 2; bl.add(pv); const b = box(0.13, 0.28, 0.012, std({ color: '#1a1a1e', metalness: 0.5 }), 0, 0.16, -0.02, pv); b.rotation.y = 0.3; }
-    const plush = voxelArt(['.b..b.', 'bbbbbb', 'bwbbwb', 'bbnnbb', '.bbbb.', 'bbbbbb', 'bb..bb'], { b: '#6a3e1a', w: '#5aa8ff', n: '#1a0e08' }, 0.04, 0.2); plush.position.set(-0.55, 1.16, 0.1); fd.add(plush);
     for (const [x, z] of [[-1.0, 0.0], [-0.85, 0.15]]) { const p = new THREE.Mesh(new THREE.IcosahedronGeometry(0.08, 0), std({ color: '#d8d8dc', roughness: 0.9 })); p.position.set(x, 1.07, z); fd.add(p); }
     for (const [x, ry] of [[-1.2, 0.1], [-0.9, -0.05]]) box(0.42, 0.005, 0.3, std({ color: '#e8e6e0' }), x, 1.025, 0.15, fd, ry);
     const mic = new THREE.Group(); mic.position.set(0.25, 1.06, 0.2); mic.rotation.set(0, 0.5, Math.PI / 2 - 0.15); fd.add(mic); cyl(0.03, 0.4, std({ color: '#2a2a2e', metalness: 0.5 }), 0, 0, 0, mic, 10); const mb = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 8), std({ color: '#4a4a50', metalness: 0.7 })); mb.position.y = 0.24; mic.add(mb);
@@ -141,3 +139,46 @@ export function buildFireRoom(S) {
   const r = rng(4); for (let i = 0; i < 18; i++) { const b = box(0.3 + r() * 0.8, 0.1 + r() * 0.3, 0.3 + r() * 0.6, std({ color: '#140e0c' }), (r() - 0.5) * 8, 0.08, -3.4 + r() * 1.2, g, r() * 3); }
   for (let i = 0; i < 6; i++) box(0.12, 3.4, 0.12, std({ color: '#100a08' }), -3.5 + i * 1.4, 3.2, -3.8, g).rotation.z = (r() - 0.5) * 0.6;
   s.add(new THREE.HemisphereLight('#5a2a10', '#000', 0.3)); S.fireRoom = s; return s; }
+
+// ===================== Fazbear Entertainment money vault =====================
+// round vault door (open), steel walls with rivets, mounds of Faz-Coins (instanced discs), coin chutes from the ceiling
+export function buildVault(S) {
+  const s = new THREE.Scene(); s.background = new THREE.Color('#050403'); s.fog = new THREE.Fog('#0a0704', 10, 26); const g = new THREE.Group(); s.add(g); const r = rng(21);
+  const steel = std({ color: '#3a3c42', metalness: 0.7, roughness: 0.4 }), steelD = std({ color: '#26282c', metalness: 0.7, roughness: 0.5 });
+  const fl = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), std({ color: '#2a2a2e', metalness: 0.6, roughness: 0.35 })); fl.rotation.x = -Math.PI / 2; fl.receiveShadow = true; g.add(fl);
+  for (let i = -7; i <= 7; i++) { box(16, 0.01, 0.03, steelD, 0, 0.005, i, g); box(0.03, 0.01, 16, steelD, i, 0.005, 0, g); }
+  box(16, 7, 0.3, steel, 0, 3.5, -6, g); for (const sx of [-1, 1]) box(0.3, 7, 14, steel, sx * 6, 3.5, 0, g);
+  for (let x = -5.5; x <= 5.5; x += 0.7) for (let y = 0.5; y < 7; y += 1.2) { const rv = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 4), steelD); rv.position.set(x, y, -5.84); g.add(rv); }
+  // the round vault door, open on its hinge (left), with bolts and a wheel
+  const door = new THREE.Group(); door.position.set(-2.6, 2.4, -5.6); door.rotation.y = 0.85; g.add(door); S.vaultDoor = door;
+  const dk = new THREE.Mesh(new THREE.CylinderGeometry(1.9, 1.9, 0.5, 40), std({ color: '#5a5c64', metalness: 0.85, roughness: 0.3 })); dk.rotation.x = Math.PI / 2; dk.position.x = 1.9; door.add(dk);
+  for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; const b = cyl(0.09, 0.6, std({ color: '#c8c8d0', metalness: 0.9, roughness: 0.2 }), 1.9 + Math.cos(a) * 1.6, Math.sin(a) * 1.6, 0, door, 10, Math.PI / 2); }
+  const wh = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.06, 8, 24), std({ color: '#d8b848', metalness: 0.9, roughness: 0.2 })); wh.position.set(1.9, 0, 0.3); door.add(wh); S.vaultWheel = wh;
+  for (let i = 0; i < 3; i++) { const sp = box(1.1, 0.07, 0.07, std({ color: '#d8b848', metalness: 0.9 }), 1.9, 0, 0.3, door); sp.rotation.z = i * Math.PI / 3; }
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(2.0, 0.18, 10, 40), steelD); ring.position.set(-0.7, 2.4, -5.8); g.add(ring);
+  // coin mounds: instanced gold discs stacked in cones
+  const gold = new THREE.MeshStandardMaterial({ color: '#e8b830', metalness: 0.9, roughness: 0.28, emissive: '#3a2400', emissiveIntensity: 0.3 });
+  const N = 4200; const im = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.1, 0.1, 0.02, 14), gold, N); im.castShadow = im.receiveShadow = true; const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
+  const mounds = [[-3.0, -3.0, 2.3, 2.6], [3.1, -3.4, 2.4, 3.0], [0.2, -4.6, 2.0, 2.2], [-4.3, 0.8, 1.5, 1.4], [4.4, 0.6, 1.6, 1.6]]; let i = 0;
+  for (const [cx, cz, rad, h] of mounds) for (let k = 0; k < N / mounds.length; k++) { const a = r() * Math.PI * 2, d = Math.sqrt(r()) * rad; const y = Math.max(0.01, h * (1 - d / rad)) * (0.7 + 0.3 * r()); e.set(r() * 0.8 - 0.4, r() * 6, r() * 0.8 - 0.4); q.setFromEuler(e); m4.compose(new THREE.Vector3(cx + Math.cos(a) * d, y, cz + Math.sin(a) * d), q, new THREE.Vector3(1, 1, 1)); if (i < N) im.setMatrixAt(i++, m4); }
+  g.add(im); S.vaultTop = (x, z) => { let best = 0.0; for (const [cx, cz, rad, h] of mounds) { const d = Math.hypot(x - cx, z - cz); if (d < rad) best = Math.max(best, h * (1 - d / rad) * 0.85); } return best; };
+  // chutes from the ceiling (coins pour from them in the shots)
+  S.chutes = [[-2.0, -2.0], [2.2, -2.4], [0, -1.2]].map(([x, z]) => { const c = cyl(0.35, 2.2, steelD, x, 6.0, z, g, 16); const m = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.05, 6, 20), std({ color: '#d8b848', metalness: 0.9 })); m.rotation.x = Math.PI / 2; m.position.set(x, 4.9, z); g.add(m); return new THREE.Vector3(x, 4.85, z); });
+  const key = new THREE.SpotLight('#ffd890', 160, 18, 0.8, 0.5, 1.2); key.position.set(0, 6.5, 3); key.target.position.set(0, 1, -2); key.castShadow = true; key.shadow.mapSize.set(1024, 1024); s.add(key, key.target);
+  for (const [x, z] of [[-3.2, -3.2], [3.3, -3.6]]) { const sp = new THREE.SpotLight('#ffcf60', 40, 10, 0.5, 0.6, 1.3); sp.position.set(x, 6.4, z + 1); sp.target.position.set(x, 0.6, z); s.add(sp, sp.target); }
+  s.add(new THREE.HemisphereLight('#8a7a5a', '#0a0806', 1.0)); S.vault = s; return s; }
+
+// ===================== William's nightmare: black void, floating static TVs, red rim =====================
+export function buildNightmare(S) {
+  const s = new THREE.Scene(); s.background = new THREE.Color('#020103'); s.fog = new THREE.FogExp2('#050208', 0.08); const g = new THREE.Group(); s.add(g);
+  const fl = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), std({ color: '#08060a', metalness: 0.7, roughness: 0.25 })); fl.rotation.x = -Math.PI / 2; fl.receiveShadow = true; g.add(fl);
+  const c = document.createElement('canvas'); c.width = 64; c.height = 48; const tex = new THREE.CanvasTexture(c); S.staticCanvas = c; S.staticTex = tex;
+  const scr = new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }); S.tvs = [];
+  for (let i = 0; i < 9; i++) { const tv = new THREE.Group(); g.add(tv); tv.scale.setScalar(1.7); box(0.62, 0.5, 0.5, std({ color: '#1a1a1e', roughness: 0.5 }), 0, 0, 0, tv); const sc = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.36), scr); sc.position.z = 0.252; tv.add(sc);
+    tv.userData = { a: i / 9 * Math.PI * 2, r: 3.4 + (i % 3) * 0.5, y: 1.0 + (i % 4) * 0.55, sp: 0.25 + (i % 3) * 0.08 }; S.tvs.push(tv); }
+  S.officeNoise = () => { const c2 = S.officeStatic; if (!c2) return; const g3 = c2.getContext('2d'); const d3 = g3.createImageData(48, 36); for (let i = 0; i < d3.data.length; i += 4) { const v = Math.random() * 220 | 0; d3.data[i] = v; d3.data[i + 1] = v; d3.data[i + 2] = v + 15; d3.data[i + 3] = 255; } g3.putImageData(d3, 0, 0); S.officeStaticTex.needsUpdate = true; };
+  S.updateNightmare = (t, center) => { const g2 = c.getContext('2d'); const d = g2.createImageData(64, 48); for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() * 200 | 0; d.data[i] = v; d.data[i + 1] = v; d.data[i + 2] = v + 20; d.data[i + 3] = 255; } g2.putImageData(d, 0, 0); tex.needsUpdate = true;
+    S.tvs.forEach(tv => { const u = tv.userData; const a = u.a + t * u.sp; tv.position.set(center.x + Math.cos(a) * u.r, u.y + 0.15 * Math.sin(t * 1.3 + u.a * 3), center.z + Math.sin(a) * u.r); tv.lookAt(center.x, u.y, center.z); tv.rotation.z += 0.2 * Math.sin(t + u.a); }); };
+  const rim = new THREE.SpotLight('#ff2a2a', 60, 14, 0.5, 0.6, 1.3); rim.position.set(0, 5, -4); rim.target.position.set(0, 1, 0); s.add(rim, rim.target); S.nmRim = rim;
+  const key = new THREE.SpotLight('#9ab0ff', 70, 14, 0.55, 0.6, 1.3); key.position.set(1.5, 5, 4); key.target.position.set(0, 1.2, 0); s.add(key, key.target); S.nmKey = key;
+  s.add(new THREE.HemisphereLight('#2a2040', '#000', 0.4)); S.nightmare = s; return s; }

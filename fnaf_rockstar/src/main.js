@@ -8,7 +8,7 @@ import { loadImage, imgToCanvas, Character, U, buildWilliam, buildSpring, addEnd
 import { addFace, blinkAt, FACES } from './face.js';
 import { collisionCheck } from './act.js';
 import { buildRockstar, fazCoin } from './rockstar.js';
-import { buildOffice, buildStage6, buildFireRoom, drawPanel, rng } from './ucn.js';
+import { buildOffice, buildStage6, buildFireRoom, buildVault, buildNightmare, drawPanel, rng } from './ucn.js';
 import { SHOTS, DURATION } from './shots.js';
 
 const q = new URLSearchParams(location.search); const W = +q.get('w') || 540, H = +q.get('h') || 960;
@@ -19,7 +19,7 @@ const camera = new THREE.PerspectiveCamera(42, W / H, 0.03, 80);
 
 // ---------- assets ----------
 const sk = {}; for (const n of ['rockstar', 'william', 'springtrap', 'child', 'goldenfreddy']) sk[n] = imgToCanvas(await loadImage(`/skins/${n}.png`));
-const S = {}; buildOffice(S); buildStage6(S); buildFireRoom(S);
+const S = {}; buildOffice(S); buildStage6(S); buildFireRoom(S); buildVault(S); buildNightmare(S);
 
 // ---------- characters: animatronics 1.35, William 1.0 (adult), kids 0.74 (ghosts) ----------
 const KIDPAL = [{ shirt: '#d84a6a', accent: '#f2c230', pants: '#2a4a9a', hair: '#5a3a1a' }, { shirt: '#3a7ae8', accent: '#ffffff', pants: '#3a3a3a', hair: '#2a1a0a' }, { shirt: '#36c04a', accent: '#f2f2f2', pants: '#5a3a22', hair: '#c8902a' }, { shirt: '#f0a020', accent: '#ffffff', pants: '#3a2a5a', hair: '#7a3a1a' }, { shirt: '#9a5ad8', accent: '#ffffff', pants: '#2a2a2a', hair: '#3a2a1a' }];
@@ -84,7 +84,7 @@ const ctx = { THREE, C, S, FX, camera, U };
 function resetWorld() {
   for (const c of allChars) { c.reset(); c.root.visible = true; c.root.scale.setScalar(c.baseScale); c.root.position.set(0, 0, 0); c.root.rotation.set(0, 0, 0); c.root.removeFromParent(); c.noBlink = false; if (c.setFace) c.setFace({ lid: 0, slope: 0, mouth: 0 }); if (c.ghostMat) c.ghostMat.opacity = c.name === 'golden' ? 0.55 : 0.6; }
   for (const o of Object.values(FX)) { if (!o || !o.isObject3D) continue; o.removeFromParent(); o.visible = true; o.scale.setScalar(1); o.rotation.set(0, 0, 0); }
-  S.tablet.visible = false; S.officeKey.intensity = 46; S.officeKey.color.set('#ffcf8a'); S.officeKey.position.set(0, 3.8, 0.9); S.officeWash.intensity = 45; S.lampBulb.visible = true; C.rockstar.star.material.emissiveIntensity = 0.35; S.officeFill.intensity = 3; if (C.rockstar.eyeRed) C.rockstar.eyeRed(0); camera.fov = 42; camera.up.set(0, 1, 0);
+  S.tablet.visible = false; S.officeKey.intensity = 46; S.officeKey.color.set('#ffcf8a'); S.officeKey.position.set(0, 3.8, 0.9); S.officeWash.intensity = 45; S.lampBulb.visible = true; C.rockstar.star.material.emissiveIntensity = 0.35; for (let i = 0; i < 5; i++) FX['coin' + i].children[0].material.emissiveIntensity = 0.3; S.vaultDoor.rotation.y = 0.85; S.deskLight.color.set('#ffc890'); S.deskLight.intensity = 9; S.officeFill.intensity = 3; if (C.rockstar.eyeRed) C.rockstar.eyeRed(0); camera.fov = 42; camera.up.set(0, 1, 0);
   const P = post.uniforms; P.vig.value = 0.6; P.grain.value = 0.03; P.glitch.value = 0; P.flash.value = 0; P.fade.value = 0; P.chroma.value = 0; P.blur.value = 0; P.tint.value.set(1, 1, 1); bloom.strength = 0.35;
 }
 function renderAt(t) {

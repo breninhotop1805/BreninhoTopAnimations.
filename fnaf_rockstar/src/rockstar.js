@@ -40,14 +40,14 @@ export function buildRockstar(canvas) {
   ch.slotPt = () => { ch.root.updateMatrixWorld(true); return cb.localToWorld(new THREE.Vector3(0, -1.75 * U, 1.0 * U)); };
   // microphone (handle + mesh ball) in the right hand; kept vertical (ball up) each frame by ch.micUp()
   const mic = new THREE.Group(); ch.handR.add(mic); ch.mic = mic;
-  const mh = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.038, 0.42, 14), new THREE.MeshStandardMaterial({ color: '#16161c', roughness: 0.35, metalness: 0.3 })); mh.position.y = 0.0; mic.add(mh);
-  const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.055, 0.05, 16), new THREE.MeshStandardMaterial({ color: '#2a2a32', metalness: 0.7, roughness: 0.3 })); rim.position.y = 0.23; mic.add(rim);
-  const ball = new THREE.Mesh(new THREE.SphereGeometry(0.11, 18, 14), new THREE.MeshStandardMaterial({ color: '#b8bcc6', metalness: 0.85, roughness: 0.4 })); ball.position.y = 0.33; mic.add(ball);
-  const grill = new THREE.Mesh(new THREE.SphereGeometry(0.112, 10, 8), new THREE.MeshBasicMaterial({ color: '#30323a', wireframe: true })); grill.position.y = 0.33; mic.add(grill);
+  const mh = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.038, 0.42, 14), new THREE.MeshStandardMaterial({ color: '#16161c', roughness: 0.35, metalness: 0.3 })); mh.position.y = 0.09; mic.add(mh);
+  const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.055, 0.05, 16), new THREE.MeshStandardMaterial({ color: '#2a2a32', metalness: 0.7, roughness: 0.3 })); rim.position.y = 0.32; mic.add(rim);
+  const ball = new THREE.Mesh(new THREE.SphereGeometry(0.11, 18, 14), new THREE.MeshStandardMaterial({ color: '#b8bcc6', metalness: 0.85, roughness: 0.4 })); ball.position.y = 0.42; mic.add(ball);
+  const grill = new THREE.Mesh(new THREE.SphereGeometry(0.112, 10, 8), new THREE.MeshBasicMaterial({ color: '#30323a', wireframe: true })); grill.position.y = 0.42; mic.add(grill);
   // world-sized, always ball-up, held IN FRONT of the fist (never inside the arm)
-  ch.micUp = () => { ch.root.updateMatrixWorld(true); const q = new THREE.Quaternion(); ch.handR.getWorldQuaternion(q); const qi = q.clone().invert(); mic.quaternion.copy(qi); const sc = 1 / ch.root.scale.x; mic.scale.setScalar(sc);
-    const fw = new THREE.Vector3(Math.sin(ch.root.rotation.y), 0, Math.cos(ch.root.rotation.y)); const off = fw.multiplyScalar(0.17).add(new THREE.Vector3(0, 0.04, 0)).applyQuaternion(qi).multiplyScalar(sc); mic.position.copy(off); };
-  // angry red eyes (UCN): emissive plates over the painted eyes, faded in by k
-  const em = new THREE.MeshBasicMaterial({ color: '#ff1a1a', toneMapped: false, transparent: true, opacity: 0 }); for (const sx of [-1, 1]) { const e = new THREE.Mesh(new THREE.BoxGeometry(1.7 * U, 1.0 * U, 0.08 * U), em); e.position.set(sx * 2.0 * U, 5.0 * U, 4.06 * U); H.add(e); }
-  ch.eyeRed = k => { em.opacity = Math.max(0, Math.min(1, k)); };
+  ch.micUp = () => { ch.root.updateMatrixWorld(true); const q = new THREE.Quaternion(); ch.handR.getWorldQuaternion(q); mic.quaternion.copy(q.invert()); mic.scale.setScalar(1 / ch.root.scale.x); mic.position.set(0, -0.6 * U, 0.3 * U); };
+  // menacing glow: only the PUPILS light up (small red points + soft halo), never a flat colour block over the eye
+  const em = new THREE.MeshBasicMaterial({ color: '#ff2a1a', toneMapped: false, transparent: true, opacity: 0 }); const halo = new THREE.MeshBasicMaterial({ color: '#ff3a1a', toneMapped: false, transparent: true, opacity: 0, depthWrite: false });
+  for (const sx of [-1, 1]) { const p = new THREE.Mesh(new THREE.BoxGeometry(0.55 * U, 0.9 * U, 0.06 * U), em); p.position.set(sx * 2.25 * U, 4.5 * U, 4.04 * U); H.add(p); const hh = new THREE.Mesh(new THREE.CircleGeometry(0.6 * U, 16), halo); hh.position.set(sx * 2.25 * U, 4.5 * U, 4.09 * U); H.add(hh); }
+  ch.eyeRed = k => { k = Math.max(0, Math.min(1, k)); em.opacity = k; halo.opacity = 0.22 * k; };
   ch.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } }); ch.baseScale = 1.35; return ch; }
