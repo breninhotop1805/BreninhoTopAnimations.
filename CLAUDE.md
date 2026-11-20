@@ -200,3 +200,19 @@ e a **máscara 3D do Michael não satisfatória**. Regras:
   Props na mão: tamanho comparado com a referência (bola do microfone ≈ do tamanho do punho), segurado NA FRENTE do punho
   (offset pra frente, nunca saindo de dentro do braço), e conferido num close ANTES do render. HUD/contador nunca em cima
   do rosto do personagem (canto superior).
+
+## REPROVAÇÃO FORTE — vídeo do Rockstar Freddy (UCN): "um dos piores vídeos"
+O que ele apontou: vídeo feio e repetitivo, sem vida, sem criatividade; quase tudo no MESMO escritório com o MESMO ângulo
+(câmera atrás da mesa olhando o Rockstar); animações sem vida/bugadas (Rockstar parado só respirando, mesmo aceno repetido);
+almas SOBREPOSTAS; microfone parecendo VOAR (afastado do punho); olhos vermelhos = retângulos chapados (feio);
+pelúcias/brinquedos do cenário malfeitos (blocos toscos). Causa real: pressa — foquei em consertar bug e esqueci direção.
+REGRAS a partir daqui:
+- **Storyboard antes de tudo**: lista de cenas com cenário + ângulo + ação de cada uma; no máximo ~3 cenas seguidas no mesmo
+  cenário/ângulo; trocar de lugar (cenários diferentes, flashback, close extremo, plano de cima, travelling) e de lente.
+  Mandar o storyboard em imagens (1 quadro por cena) pra ele aprovar ANTES do render.
+- **Cada personagem atua em toda cena** (andar, gesto forte com overshoot, cabeça viva, reação) — nunca só `alive`.
+  Não repetir o mesmo gesto (ex.: wave) mais de 1–2 vezes no vídeo.
+- **Prop na mão = segurado de verdade**: cabo atravessando o punho fechado (encaixe no handR), nunca flutuando à frente.
+- **Olhos brilhando**: pupila acesa pequena/glow suave sobre o pixel do olho — nunca retângulo de cor chapada cobrindo o olho.
+- **Vários personagens/almas no quadro**: espaçados na tela (sem sobreposição visual), entrando um de cada vez.
+- **Objetos de cenário em close** (pelúcias, brinquedos): modelar com cuidado (personagem reconhecível) ou deixar fora do close.
