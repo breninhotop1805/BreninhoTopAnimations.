@@ -193,3 +193,6 @@ e a **máscara 3D do Michael não satisfatória**. Regras:
   feitos, encaixe justo na cabeça, sem ficar "caixa grande"); as mãos seguram pelas laterais sem atravessar a peça nem a cabeça.
 - Pelúcia/versão mini de personagem que tem modelo 3D: usar o modelo 3D completo (focinho, orelhas, gancho…), nunca só a skin.
 - Exposição: lanterna/spot perto de rosto claro estoura — intensidade baixa e conferir em cada close.
+- (vídeo do compartimento do Freddy) Rosto dos Funtimes ABERTO (placas do rosto + olhos 3D redondos atrás) foi REPROVADO:
+  "que nojo, olhos redondos, os olhos 2D abriram junto". Não abrir rostos/placas faciais; se uma peça aberta tiver risco de
+  ficar estranha, não usar. Peito/barriga abrindo com o design da própria skin foi aprovado ("o Freddy ficou bom").
