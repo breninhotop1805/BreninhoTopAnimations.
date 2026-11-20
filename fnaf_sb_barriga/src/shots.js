@@ -1,7 +1,7 @@
 // POR QUE O GLAMROCK FREDDY TEM UM COMPARTIMENTO PRA CRIANÇAS? — shot list. Times = real word timestamps (faster-whisper).
 // Sets: mainstage (stage top y=1, z=-3.4), atrium (floor 0), party (floor 0), gallery (SL stage y=1, z=-3.4), control (SL), ug (tunnels).
 import * as THREE from 'three';
-import { gesture, startle, headShake, nod, wave, alive, walkPath, springE } from './act.js';
+import { gesture, startle, headShake, nod, wave, alive, walkPath, springE, gestW } from './act.js';
 
 const V3 = THREE.Vector3;
 const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -35,6 +35,8 @@ const scene = (x, n, vig = 0.65) => { const s = x.S[n]; x.out.scene = s; x.post.
 const stage = x => { const s = scene(x, 'mainstage', 0.7); x.S.stageSpots.forEach((l, i) => l.target.position.set(Math.sin(x.t * 1.3 + i * 1.7) * 3, 1.5, -3.4)); return s; };
 const gallery = x => { const s = scene(x, 'gallery', 0.8); x.S.SL.bulbs.forEach((b, i) => b.visible = Math.sin(x.t * 6 + i * 0.9) > -0.6); return s; };
 // world point inside Freddy's cavity (local units in skin pixels)
+// Freddy taps his belly: arm comes FORWARD first, then a little inward (never through the torso)
+function tapBelly(f, L, a, amt = 0.6) { const w = Math.max(0, gestW(L, a, 9)) * amt; f.armR.piv.rotation.x += -1.25 * w; f.armR.piv.rotation.z += 0.22 * w * w; f.head.rotation.x += 0.15 * w; }
 const cavPt = (c, x, y, z) => { c.root.updateMatrixWorld(true); return c.cav.localToWorld(new V3(x * U, y * U, z * U)); };
 // POV from inside the cavity looking out through the doors
 function povInside(x, c) { const e = cavPt(c, 0, 0.6, -0.8), f = cavPt(c, 0, 0.3, 40); cam(x, [e.x, e.y, e.z], [f.x, f.y, f.z], 70); }
@@ -83,7 +85,7 @@ at(9.24, 'sb', x => {
 });
 // 10.08 "ele mesmo avisa que aquele espaço existe apenas" — Freddy explains, hand on his belly; Gregory looks up
 at(10.08, 'avisa1', x => {
-  const s = scene(x, 'atrium'); const L = x.L; const f = put(x, 'gfreddy', s, -0.6, 0, -1.0, 0.45); alive(f, x.t, 1); gesture(f, 'chest', L, 0.2, 9, 0.55, { face: false }); nod(f, L, 1.2, 2, 0.12);
+  const s = scene(x, 'atrium'); const L = x.L; const f = put(x, 'gfreddy', s, -0.6, 0, -1.0, 0.45); alive(f, x.t, 1); tapBelly(f, L, 0.2); nod(f, L, 1.2, 2, 0.12);
   const g = put(x, 'gregory', s, 0.9, 0, 0.5, -2.4); alive(g, x.t, 1, 2); lookAt(g, hp(f), 0.85); lookAt(f, hp(g), 0.8);
   camMove(x, [1.9, 1.9, 3.4], [-0.2, 1.7, -0.5], [1.6, 1.9, 3.0], [-0.2, 1.8, -0.5], eo, 48);
 });
@@ -102,7 +104,7 @@ at(14.54, 'dentro2', x => {
 at(16.44, 'sb2', x => { const s = scene(x, 'atrium'); const k = eio(x.u); cam(x, [mix(-3, 2, k), mix(7, 4.5, k), mix(9, 7, k)], [0, 2, -5], 56); });
 // 17.22 "ele mesmo avisa que aquele espaço..." — from Gregory's height: Freddy leans in and taps his chest
 at(17.22, 'avisa2', x => {
-  const s = scene(x, 'atrium'); const L = x.L; const f = put(x, 'gfreddy', s, 0, 0, -1.0, 0); alive(f, x.t, 1); f.torso.rotation.x += 0.12 * eo(seg(L, 0.1, 0.5)); gesture(f, 'chest', L, 0.4, 9, 0.55, { face: false }); lookCam(x, f, 0.8);
+  const s = scene(x, 'atrium'); const L = x.L; const f = put(x, 'gfreddy', s, 0, 0, -1.0, 0); alive(f, x.t, 1); f.torso.rotation.x += 0.12 * eo(seg(L, 0.1, 0.5)); tapBelly(f, L, 0.4); lookCam(x, f, 0.8);
   const k = eo(x.u); cam(x, [0.35, 1.25, mix(2.4, 1.9, k)], [0, 2.5, -1.0], 50);
 });
 // 19.36 "carregar bolos de aniversário durante as festas" — a birthday party: cake with candles on the table, confetti on "aniversário"
@@ -207,7 +209,7 @@ at(53.44, 'seguro', x => {
 });
 // 55.20 "pra salvar a vida do Gregory" — Freddy, protective, pats the closed belly; Gregory's face lit by the seam glow is implied
 at(55.20, 'vida', x => {
-  const s = scene(x, 'atrium'); const L = x.L; const f = put(x, 'gfreddy', s, 0, 0, -1.0, 0); alive(f, x.t, 1); gesture(f, 'chest', L, 0.2, 9, 0.55, { face: false }); f.setHatch(0.04); f.hatchLight.intensity = 0.3; lookCam(x, f, 0.7); nod(f, L, 0.7, 1, 0.12);
+  const s = scene(x, 'atrium'); const L = x.L; const f = put(x, 'gfreddy', s, 0, 0, -1.0, 0); alive(f, x.t, 1); tapBelly(f, L, 0.2); f.setHatch(0.04); f.hatchLight.intensity = 0.3; lookCam(x, f, 0.7); nod(f, L, 0.7, 1, 0.12);
   const h = hp(f); const k = eo(x.u); cam(x, [h.x + 0.6, h.y - 0.9, h.z + mix(3.2, 2.6, k)], [h.x, h.y - 0.7, h.z], 46);
 });
 // 56.50 "Você já tinha ligado esses projetos?" — Gregory next to Freddy, "?" and a shrug
