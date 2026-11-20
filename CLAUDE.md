@@ -196,3 +196,7 @@ e a **máscara 3D do Michael não satisfatória**. Regras:
 - (vídeo do compartimento do Freddy) Rosto dos Funtimes ABERTO (placas do rosto + olhos 3D redondos atrás) foi REPROVADO:
   "que nojo, olhos redondos, os olhos 2D abriram junto". Não abrir rostos/placas faciais; se uma peça aberta tiver risco de
   ficar estranha, não usar. Peito/barriga abrindo com o design da própria skin foi aprovado ("o Freddy ficou bom").
+- (vídeo do Rockstar Freddy) Microfone saiu MINÚSCULO (parte do cabo ficava dentro do braço) e só foi notado no render.
+  Props na mão: tamanho comparado com a referência (bola do microfone ≈ do tamanho do punho), segurado NA FRENTE do punho
+  (offset pra frente, nunca saindo de dentro do braço), e conferido num close ANTES do render. HUD/contador nunca em cima
+  do rosto do personagem (canto superior).
