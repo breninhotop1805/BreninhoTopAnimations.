@@ -1,0 +1,58 @@
+"""SFX for "O NIGHTMARE FOXY É O IRMÃO DO JOGADOR". No music. Harsh sounds low; each sound marks one moment; strong opening."""
+import numpy as np, wave, os
+from sfx_lib import *
+def loopfill(fn, t0, t1, gain): add(fn(t1 - t0), t0, gain)
+def room(d): return lowpass(noise(d), 0.006) * 4.0
+def chip(f, d=0.06):  # 8-bit square blip for the minigame
+    t = np.arange(int(d * SR)) / SR; return np.sign(np.sin(2 * np.pi * f * t)) * np.exp(-t / (d * 0.6))
+def chip_sweep(f0, f1, d=0.25):
+    t = np.arange(int(d * SR)) / SR; f = f0 + (f1 - f0) * t / d; return np.sign(np.sin(2 * np.pi * np.cumsum(f) / SR)) * np.exp(-t / (d * 0.7))
+def sob(d=1.2):
+    t = np.arange(int(d * SR)) / SR; f = 520 + 60 * np.sin(2 * np.pi * 7 * t); return np.sign(np.sin(2 * np.pi * np.cumsum(f) / SR)) * (0.5 + 0.5 * np.sin(2 * np.pi * 3 * t) ** 2) * np.minimum(1, (d - t) / 0.2)
+mstep2 = lambda: metal_step(60)
+# --- ambience: low night-room tone, hallway hum ---
+loopfill(room, 0.0, 34.24, 0.05); loopfill(room, 40.14, 59.64, 0.05)
+# --- opening (strong): torch click + buzz, sweep, eyes sting, closet creak, heavy steps, jaw ---
+add(click(), 0.12, 0.35); add(buzz(0.25, 120), 0.13, 0.05); add(whoosh(0.6), 0.2, 0.08); add(sting(1.2), 0.76, 0.05); add(heartbeat(), 0.9, 0.25)
+add(creak(0.7, 160), 1.52, 0.12)
+for k, tt in enumerate([1.72, 2.02, 2.3]): add(mstep2(), tt, 0.09)
+add(growl(0.8, 60), 2.44, 0.07); add(mstep2(), 3.0, 0.07); add(mstep2(), 3.35, 0.06); add(creak(0.5, 200), 3.76, 0.09)
+add(whoosh(0.8, False), 4.36, 0.07); add(thud(70, 0.1, 0.3), 4.6, 0.08); add(sting(1.0), 4.98, 0.03)
+add(breath(0.8), 5.95, 0.08); add(whoosh(0.4), 7.72, 0.07)
+for i in range(4): add(zap(0.12), 8.1 + i * 0.12, 0.03)
+for k, tt in enumerate([9.9, 10.25, 10.6]): add(mstep2(), tt, 0.08); add(click(), 10.16, 0.25)
+add(np.concatenate([click() * (0.6 + 0.4 * (i % 2)) for i in range(6)]), 10.88, 0.12)
+for tt in [11.35, 11.7]: add(mstep2(), tt, 0.08); add(growl(0.7, 50), 11.4, 0.06)
+add(creak(0.6, 170), 12.1, 0.08)
+for tt in [12.4, 12.75, 13.1]: add(mstep2(), tt, 0.07)
+add(growl(0.6, 65), 13.54, 0.07); add(breath(0.4, True), 13.56, 0.12)
+add(whoosh(1.2), 14.06, 0.05); add(sting(1.2), 14.88, 0.04)
+add(breath(1.0, True), 15.5, 0.05); add(breath(0.9, False), 16.0, 0.05)
+add(breath(0.7, False), 17.34, 0.07); add(click(), 17.4, 0.12)
+add(creak(0.9, 140), 18.6, 0.12)
+# jumpscare on "pular" (low, as per the channel rules)
+add(scream(0.9), 19.6, 0.06); add(boom(0.6, 1.0), 19.6, 0.05); add(static(0.4), 19.62, 0.03)
+add(heartbeat(), 20.75, 0.2); add(heartbeat(), 21.3, 0.18); add(whoosh(0.3), 21.5, 0.08); add(pop_sfx(), 22.44, 0.16)
+add(click(), 23.8, 0.3); add(whoosh(0.4), 23.82, 0.06); add(buzz(1.4, 100), 24.0, 0.02)
+add(hiss(0.6), 25.68, 0.05); add(growl(0.9, 55), 26.6, 0.07)
+add(whir(1.2, 220, 60), 27.95, 0.06); add(chime(1.4), 28.7, 0.05); add(pop_sfx(), 28.75, 0.1)
+add(pop_sfx(), 30.96, 0.16); add(whoosh(0.3), 32.16, 0.06)
+add(static(1.4), 32.84, 0.02); add(glitch(0.4), 33.9, 0.05); add(boot(0.8), 34.24, 0.06); add(static(0.35), 34.24, 0.04)
+for i in range(9): add(chip(330 if i % 2 else 294, 0.05), 35.98 + i * 0.12, 0.05)
+add(chip_sweep(200, 600, 0.2), 37.1, 0.05)
+add(chip_sweep(900, 200, 0.3), 37.68, 0.07); add(alarm(0.2, 880), 37.75, 0.03); add(sob(1.0), 38.52, 0.04)
+add(chip_sweep(900, 200, 0.3), 39.3, 0.06); add(sob(0.7), 39.55, 0.035)
+add(zap(0.2), 40.14, 0.05); add(growl(1.0, 58), 40.24, 0.08); add(whoosh(0.3), 41.0, 0.07)
+add(whoosh(0.5), 42.5, 0.04); add(thud(90, 0.08, 0.25), 42.9, 0.08)
+add(creak(0.6, 190), 43.9, 0.07); add(breath(0.9), 44.2, 0.04)
+add(scream(0.6) , 45.2, 0.03); add(thud(70, 0.1, 0.3), 45.2, 0.07); add(breath(0.3, True), 45.33, 0.12)
+add(laugh(5, 300, 0.14, 1.0), 46.3, 0.05); add(sob(1.0) * 0.0, 46.3, 0)
+add(sting(1.0), 47.7, 0.04); add(zap(0.15), 48.6, 0.04); add(whir(0.6, 90, 140), 49.2, 0.04)
+add(heartbeat(), 50.4, 0.22); add(heartbeat(), 50.95, 0.2); add(zap(0.2), 52.02, 0.05); add(glitch(0.4), 52.05, 0.04); add(mstep2(), 52.3, 0.07); add(mstep2(), 52.75, 0.07)
+add(heartbeat(), 53.2, 0.22); add(breath(0.4, True), 53.66, 0.12)
+add(buzz(0.4, 60), 54.52, 0.05); add(zap(0.1), 54.6, 0.04); add(growl(0.8, 52), 55.5, 0.06); add(glitch(0.4), 56.1, 0.05)
+add(glitch(0.5), 57.2, 0.06); add(sting(1.2), 57.34, 0.04); add(whoosh(0.5), 58.6, 0.05); add(breath(1.0, False), 58.95, 0.06)
+mix[:] = np.tanh(mix * 1.15) * 0.8
+pcm = (np.clip(mix, -1, 1) * 32767).astype(np.int16); os.makedirs('out', exist_ok=True)
+with wave.open('out/sfx.wav', 'wb') as w: w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR); w.writeframes(np.stack([pcm, pcm], 1).tobytes())
+print('ok', np.abs(mix).max())
