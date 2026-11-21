@@ -52,42 +52,42 @@ const game = (x, o) => { x.out.ui = [Object.assign({ type: 'game', L: x.L }, o)]
 // mask held/raised/worn: P = where the mask's pivot (the head pivot) is, in world space
 function maskAt(x, m, s, P) { const M = m.mask; M.removeFromParent(); s.add(M); M.position.copy(P); M.rotation.set(0, m.root.rotation.y, 0); M.scale.setScalar(m.root.scale.x);
   const c = P.clone().add(new V3(0, 0.27, 0)); for (const [A, sx] of [[m.armR, -1], [m.armL, 1]]) aimArm(m, A, c.clone().add(new V3(sx * 0.46, 0, 0)), 1); }
+// the Nightmare as a small plush (same 3D model at plush scale): sitting on the floor, lights off; w 0..1
+function plushSit(n, w = 1) { n.legR.piv.rotation.x = -1.45 * w; n.legL.piv.rotation.x = -1.45 * w; n.legR.piv.rotation.z = 0.1 * w; n.legL.piv.rotation.z = -0.1 * w; n.pelvis.position.y -= 10 / 16 * w; n.armR.piv.rotation.x = -0.5 * w; n.armL.piv.rotation.x = -0.5 * w; n.armR.piv.rotation.z = -0.15 * w; n.armL.piv.rotation.z = 0.15 * w; }
+// the torch lying on the quilt next to the child (prop resting on the bed, not held)
+function bedTorch(x, s) { const T = x.FX.torch; s.add(T); T.position.set(0.75, x.S.bedTop + 0.07, 2.35); T.rotation.set(0, -0.6, 0); T.userData.lens.material.color.set('#3a3a3a'); return T.position.clone(); }
 const bedY = (x, c) => x.S.bedTop + (2 - 12) / 16 * c.baseScale + 0.01;
 
 const shots = []; const at = (t, name, fn) => shots.push({ t, name, fn });
 
-// 0.00 "Existe um motivo perturbador" — dark room; the flashlight clicks on and sweeps to the closet; two orange eyes light up in the slit
-at(0.00, 'open', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(0.45); const n = nfIn(x, s); eyes(n, seg(L, 0.7, 0.85));
-  camMove(x, [0.4, 1.7, 1.6], [-2.6, 1.6, -3.6], [0.1, 1.75, 0.2], [0, 1.9, -4.5], eio, 52); hand(x, 1.2);
-  const sw = eio(seg(L, 0.15, 0.7)); povFlash(x, new V3(mix(-3.4, 0, sw), mix(1.2, 2.0, sw), -4.4), L > 0.12 ? 34 * (L < 0.2 ? 0.5 + 0.5 * Math.sin(L * 120) : 1) : 0);
-  x.post.vig.value = 0.9;
-});
+// 0.00 "Existe um motivo perturbador" — FRAME 0 = Nightmare Foxy's face in the closet gap, already in the beam; fast push-in; on "perturbador" the jaw SNAPS open (shake + chroma)
+at(0.00, 'abre', x => { const s = bedroom(x); const L = x.L; x.S.setCloset(0.62); const n = nfIn(x, s, -5.2); eyes(n, 0.4 + 0.6 * eo(seg(L, 0.05, 0.25)));
+  n.jawOpen(0.15 + 0.85 * eo(seg(L, 0.76, 0.92)) * (1 - 0.25 * sm(seg(L, 1.1, 1.5)))); n.head.rotation.z += 0.12 * eo(seg(L, 0.3, 0.7)); lookCam(x, n, 0.8);
+  const h = hp(n); const k = eo(x.u); cam(x, [h.x + mix(0.4, 0.15, k), h.y - mix(0.3, 0.2, k), h.z + mix(3.4, 2.3, k)], [h.x, h.y - 0.25, h.z], 46);
+  povFlash(x, h, 14, 0.35); punch(x, 0.76, 0.16); if (L > 0.76 && L < 1.2) shake(x, 0.35 * (1 - seg(L, 0.76, 1.2))); x.post.chroma.value = 1.2 * Math.max(0, 1 - Math.abs(L - 0.82) / 0.2); x.post.vig.value = 0.85; });
 // 1.50 "pelo qual o Nightmare Foxy" — the bi-fold doors fold open, he steps out into the beam; jaw drops on "Foxy"
 at(1.50, 'reveal', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(mix(0.45, 1, eo(seg(L, 0.05, 0.4)))); const n = put(x, 'nfoxy', s, 0, 0, -5.35); walkPath(n, L, 0.15, 0.85, [0, -5.35], [0, -4.25], { stride: 0.8 }); alive(n, x.t, 0.6);
+  const s = bedroom(x); const L = x.L; x.S.setCloset(mix(0.62, 1, eo(seg(L, 0.4, 0.62)))); const n = put(x, 'nfoxy', s, 0, 0, -5.35); walkPath(n, L, 0.4, 1.0, [0, -5.35], [0, -4.25], { stride: 0.8 }); alive(n, x.t, 0.6);
   n.jawOpen(eo(seg(L, 0.92, 1.12)) * (1 + 0.15 * springE(seg(L, 1.12, 1.3)))); lookCam(x, n, 0.6 + 0.3 * seg(L, 0.8, 1.0)); eyes(n, 1);
   const k = eo(x.u); cam(x, [mix(0.5, 0.25, k), mix(1.2, 1.3, k), mix(0.2, -1.2, k)], [0, mix(2.0, 2.35, k), -4.6], 50); povFlash(x, new V3(0, 2.2, -4.4), 30); punch(x, 0.94, 0.14); if (L > 0.94 && L < 1.2) shake(x, 0.25);
 });
-// 2.86 "é o único monstro que se esconde dentro" — he backs into the closet, hunching; the doors start to close on "esconde"
+// 2.86 "é o único monstro que se esconde dentro do armário" — he backs into the closet, hunching, and the doors fold shut on "armário"
 at(2.86, 'esconde', x => {
-  const s = bedroom(x); const L = x.L; const n = put(x, 'nfoxy', s, 0, 0, -4.25); walkPath(n, L, 0.1, 0.8, [0, -4.25], [0, -5.35], { stride: 0.6 }); n.root.rotation.y = 0; alive(n, x.t, 0.6); eyes(n, 1); n.jawOpen(0.3 * (1 - seg(L, 0.6, 1.0)));
-  n.torso.rotation.x += 0.18 * eo(seg(L, 0.3, 0.9)); lookCam(x, n, 0.7); x.S.setCloset(mix(1, 0.32, eio(seg(L, 0.9, 1.5))));
-  camMove(x, [-1.6, 1.4, -1.2], [0, 1.9, -4.8], [-1.0, 1.6, -1.8], [0, 1.9, -5.0], eo, 46); povFlash(x, new V3(0, 1.9, -4.8), 26);
+  const s = bedroom(x); const L = x.L; const n = put(x, 'nfoxy', s, 0, 0, -4.25); walkPath(n, L, 0.2, 1.0, [0, -4.25], [0, -5.35], { stride: 0.6, face: false }); alive(n, x.t, 0.6); eyes(n, 1); n.jawOpen(0.3 * (1 - seg(L, 0.8, 1.2)));
+  n.torso.rotation.x += 0.18 * eo(seg(L, 0.4, 1.0)); lookCam(x, n, 0.7); x.S.setCloset(mix(1, 0.3, eio(seg(L, 1.25, 1.75))));
+  camMove(x, [-1.6, 1.4, -1.2], [0, 1.9, -4.8], [-1.0, 1.6, -1.6], [0, 1.9, -5.0], eo, 46); povFlash(x, new V3(0, 1.9, -4.8), 26); punch(x, 1.7, 0.08);
 });
-// 4.36 "do armário em FNAF 4" — pull back: the whole bedroom, closet ajar, his eyes still glowing in the slit
-at(4.36, 'quarto', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(0.32); const n = nfIn(x, s); eyes(n, 1); const k = eio(x.u);
-  cam(x, [0, mix(1.9, 2.3, k), mix(-1.0, 2.6, k)], [0, mix(1.8, 1.6, k), -4.5], 54); povFlash(x, new V3(mix(0, -2.4, k), 1.6, -4.3), 26, 0.45); punch(x, 0.62, 0.1);
-});
+// 4.84 "em FNAF 4" — the FNAF 4 bedroom: the child hugging his knees on the bed, staring at the closet where two eyes glow
+at(4.84, 'fnaf4', x => { const s = bedroom(x); const L = x.L; x.S.setCloset(0.32); const n = nfIn(x, s); eyes(n, 1); const c = put(x, 'cchild', s, 0.2, 0, 2.6, Math.PI + 0.15); c.root.position.y = bedY(x, c); hugKnees(c); lookAt(c, new V3(0, 2, -4.5), 0.7); c.setFace({ lid: 0.1, slope: -0.8 }); c.root.position.x += 0.004 * Math.sin(x.t * 30); moonOn(x, c, 4); lampOn(x);
+  const h = hp(c); const k = eio(x.u); cam(x, [mix(1.6, 1.1, k), mix(3.0, 2.6, k), mix(-1.4, -0.6, k)], [h.x, h.y - 0.35, h.z], 54); });
 // 5.92 "Repara bem na diferença de comportamento" — the crying child in the middle of the room, torch sweeping left... right
 at(5.92, 'repara', x => {
   const s = bedroom(x); const L = x.L; const c = put(x, 'cchild', s, 0, 0, 0.6, Math.PI); alive(c, x.t, 1);
-  const tgt = new V3(-3.6 + 7.2 * eio(seg(L, 0.1, 1.6)), 1.4, -1.6); c.root.rotation.y = Math.PI - 0.35 * (tgt.x / 3.6); torch(x, c, tgt); lookAt(c, tgt, 0.8); c.setFace({ lid: 0.1, slope: -0.6 }); moonOn(x, c); lampOn(x);
-  const h = hp(c); const k = eo(x.u); cam(x, [h.x + mix(0.8, 0.5, k), h.y + 0.1, h.z - mix(2.4, 1.8, k)], [h.x, h.y - 0.25, h.z], 46); bubble(x, 'q', s, c, 1.2);
+  const tgt = new V3(-2.2 + 4.4 * eio(seg(L, 0.1, 1.6)), 1.4, -2.6); c.root.rotation.y = Math.PI - 0.2 * (tgt.x / 2.2); torch(x, c, tgt); lookAt(c, tgt, 0.8); c.setFace({ lid: 0.1, slope: -0.6 }); moonOn(x, c); lampOn(x);
+  const h = hp(c); const k = eo(x.u); const ry = c.root.rotation.y, d = mix(2.4, 1.8, k); cam(x, [h.x + Math.sin(ry) * d + 0.3 * Math.cos(ry), h.y + 0.1, h.z + Math.cos(ry) * d - 0.3 * Math.sin(ry)], [h.x, h.y - 0.25, h.z], 46); bubble(x, 'q', s, c, 1.2);
 });
 // 7.72 "entre os animatrônicos durante a noite" — the four Nightmares lined up down the dark hallway, camera backs away
-at(7.72, 'lineup', x => {
+at(7.72, 'noite', x => {
   const s = hallS(x, 'L'); const L = x.L; const order = [['nfreddy', -3.2, 0.4], ['nbonnie', -5.2, -0.4], ['nchica', -7.2, 0.4], ['nfoxy', -9.2, -0.4]];
   order.forEach(([nm, z, px], i) => { const c = put(x, nm, s, px, 0, z, 0); alive(c, x.t, 0.7, i); lookCam(x, c, 0.5); c.jawOpen(0.15); eyes(c, seg(L, 0.35 + i * 0.12, 0.45 + i * 0.12)); });
   const k = eio(x.u); cam(x, [mix(0.0, 0.2, k), mix(1.9, 2.2, k), mix(0.6, 1.6, k)], [0, 2.0, -6], 50); povFlash(x, new V3(0, 1.8, -5), 22, 0.3);
@@ -107,13 +107,14 @@ at(11.30, 'freddy', x => {
   const s = hallS(x, 'R'); const L = x.L; const c = put(x, 'nfreddy', s, 0, 0, -6); walkPath(c, L, -0.5, 0.72, [0, -6.4], [0, -4.4], { stride: 0.8, linear: true }); lookCam(x, c, 0.6); c.jawOpen(0.3); eyes(c, 1);
   camMove(x, [-0.3, 1.5, 1.0], [0, 2.3, -5], [-0.2, 1.6, 0.6], [0, 2.4, -4.6], eo, 46); povFlash(x, new V3(0, 2.2, -5), 30); hand(x);
 });
-// 12.02 "pelos corredores tentando invadir o quarto" — inside the room: the child braces at the left door; Bonnie leans into the doorway on "quarto"
-at(12.02, 'invadir', x => {
-  const s = bedroom(x); const L = x.L; const c = put(x, 'cchild', s, -1.6, 0, 1.4, -Math.PI / 2); alive(c, x.t, 1); const b = put(x, 'nbonnie', s, -5.2, 0, 1.4, Math.PI / 2);
-  walkPath(b, L, 0.2, 1.3, [-6.2, 1.4], [-4.75, 1.4], { stride: 0.7 }); b.root.rotation.y = Math.PI / 2; alive(b, x.t, 0.6); b.jawOpen(eo(seg(L, 1.4, 1.6)) * 0.9); eyes(b, 1); lookAt(b, hp(c), 0.7);
-  torch(x, c, new V3(-4.6, mix(1.5, 0.8, eo(seg(L, 1.45, 1.7))), mix(1.0, 0.5, eo(seg(L, 1.45, 1.7))))); lookAt(c, new V3(-4.6, 2.2, 1.4), 0.6); moonOn(x, c, 6); if (L > 1.5) { startle(c, L, 1.5, 0.8); c.setFace({ mouth: 1, lid: 0 }); c.noBlink = true; }
-  camMove(x, [0.7, 1.6, 2.0], [-4.5, 1.9, 1.2], [0.4, 1.6, 1.8], [-4.5, 2.0, 1.25], eo, 46); if (L > 1.5 && L < 1.8) shake(x, 0.2);
-});
+// 12.02 "pelos corredores" — low tracking shot down the right hallway: Chica in front, Freddy behind, both marching toward the room
+at(12.02, 'corredores', x => { const s = hallS(x, 'R'); const L = x.L; const c = put(x, 'nchica', s, -0.2, 0, -6); walkPath(c, L, -0.6, 1.2, [-0.25, -6.6], [-0.25, -4.6], { stride: 0.8, linear: true }); c.jawOpen(0.25); eyes(c, 1);
+  const f = put(x, 'nfreddy', s, 0.45, 0, -8); walkPath(f, L, -0.9, 1.4, [0.45, -9.2], [0.45, -7.2], { stride: 0.8, linear: true }); f.jawOpen(0.2); eyes(f, 1);
+  camMove(x, [-0.8, 0.75, -1.4], [0.1, 2.0, -6.5], [-0.75, 0.8, -1.9], [0.1, 2.1, -6.0], eo, 52); povFlash(x, new V3(0, 1.8, -5.5), 22, 0.45); });
+// 12.70 "tentando invadir o quarto" — the child's POV at the left door: Nightmare Bonnie reaches the doorway and leans in on "quarto"; the torch shakes
+at(12.70, 'invadir', x => { const s = bedroom(x); const L = x.L; const b = put(x, 'nbonnie', s, -5.2, 0, 1.4, Math.PI / 2); walkPath(b, L, -0.4, 0.75, [-6.2, 1.4], [-4.75, 1.4], { stride: 0.7, face: false }); b.root.rotation.y = Math.PI / 2; alive(b, x.t, 0.6);
+  b.torso.rotation.x += 0.2 * eo(seg(L, 0.7, 1.0)); b.jawOpen(0.2 + 0.7 * eo(seg(L, 0.8, 0.95))); eyes(b, 1); lookCam(x, b, 0.8);
+  cam(x, [-1.6, 1.1, 1.5], [-4.6, 1.95, 1.35], 52); hand(x, 1.4); povFlash(x, new V3(-4.6, 1.9, 1.4), 26, 0.35); punch(x, 0.84, 0.12); if (L > 0.84 && L < 1.2) shake(x, 0.25); });
 // 14.06 "Foxy já tá lá dentro" — slow push into the closet slit; his eyes light up on "dentro"
 at(14.06, 'dentro', x => {
   const s = bedroom(x); const L = x.L; x.S.setCloset(0.38); const n = nfIn(x, s); eyes(n, eo(seg(L, 0.8, 0.95)));
@@ -143,21 +144,19 @@ at(19.46, 'pular', x => {
   cam(x, [0, 1.85, 0.6], [0, 2.1, -3], 56); povFlash(x, new V3(0, 2.2, -2), 36, 0.42); if (L > 0.14) shake(x, 0.5 * (1 - seg(L, 0.5, 1.2)));
   x.post.chroma.value = 1.5 * seg(L, 0.14, 0.3) * (1 - seg(L, 0.6, 1.2)); x.post.tint.value.set(1 + 0.2 * k * (1 - seg(L, 0.6, 1.2)), 1, 1); x.post.fade.value = sm(seg(L, 0.95, 1.24));
 });
-// 20.70 "E tem outro detalhe bizarro" — calm again: the closet ajar, the eye in the slit; punch-in on "bizarro"
-at(20.70, 'detalhe', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(0.4); const n = nfIn(x, s); eyes(n, 1); n.head.rotation.z = 0.25 * eio(seg(L, 0.4, 1.0));
-  camMove(x, [-1.0, 1.9, -1.4], [0, 2.2, -4.6], [-0.6, 2.0, -2.0], [0, 2.25, -4.6], eo, 46); punch(x, 0.8, 0.16); povFlash(x, new V3(0, 2.0, -4.5), 20, 0.4); x.post.fade.value = 1 - sm(seg(L, 0, 0.2));
-});
-// 22.04 "que quase ninguém conecta" — the child scratches his head, puzzled
-at(22.04, 'conecta', x => {
-  const s = bedroom(x); const L = x.L; const c = put(x, 'cchild', s, 0.3, 0, 0.4, Math.PI + 0.3); alive(c, x.t, 1); gesture(c, 'think', L, 0.25, 9, 1, { face: false }); lookCam(x, c, 0.6); c.setFace({ lid: 0.2, slope: 0.3 }); moonOn(x, c, 6); lampOn(x);
-  const h = hp(c); const k = eo(x.u); cam(x, [h.x - mix(0.9, 0.6, k), h.y - 0.05, h.z - mix(2.2, 1.7, k)], [h.x, h.y - 0.3, h.z], 46); bubble(x, 'q', s, c, 0.4);
-});
+// 20.70 "E tem outro detalhe bizarro" — calm again: the child sits on his bed, his torch lying beside him, staring at the closet; his head tilts, "?" on "bizarro"
+at(20.70, 'detalhe', x => { const s = bedroom(x); const L = x.L; x.S.setCloset(0.35); const n = nfIn(x, s); eyes(n, 0.6); const c = put(x, 'cchild', s, 0.2, 0, 2.6, Math.PI); c.root.position.y = bedY(x, c); sitPose(c); c.armR.piv.rotation.x = -0.35; c.armL.piv.rotation.x = -0.35;
+  bedTorch(x, s); lookAt(c, new V3(0, 1.8, -4.5), 0.8); c.head.rotation.z += 0.25 * eio(seg(L, 0.6, 1.0)); c.setFace({ lid: 0.15, slope: 0.4 }); moonOn(x, c, 5); lampOn(x);
+  bubble(x, 'q', s, c, 0.8); x.post.fade.value = 1 - sm(seg(L, 0, 0.2)); const h = hp(c); const k = eo(x.u); cam(x, [h.x - mix(1.3, 1.0, k), h.y + 0.05, h.z - mix(2.0, 1.5, k)], [h.x, h.y - 0.25, h.z], 46); });
+// 22.04 "que quase ninguém conecta" — the camera CONNECTS the two clues: from the torch lying on the bed it races across the room to the closet gap
+at(22.04, 'conecta', x => { const s = bedroom(x); const L = x.L; x.S.setCloset(0.4); const n = nfIn(x, s); eyes(n, 1); const c = put(x, 'cchild', s, 0.2, 0, 2.6, Math.PI); c.root.position.y = bedY(x, c); sitPose(c); c.armR.piv.rotation.x = -0.35; c.armL.piv.rotation.x = -0.35; lookAt(c, new V3(0, 1.8, -4.5), 0.8); moonOn(x, c, 5); lampOn(x);
+  const tp = bedTorch(x, s); const cp = new V3(0, 2.3, -4.8); const k = eio(seg(L, 0.45, 1.05)); const look = tp.clone().lerp(cp, k);
+  cam(x, [mix(tp.x + 0.5, -0.3, k), mix(tp.y + 0.35, 2.05, k), mix(tp.z - 0.7, -2.0, k)], [look.x, look.y, look.z], mix(40, 46, k)); x.post.blur.value = 0.7 * Math.sin(k * Math.PI); povFlash(x, cp, 14 * k, 0.4); punch(x, 1.15, 0.1); });
 // 23.48 "Se você apontar a lanterna na hora certa" — over his shoulder: the torch snaps up on "apontar", beam on the closet
 at(23.48, 'apontar', x => {
   const s = bedroom(x); const L = x.L; x.S.setCloset(0.42); const n = nfIn(x, s); eyes(n, 1); const c = put(x, 'cchild', s, 0.5, 0, 0.0, Math.PI); alive(c, x.t, 1); const up = springE(seg(L, 0.32, 0.62));
   torch(x, c, new V3(0, mix(0.2, 2.0, up), mix(-1.5, -4.5, up)), L > 0.32 ? 1 : 0.0); lookAt(c, new V3(0, 2, -4.5), 0.8);
-  camMove(x, [1.3, 1.55, 1.6], [0, 1.6, -4.5], [1.1, 1.5, 1.2], [0, 1.8, -4.5], eo, 44);
+  const h = hp(c); camMove(x, [2.1, 1.2, -0.5], [h.x, h.y - 0.3, h.z - 0.3], [1.85, 1.2, -0.35], [h.x, h.y - 0.25, h.z - 0.3], eo, 50); moonOn(x, c, -20); lampOn(x);
 });
 // 25.38 "pra dentro do armário" — the beam pours into the closet: he flinches from the light
 at(25.38, 'luz', x => {
@@ -169,28 +168,25 @@ at(26.46, 'gigante', x => {
   const s = bedroom(x); const L = x.L; x.S.setCloset(0.9); const n = nfIn(x, s, -4.9); eyes(n, 1); n.jawOpen(0.4 + 0.5 * eo(seg(L, 0.2, 0.5))); n.head.rotation.x = 0.25; aimArm(n, n.armR, new V3(-0.2, 2.4, -2.6), 0.5);
   camMove(x, [0.6, 0.35, -2.2], [0, 2.4, -4.9], [0.45, 0.3, -2.5], [0, 2.6, -4.9], eo, 56); spot(x, [0.4, 1.2, -0.6], [0, 2.3, -4.9], 30, 0.25);
 });
-// 27.54 "simplesmente encolhe" — he shrinks down in a puff, getting smaller and smaller
-at(27.54, 'encolhe', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(0.9); const k = eio(seg(L, 0.45, 1.2)); const n = put(x, 'nfoxy', s, 0, 0, -4.9); n.root.scale.setScalar(mix(1.35, 0.3, k)); eyes(n, 1 - 0.6 * k); n.jawOpen(0.6 * (1 - k)); n.root.rotation.y = 0.6 * Math.sin(k * Math.PI);
-  const P = x.FX.parts; s.add(P); P.userData.update(seg(L, 0.5, 1.28), new V3(0, mix(1.6, 0.35, k), -4.8));
-  if (L >= 1.2) { n.root.visible = false; const p = put(x, 'pfoxy', s, 0, 0, -4.9); sitPose(p); }
-  camMove(x, [0.3, 1.5, -2.2], [0, 1.9, -4.9], [0.2, 1.0, -3.0], [0, 0.6, -4.9], eio, 50); spot(x, [0.3, 1.2, -0.4], [0, 1.0, -4.9], 30, 0.28); 
-});
+// 27.54 "simplesmente encolhe" — the SAME model shrinks down to plush size in a puff, sitting down on the closet floor as it lands
+at(27.54, 'encolhe', x => { const s = bedroom(x); const L = x.L; x.S.setCloset(0.9); const k = eio(seg(L, 0.4, 1.15)); const n = put(x, 'nfoxy', s, 0, 0, -4.9); n.root.scale.setScalar(mix(1.35, 0.3, k)); eyes(n, 1 - 0.85 * k); n.jawOpen(0.6 * (1 - k)); n.root.rotation.y = 0.5 * Math.sin(k * Math.PI);
+  plushSit(n, sm(seg(L, 0.85, 1.2))); const P = x.FX.parts; s.add(P); P.userData.update(seg(L, 0.45, 1.25), new V3(0, mix(1.6, 0.35, k), -4.8));
+  camMove(x, [0.3, 1.5, -2.2], [0, 1.9, -4.9], [0.2, 0.9, -3.1], [0, 0.45, -4.9], eio, 50); spot(x, [0.3, 1.2, -0.4], [0, 1.0, -4.9], 30, 0.28); });
 // 28.82 "e vira uma pelúcia inofensiva" — just a Foxy plush on the closet floor, in the beam
 at(28.82, 'pelucia', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(0.9); const p = put(x, 'pfoxy', s, 0, 0, -4.9); sitPose(p); p.head.rotation.z = 0.15 * eio(seg(L, 0.3, 0.9)); p.head.rotation.x = 0.1;
+  const s = bedroom(x); const L = x.L; x.S.setCloset(0.9); const p = put(x, 'pfoxy', s, 0, 0, -4.9); plushSit(p); eyes(p, 0.15); p.jawOpen(0); p.head.rotation.z = 0.15 * eio(seg(L, 0.3, 0.9)); p.head.rotation.x = 0.1;
   const P = x.FX.parts; s.add(P); P.userData.update(0.5 + seg(L, 0, 0.6) * 0.5, new V3(0, 0.35, -4.8));
   const h = hp(p); const k = eo(x.u); cam(x, [h.x + mix(0.5, 0.25, k), h.y + 0.05, h.z + mix(1.4, 0.9, k)], [h.x, h.y - 0.12, h.z], 40); spot(x, [0.3, 1.2, -1.2], [0, 0.3, -4.9], 26, 0.25);
 });
 // 30.46 "Mas por que ele é o único que funciona assim?" — the child, close: "?" and a shrug on "assim"
 at(30.46, 'porque', x => {
-  const s = bedroom(x); const L = x.L; const c = put(x, 'cchild', s, 0.3, 0, -2.6, Math.PI + 0.25); alive(c, x.t, 1); torch(x, c, new V3(0, 0.3, -4.9), 1, 1); lookAt(c, new V3(0, 0.3, -4.9), mix(0.8, 0, seg(L, 0.6, 1.0))); if (L > 0.8) lookCam(x, c, eo(seg(L, 0.8, 1.2)) * 0.8);
+  const s = bedroom(x); const L = x.L; const c = put(x, 'cchild', s, 0.3, 0, -1.5, Math.PI + 0.25); alive(c, x.t, 1); lookAt(c, new V3(0, 0.3, -4.9), mix(0.8, 0, seg(L, 0.6, 1.0))); spot(x, [0.6, 1.0, -1.6], new V3(0, 0.3, -4.9), 18, 0.3); if (L > 0.8) lookCam(x, c, eo(seg(L, 0.8, 1.2)) * 0.8);
   gesture(c, 'shrug', L, 1.7, 9, 0.9, { face: false }); c.setFace({ lid: 0.15, slope: -0.5 }); moonOn(x, c, 6); lampOn(x, 40);
   const h = hp(c); const k = eo(x.u); cam(x, [h.x - mix(1.1, 0.7, k), h.y, h.z - mix(2.0, 1.5, k)], [h.x, h.y - 0.3, h.z], 46); bubble(x, 'q', s, c, 0.5);
 });
 // 32.84 "A resposta está escondida" — into the darkness of the closet; static creeps in
 at(32.84, 'resposta', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(0.9); const p = put(x, 'pfoxy', s, 0, 0, -4.9); sitPose(p); const k = eio(x.u);
+  const s = bedroom(x); const L = x.L; x.S.setCloset(0.9); const p = put(x, 'pfoxy', s, 0, 0, -4.9); plushSit(p); eyes(p, 0.15); p.jawOpen(0); const k = eio(x.u);
   cam(x, [0, mix(0.7, 0.55, k), mix(-3.0, -4.3, k)], [0, 0.5, -5.2], 46); spot(x, [0.3, 1.2, -1.2], [0, 0.3, -4.9], 26 * (1 - k * 0.8), 0.25);
   x.post.glitch.value = 0.6 * seg(L, 0.9, 1.4); x.post.chroma.value = 1.5 * seg(L, 0.8, 1.4);
 });
@@ -204,12 +200,18 @@ at(37.06, 'mg_bro', x => { game(x, { scene: 'room', peek: eo(seg(x.L, 0.0, 0.35)
 at(37.68, 'mg_scare', x => { const L = x.L; game(x, { scene: 'roomScare', jump: eo(seg(L, 0.0, 0.3)), cry: L > 0.84 ? 1 : 0 }); });
 // 39.20 "o dia inteiro fazendo" — again, in the hallway
 at(39.20, 'mg_again', x => { const L = x.L; game(x, { scene: 'hallScare', jump: eo(seg(L, 0.1, 0.35)), cry: L > 0.35 ? 1 : 0 }); });
-// 40.14 "exatamente a mesma coisa" — and the Nightmare does the same: out of the closet, arms up, jaw wide (the sprite's pose)
-at(40.14, 'mesma', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(1); const k = eo(seg(L, 0.1, 0.4)); const n = put(x, 'nfoxy', s, 0, 0, mix(-5.0, -3.6, k)); eyes(n, 1); n.jawOpen(k);
+// 39.86 "fazendo exatamente" — the Nightmare does it: bursting out of the closet, arms up, jaw wide (the minigame's pose)
+at(39.86, 'mesma', x => {
+  const s = bedroom(x); const L = x.L; x.S.setCloset(1); const k = eo(seg(L, 0.05, 0.35)); const n = put(x, 'nfoxy', s, 0, 0, mix(-5.0, -3.6, k)); eyes(n, 1); n.jawOpen(k);
   for (const [A, sx] of [[n.armR, -1], [n.armL, 1]]) { A.piv.rotation.x = -0.3 * k; A.piv.rotation.z = sx * 2.4 * k; } n.head.rotation.x = -0.1 * k; lookCam(x, n, 0.5);
-  const a = mix(0.5, -0.3, eio(x.u)); const h = hp(n); cam(x, [h.x + Math.sin(a) * 3.6, 1.7, h.z + Math.cos(a) * 3.6], [h.x, h.y - 0.7, h.z], 52); punch(x, 0.92, 0.14);
-  spot(x, [Math.sin(a) * 2.5, 1.6, h.z + 2.8], h, 30, 0.35);
+  cam(x, [mix(0.45, 0.3, eo(x.u)), 1.55, mix(-0.6, -0.9, eo(x.u))], [0, 1.8, -3.7], 54); punch(x, 0.28, 0.12); spot(x, [1.0, 1.4, -0.4], new V3(0, 1.8, -3.6), 30, 0.4); if (L > 0.1 && L < 0.5) shake(x, 0.2);
+});
+// 41.06 "a mesma coisa" — MATCH CUT: same spot, same pose, same light: it's the older brother in the Foxy mask
+at(41.06, 'mesma2', x => {
+  const s = bedroom(x); const L = x.L; x.S.setCloset(1); const m = put(x, 'michael', s, 0, 0, -3.6); alive(m, x.t, 0.6); const k = 1 - 0.15 * Math.sin(Math.min(1, L / 0.3) * Math.PI);
+  for (const [A, sx] of [[m.armR, -1], [m.armL, 1]]) { A.piv.rotation.x = -0.3 * k; A.piv.rotation.z = sx * 2.4 * k; } m.pelvis.position.y += 0.03 * Math.abs(Math.sin(x.t * 8));
+  cam(x, [mix(0.3, 0.2, eo(x.u)), 1.55, mix(-0.9, -1.1, eo(x.u))], [0, 1.6, -3.7], 54); spot(x, [1.0, 1.4, -0.4], new V3(0, 1.5, -3.6), 30, 0.4);
+  const gl = Math.max(0, 1 - L / 0.12); x.post.glitch.value = 0.6 * gl; x.post.chroma.value = 1.5 * gl;
 });
 // 42.04 "Ele colocava uma máscara do Foxy" — the older brother in the hallway lifts the Foxy mask and pulls it over his head on "máscara"
 at(42.04, 'pemask', x => {
@@ -228,8 +230,7 @@ at(43.86, 'escondia', x => {
 at(45.02, 'pulava', x => {
   const s = bedroom(x); const L = x.L; x.S.setCloset(mix(0.45, 1, eo(seg(L, 0.1, 0.25)))); const k = eo(seg(L, 0.18, 0.45)); const m = put(x, 'michael', s, 0, 0, mix(-5.3, -3.1, k)); alive(m, x.t, 0.6);
   for (const [A, sx] of [[m.armR, -1], [m.armL, 1]]) { A.piv.rotation.x = -0.3 * k; A.piv.rotation.z = sx * 2.5 * k; } m.torso.rotation.x = -0.1 * k;
-  const c = put(x, 'cchild', s, 0.6, 0, -0.5, Math.PI); alive(c, x.t, 1); if (L > 0.3) { startle(c, L, 0.3, 1); c.setFace({ mouth: 1 }); c.noBlink = true; } lookAt(c, hp(m), 0.8);
-  camMove(x, [1.3, 1.45, 1.3], [-0.1, 1.5, -3.3], [1.15, 1.5, 1.0], [-0.1, 1.55, -3.3], eo, 50); if (L > 0.2 && L < 0.6) shake(x, 0.25); spot(x, [1.0, 0.6, 0.6], [0, 1.6, -3.4], 60, 0.45);
+  lookCam(x, m, 0.7); cam(x, [0.35, 1.12, -0.6], [0, 1.6, -3.6], 54); hand(x, 1.5); if (L > 0.2 && L < 0.7) shake(x, 0.3 * (1 - seg(L, 0.2, 0.7))); povFlash(x, new V3(0, 1.6, -3.4), 22, 0.4); punch(x, 0.46, 0.12);
 });
 // 46.08 "só pra assustar a criança" — the child, close, crying; behind him the brother doubles over laughing
 at(46.08, 'assustar', x => {
@@ -242,23 +243,19 @@ at(47.68, 'ouseja', x => {
   const s = bedroom(x); const L = x.L; x.S.setCloset(1); const n = put(x, 'nfoxy', s, 0, 0, -4.6); alive(n, x.t, 0.8); eyes(n, L < 0.68 ? 0.2 : 1); n.jawOpen(0.2 + 0.5 * eo(seg(L, 0.7, 0.9))); lookCam(x, n, 0.7);
   camMove(x, [0.6, 1.5, -1.0], [0, 2.3, -4.6], [0.4, 1.6, -1.6], [0, 2.4, -4.6], eo, 46); povFlash(x, new V3(0, 2.1, -4.6), 28); punch(x, 0.7, 0.12);
 });
-// 49.16 "não é um monstro aleatório" — close on his face; a slow "no" with the head
-at(49.16, 'aleatorio', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(1); const n = put(x, 'nfoxy', s, 0, 0, -4.6); alive(n, x.t, 0.8); eyes(n, 1); n.jawOpen(0.25); lookCam(x, n, 0.8); headShake(n, L, 0.05, 2, 0.2);
-  const h = hp(n); const a = mix(-0.35, 0.25, eio(x.u)); cam(x, [h.x + Math.sin(a) * 1.7, h.y - 0.2, h.z + Math.cos(a) * 1.7], [h.x, h.y - 0.15, h.z], 44); povFlash(x, h, 22, 0.35);
-});
-// 50.34 "ele é o trauma real do garoto" — the child hugging his knees on the bed; the Nightmare's eyes in the dark closet behind
-at(50.34, 'trauma', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(0.45); const n = nfIn(x, s); eyes(n, 1); const c = put(x, 'cchild', s, 0.0, 0, 2.6, Math.PI); c.root.position.y = bedY(x, c); hugKnees(c); c.head.rotation.x = 0.1;
-  c.setFace({ lid: 0.4, slope: -1 }); c.noBlink = true; c.root.position.x += 0.005 * Math.sin(x.t * 30);
-  const h = hp(c); camMove(x, [h.x + 0.8, h.y - 0.15, h.z - 2.0], [h.x, h.y - 0.3, h.z], [h.x + 0.6, h.y - 0.1, h.z - 1.6], [h.x, h.y - 0.3, h.z], eo, 46); moonOn(x, c, -20); punch(x, 0.32, 0.1);
-});
-// 51.64 "ganhando vida no pesadelo" — the eyes ignite on "vida", he steps out, the room glitches
-at(51.64, 'vida', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(mix(0.45, 1, eo(seg(L, 0.2, 0.5)))); const n = put(x, 'nfoxy', s, 0, 0, -5.35); walkPath(n, L, 0.4, 1.3, [0, -5.35], [0, -4.0], { stride: 0.8 }); eyes(n, eo(seg(L, 0.35, 0.5))); n.jawOpen(0.3 + 0.4 * seg(L, 0.4, 0.8)); lookCam(x, n, 0.7);
-  camMove(x, [-0.4, 0.8, -0.6], [0, 2.3, -4.6], [-0.3, 0.9, -1.4], [0, 2.5, -4.4], eo, 52); spot(x, [-1, 0.6, 0.4], [0, 2, -4.4], 22, 0.4);
-  x.post.glitch.value = 0.25 * Math.max(0, Math.sin(L * 9)) * seg(L, 0.4, 0.6); x.post.chroma.value = 0.6 * seg(L, 0.38, 0.6);
-});
+// 49.16 "não é um monstro aleatório" — a 'random' roulette: Freddy, Bonnie, Chica flash by in the closet doorway... and it always stops on Foxy
+at(49.16, 'aleatorio', x => { const s = bedroom(x); const L = x.L; x.S.setCloset(1); const seq = ['nfreddy', 'nbonnie', 'nchica']; const i = Math.floor(L / 0.22); const nm = i < 3 ? seq[i] : 'nfoxy'; const c = put(x, nm, s, 0, 0, -4.6); alive(c, x.t, 0.8); eyes(c, 1);
+  c.jawOpen(nm === 'nfoxy' ? 0.2 + 0.6 * eo(seg(L, 0.7, 0.85)) : 0.3); lookCam(x, c, 0.8);
+  const h = hp(c); const k = eo(x.u); cam(x, [h.x + 0.3, h.y - 0.4, h.z + mix(2.7, 2.1, k)], [h.x, h.y - 0.35, h.z], 46); povFlash(x, h, 22, 0.4);
+  const b = i < 3 ? Math.max(0, 1 - ((L % 0.22) / 0.08)) : Math.max(0, 1 - (L - 0.66) / 0.1); x.post.glitch.value = 0.5 * b; x.post.chroma.value = 1.2 * b; if (i >= 3) punch(x, 0.66, 0.14); });
+// 50.34 "ele é o trauma real do garoto" — the child cowers, crying, shaking; behind him the Nightmare's eyes burn in the closet
+at(50.34, 'trauma', x => { const s = bedroom(x); const L = x.L; x.S.setCloset(0.45); const n = nfIn(x, s); eyes(n, 1); const c = put(x, 'cchild', s, 0.35, 0, -0.6, 0.15); alive(c, x.t, 1); gesture(c, 'cower', L, 0.05, 9, 0.9, { face: false });
+  c.setFace({ lid: 0.5, slope: -1, mouth: 0.6 }); c.noBlink = true; c.root.position.x += 0.008 * Math.sin(x.t * 40); moonOn(x, c, -30);
+  const h = hp(c); const k = eo(x.u); cam(x, [h.x + 0.25, h.y + 0.05, h.z + mix(2.0, 1.55, k)], [h.x - 0.15, h.y - 0.1, h.z - 1.0], 48); spot(x, [1.0, 1.0, 1.5], h, 2.5, 0.4); punch(x, 0.32, 0.1); });
+// 51.64 "ganhando vida no pesadelo" — the plush on the closet floor comes to life: eyes ignite, it GROWS back into the giant Nightmare and stands up (callback)
+at(51.64, 'vida', x => { const s = bedroom(x); const L = x.L; x.S.setCloset(1); const k = eio(seg(L, 0.2, 1.0)); const n = put(x, 'nfoxy', s, 0, 0, -4.9); n.root.scale.setScalar(mix(0.3, 1.35, k)); plushSit(n, 1 - sm(seg(L, 0.1, 0.45)));
+  eyes(n, eo(seg(L, 0.05, 0.2))); n.jawOpen(0.2 + 0.6 * eo(seg(L, 1.0, 1.15))); lookCam(x, n, 0.7 * k); const P = x.FX.parts; s.add(P); P.userData.update(seg(L, 0.15, 0.95), new V3(0, mix(0.4, 1.6, k), -4.8));
+  camMove(x, [0.25, 0.75, -3.1], [0, 0.5, -4.9], [0.3, 1.2, -1.5], [0, 2.3, -4.8], eio, 52); spot(x, [-1, 0.6, 0.4], [0, 1.4, -4.7], 22, 0.4); x.post.glitch.value = 0.25 * Math.max(0, Math.sin(L * 9)) * seg(L, 0.4, 0.8); punch(x, 1.0, 0.1); });
 // 53.12 "Na mente dele" — extreme close on the child's face: eyes shut tight, then open wide
 at(53.12, 'mente', x => {
   const s = bedroom(x); const L = x.L; const c = put(x, 'cchild', s, 0.0, 0, 2.6, Math.PI); c.root.position.y = bedY(x, c); hugKnees(c);
@@ -289,7 +286,7 @@ at(57.82, 'tiramask', x => {
   const s = hallS(x, 'L'); x.S.hallLightsL.forEach(l => l.intensity = 2.2); const L = x.L; const m = put(x, 'michael', s, 0, 0, -3.6); alive(m, x.t, 0.6); const k = eio(seg(L, 0.7, 1.12)), k2 = eio(seg(L, 1.12, 1.6));
   m.root.updateMatrixWorld(true); const head = m.head.getWorldPosition(new V3()); const above = head.clone().add(new V3(0, 0.62, 0.02)); const chest = head.clone().add(new V3(0, -0.85, 0.5));
   if (k > 0) maskAt(x, m, s, k2 > 0 ? above.clone().lerp(chest, k2) : head.clone().lerp(above, k));
-  lookCam(x, m, k2 > 0.3 ? 0.8 : 0.5); m.setFace({ lid: 0.3, slope: -0.8 }); m.noBlink = true;
+  lookCam(x, m, k2 > 0.3 ? 0.8 : 0.5); m.setFace({ lid: 0.3, slope: 1, mouth: k2 > 0.6 ? 0.6 : 0 }); m.noBlink = true;
   const h = hp(m); const kk = eo(x.u); cam(x, [h.x + 0.2, h.y - 0.1, h.z + mix(2.3, 1.7, kk)], [h.x, h.y - 0.2, h.z], 44); povFlash(x, h, 18, 0.4);
 });
 

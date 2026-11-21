@@ -7,7 +7,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { loadImage, imgToCanvas, Character, U } from './skin.js';
 import { addFace, blinkAt } from './face.js';
 import { collisionCheck } from './act.js';
-import { buildNFoxy, buildNFreddy, buildNBonnie, buildNChica, buildFoxyMask } from './nightmare.js';
+import { buildNFoxy, buildNFreddy, buildNBonnie, buildNChica, buildFoxyMask2 } from './nightmare.js';
 import { buildBedroom, buildHall } from './sets.js';
 import { drawMinigame } from './minigame.js';
 import { SHOTS, DURATION } from './shots.js';
@@ -25,9 +25,9 @@ const S = {}; buildBedroom(S); buildHall(S, 'L'); buildHall(S, 'R');
 
 // ---------- characters: animatronics 1.35, the brother 1.0, the crying child 0.78, plushies 0.3 ----------
 const C = { nfoxy: buildNFoxy(sk.nfoxy_src), nfreddy: buildNFreddy(sk.nfreddy_src), nbonnie: buildNBonnie(sk.nbonnie_src), nchica: buildNChica(sk.nchica_src),
-  michael: new Character('michael', sk.michael), cchild: new Character('cchild', sk.cchild), pfoxy: new Character('pfoxy', sk.foxy_classic), pfreddy: new Character('pfreddy', sk.freddy_classic) };
+  michael: new Character('michael', sk.michael), cchild: new Character('cchild', sk.cchild), pfoxy: buildNFoxy(sk.nfoxy_src, 'pfoxy'), pfreddy: new Character('pfreddy', sk.freddy_classic) };
 for (const n of ['nfoxy', 'nfreddy', 'nbonnie', 'nchica']) C[n].baseScale = 1.35; C.michael.baseScale = 1.0; C.cchild.baseScale = 0.78; C.pfoxy.baseScale = 0.3; C.pfreddy.baseScale = 0.3;
-C.michael.mask = buildFoxyMask(); C.michael.head.add(C.michael.mask);
+C.michael.mask = buildFoxyMask2(sk.foxy_classic); C.michael.head.add(C.michael.mask);
 addFace(C.cchild, { eyes: [[1, 4, 2, 2], [5, 4, 2, 2]], lid: '#fbcc83', lash: '#3b2700', mouth: { row: 7, x0: 3, x1: 4, max: 1, dark: '#5a1a10', paint: true } });
 addFace(C.michael, { eyes: [[2, 12, 4, 1], [10, 12, 4, 1]], lid: '#f6cdb8', lash: '#140b09', mouth: { row: 14, x0: 6, x1: 9, max: 1, dark: '#4a1a16', paint: true } });
 const BLINKERS = new Set(['cchild', 'michael']);
@@ -77,7 +77,7 @@ const ctx = { THREE, C, S, FX, camera, U };
 function resetWorld() {
   for (const c of allChars) { c.reset(); c.root.visible = true; c.root.scale.setScalar(c.baseScale); c.root.position.set(0, 0, 0); c.root.rotation.set(0, 0, 0); c.root.removeFromParent(); c.noBlink = false; if (c.setFace) c.setFace({ lid: 0, slope: 0, mouth: 0 }); }
   C.michael.mask.visible = true; C.michael.mask.removeFromParent(); C.michael.head.add(C.michael.mask); C.michael.mask.position.set(0, 0, 0); C.michael.mask.rotation.set(0, 0, 0); C.michael.mask.scale.setScalar(1); S.hallLightsL.forEach(l => l.intensity = 2.2); S.hallLightsR.forEach(l => l.intensity = 2.2);
-  for (const n of ['nfoxy', 'nfreddy', 'nbonnie', 'nchica']) { const m = C[n].eyeMesh; if (m) m.traverse(o => { if (o.isMesh) o.material.emissiveIntensity = 1.3; }); }
+  for (const n of ['nfoxy', 'nfreddy', 'nbonnie', 'nchica', 'pfoxy']) { const m = C[n].eyeMesh; if (m) m.traverse(o => { if (o.isMesh) o.material.emissiveIntensity = 1.3; }); }
   for (const o of Object.values(FX)) { o.removeFromParent(); o.visible = true; o.scale.setScalar(1); o.rotation.set(0, 0, 0); }
   S.flash.intensity = 0; S.hallFlashL.intensity = 0; S.hallFlashR.intensity = 0; S.setCloset(0.35); S.lamp.intensity = 1.2; S.lamp.color.set('#ffc070'); camera.fov = 42; camera.up.set(0, 1, 0);
   const P = post.uniforms; P.vig.value = 0.6; P.grain.value = 0.03; P.glitch.value = 0; P.flash.value = 0; P.fade.value = 0; P.chroma.value = 0; P.blur.value = 0; P.tint.value.set(1, 1, 1); bloom.strength = 0.35; S.moon.intensity = 3; S.moon.target.position.set(0, 0.5, -3.5);

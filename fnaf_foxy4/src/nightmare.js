@@ -34,7 +34,7 @@ function eyeGlow(ch, A, filter, color, ei = 2.2) { const s = A.width / 64; const
 
 // hinged lower jaw: pivot near the back of the mouth; open(k) 0..1
 function addJaw(ch, o) { const jaw = new THREE.Group(); jaw.position.set(0, o.y * U, o.z0 * U); ch.head.add(jaw); ch.jaw = jaw;
-  bx(o.w, o.h, o.d, o.col, 0, -o.h / 2, o.d / 2, jaw); bx(o.w - 0.6, 0.25, o.d - 0.6, '#1a0606', 0, 0.02, o.d / 2, jaw); if (o.under) bx(o.w - 1, o.h * 0.5, o.d - 1, o.under, 0, -o.h + 0.05, o.d / 2 + 0.2, jaw);
+  bx(o.w, o.h, o.d, o.col, 0, -o.h / 2, o.d / 2, jaw); bx(o.w - 0.6, 0.25, o.d - 0.6, '#1a0606', 0, 0.14, o.d / 2, jaw); if (o.under) bx(o.w - 1, o.h * 0.5, o.d - 1, o.under, 0, -o.h + 0.05, o.d / 2 + 0.2, jaw);
   teethRow(jaw, o.w, o.d, 0.05, 0, 1, o.n || 6, o.ns || 3, o.th || 1.0, o.tcol);
   ch.jawOpen = k => { jaw.rotation.x = (o.min ?? 0.12) + k * (o.max ?? 0.7); }; return jaw; }
 
@@ -46,8 +46,8 @@ export function buildNFoxy(src, name = 'nfoxy') {
   const ch = new Character(name, A); const H = ch.head; const red = '#7e0a08', redD = '#560504', redL = '#9a1c14', beige = '#c97a55', endo = '#3a3a40', black = '#120c0c';
   // long snout: red top, beige under-side, black nose, upper teeth all around
   const sn = new THREE.Group(); sn.position.set(0, 1.4 * U, 3.6 * U); H.add(sn); ch.snout = sn;
-  bx(4.4, 2.2, 4.6, red, 0, 1.1, 2.3, sn); bx(3.6, 0.9, 4.2, beige, 0, 0.1, 2.5, sn); bx(4.6, 0.5, 1.2, redD, 0, 2.3, 0.7, sn); bx(1.6, 1.0, 0.8, black, 0, 1.9, 4.6, sn, { rough: 0.3 });
-  bx(4.0, 0.3, 4.0, '#160404', 0, -0.25, 2.5, sn); teethRow(sn, 4.4, 4.6, -0.2, 0, -1, 8, 5, 1.25);
+  bx(4.4, 2.2, 4.6, red, 0, 1.1, 2.3, sn); bx(3.6, 0.9, 4.2, beige, 0, 0.2, 2.5, sn); bx(4.6, 0.5, 1.2, redD, 0, 2.3, 0.7, sn); bx(1.6, 1.0, 0.8, black, 0, 1.9, 4.6, sn, { rough: 0.3 });
+  bx(4.0, 0.3, 4.0, '#160404', 0, -0.42, 2.5, sn); teethRow(sn, 4.4, 4.6, -0.3, 0, -1, 8, 5, 1.25);
   // big hinged jaw, hangs open (Nightmare Foxy's mouth is huge)
   addJaw(ch, { y: 1.2, z0: 2.6, w: 4.0, h: 1.2, d: 5.4, col: beige, under: redD, n: 8, ns: 5, th: 1.2, min: 0.18, max: 0.75 });
   // ragged ears with endo rods, shifted up by half their height so they sit ON the head
@@ -113,4 +113,10 @@ export function buildFoxyMask() {
   for (let i = 0; i < 5; i++) bx(0.6, 0.6, 0.3, '#f2f2e8', -1.6 + i * 0.8, -0.7, 3.25, sn);
   const P = { r: red, d: redD, b: beige };
   for (const sx of [-1, 1]) { const e = voxelArt(['..r.', '.rr.', '.rbr', 'rbbr', 'rbbr', 'rrrr'], P, 0.6 * U, 1.0 * U); e.position.set(sx * 2.6 * U, (8.8 + 1.8) * U, -0.6 * U); e.rotation.z = -sx * 0.2; g.add(e); }
+  g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } }); return g; }
+
+// ===================== Foxy mask v2: the REAL classic Foxy head (skin + 3D snout, jaw, ears) as a shell over the brother's head =====================
+import { buildFoxy } from './skin.js';
+export function buildFoxyMask2(foxyCanvas) { const fx = buildFoxy(foxyCanvas, 'maskfoxy', { hook: false }); const head = fx.head; head.removeFromParent(); head.rotation.set(0, 0, 0);
+  const g = new THREE.Group(); head.scale.setScalar(1.16); head.position.set(0, -0.35 * U, 0.05 * U); g.add(head); if (fx.jaw) fx.jaw.rotation.x = 0.06;
   g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } }); return g; }
