@@ -22,6 +22,9 @@ if (mode === 'stills') {
   for (const t of a1.split(',').map(Number)) { const b = await grab(t); fs.writeFileSync(`${out}/t${t.toFixed(2).padStart(6, '0')}.jpg`, b); }
 } else if (mode === 'view') {
   await page.evaluate(t => window.VIEW(t), parseFloat(a2 || '0')); fs.writeFileSync(a1, await page.screenshot({ type: 'jpeg', quality: 92 }));
+} else if (mode === 'check') {
+  await page.evaluate(() => window.NORENDER = 1); const dur = await page.evaluate(() => window.APP.duration); const from = parseFloat(a1 || '0'), to = parseFloat(a2 || dur);
+  for (let i = Math.round(from * FPS); i < Math.round(to * FPS); i++) await page.evaluate(t => window.APP.renderAt(t), i / FPS);
 } else if (mode === 'video') {
   const dur = await page.evaluate(() => window.APP.duration);
   const from = parseFloat(a2 || '0'), to = parseFloat(a3 || dur);

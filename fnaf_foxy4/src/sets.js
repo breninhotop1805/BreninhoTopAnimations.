@@ -83,7 +83,8 @@ export function buildBedroom(S) {
     const h2 = new THREE.Group(); h2.position.x = pw - 0.01; hinge.add(h2); louverPanel(h2, pw - 0.02, ch - 0.05); S.closet.push({ side, hinge, h2 }); }
   S.closetZ = z0; S.closetW = cw; S.closetH = ch;
   // bi-fold: f = 0 closed; each pair folds into a V toward the room, opening a gap in the middle
-  S.setCloset = k => { const f = k * 1.2; S.closet.forEach(({ side, hinge, h2 }) => { hinge.rotation.y = side < 0 ? -f : Math.PI + f; h2.rotation.y = side < 0 ? 2 * f : -2 * f; }); };
+  S.setCloset = k => { const f = k * 1.2 + Math.max(0, k - 0.85) * 2.4;   // fully open (k=1): both pairs folded flat against the sides -> the whole opening is free
+    S.closet.forEach(({ side, hinge, h2 }) => { hinge.rotation.y = side < 0 ? -f : Math.PI + f; h2.rotation.y = side < 0 ? 2 * f : -2 * f; }); };
   S.setCloset(0.35);
   // left tall dresser (5 drawers, broken 3rd) + lava lamp, clock, purple fan
   const dl = dresser(g, -2.4, z0 + 0.45, 1.5, 2.3, 0.8, 5, 1, 2); dl.rotation.y = 0;

@@ -71,6 +71,23 @@ function drawUI(spec, t) { ui.clearRect(0, 0, W, H); if (!spec) { uiTex.needsUpd
     else if (it.type === 'game') drawMinigame(ui, W, H, it, t); }
   uiTex.needsUpdate = true; }
 
+// ---------- set collision check: no body part inside the closet walls/frame/ceiling, the clothes or the louvered door panels ----------
+const _v = new THREE.Vector3(), _bb = new THREE.Box3();
+function charPoints(c) { const pts = []; c.root.updateMatrixWorld(true); c.root.traverse(o => { if (!o.isMesh || !o.visible || !o.geometry) return; let vis = true; for (let p = o; p; p = p.parent) if (!p.visible) { vis = false; break; } if (!vis) return;
+  if (!o.geometry.boundingBox) o.geometry.computeBoundingBox(); const b = o.geometry.boundingBox; const sh = 0.15; const lo = b.min.clone().lerp(b.max, sh), hi = b.max.clone().lerp(b.min, sh);
+  for (const x of [lo.x, hi.x]) for (const y of [lo.y, hi.y]) for (const z of [lo.z, hi.z]) pts.push(o.localToWorld(new THREE.Vector3(x, y, z))); }); return pts; }
+let PANELS = null;
+function setCheck(t, live) { const z0 = S.closetZ, hw = S.closetW / 2, H = S.closetH; if (!PANELS) { PANELS = []; S.closet.forEach(({ hinge, h2 }) => { PANELS.push(hinge.children.find(c => c !== h2), h2.children[0]); }); }
+  const pw = S.closetW / 4 - 0.02, ph = S.closetH - 0.05; const inv = PANELS.map(p => { p.updateWorldMatrix(true, false); return p.matrixWorld.clone().invert(); });
+  for (const c of live) { if (!c.root.visible || c.root.parent !== S.bedroom) continue; const bad = new Set();
+    for (const p of charPoints(c)) {
+      if (p.z < z0 + 0.1) { // at or inside the closet plane
+        if (p.z > -6.2 + 0.02 && (Math.abs(p.x) > hw - 0.02 || p.y > H - 0.02)) bad.add('parede/batente do armário');
+        if (p.z <= -6.2 + 0.02) bad.add('fundo do armário'); }
+      if (p.y > 2.1 && p.y < 3.1 && p.z < z0 - 1.05 && p.z > z0 - 1.65 && (p.x < -0.9 || p.x > 0.95)) bad.add('roupas do armário');
+      inv.forEach(m => { _v.copy(p).applyMatrix4(m); if (_v.x > 0.01 && _v.x < pw - 0.01 && _v.y > 0.01 && _v.y < ph && Math.abs(_v.z) < 0.04) bad.add('porta do armário'); }); }
+    for (const b of bad) console.log(`LOG ATRAVESSA t=${t.toFixed(2)} ${c.name} dentro: ${b}`); } }
+
 // ---------- frame ----------
 const allChars = Object.values(C);
 const ctx = { THREE, C, S, FX, camera, U };
@@ -87,10 +104,10 @@ function renderAt(t) {
   const run = () => { resetWorld(); const out = { scene: S.bedroom, ui: null }; const live = []; shot.fn(Object.assign(ctx, { t, L, d, u: Math.min(1, L / d), out, live, post: post.uniforms, bloom })); return { out, live }; };
   run(); const cp = camera.position.clone(), cq = camera.quaternion.clone(), cf = camera.fov; const { out, live } = run(); camera.position.copy(cp); camera.quaternion.copy(cq); camera.fov = cf;
   for (const c of allChars) { if (!c.applyFace) continue; if (BLINKERS.has(c.name) && c.face.lid < 0.05 && !c.noBlink) c.face.lid = blinkAt(t, c.name.length); c.applyFace(); }
-  collisionCheck(t, live);
+  collisionCheck(t, live); if (out.scene === S.bedroom) setCheck(t, live);
   if (S.fanBlades) S.fanBlades.rotation.z = -t * 14;
   const sec = Math.floor(t); if (S.clockDigits) S.clockDigits.material.color.set(sec % 2 ? '#ff2a1a' : '#e0241a');
-  camera.aspect = W / H; camera.updateProjectionMatrix(); renderPass.scene = out.scene; drawUI(out.ui, t); uiPass.uniforms.uiOn.value = out.ui ? 1 : 0; post.uniforms.time.value = t; composer.render();
+  if (window.NORENDER) return; camera.aspect = W / H; camera.updateProjectionMatrix(); renderPass.scene = out.scene; drawUI(out.ui, t); uiPass.uniforms.uiOn.value = out.ui ? 1 : 0; post.uniforms.time.value = t; composer.render();
 }
 if (q.get('view')) { const v = q.get('view').split(',').map(Number); window.VIEW = t => { resetWorld(); camera.position.set(v[0], v[1], v[2]); camera.lookAt(v[3], v[4], v[5]); camera.fov = v[6] || 50; camera.aspect = W / H; camera.updateProjectionMatrix();
   const sc = q.get('sc') || 'bedroom'; renderPass.scene = S[sc]; if (q.get('fl')) { const f = sc === 'bedroom' ? S.flash : S['hallFlash' + sc.slice(-1)]; f.intensity = 40; f.position.copy(camera.position); f.target.position.set(v[3], v[4], v[5]); }

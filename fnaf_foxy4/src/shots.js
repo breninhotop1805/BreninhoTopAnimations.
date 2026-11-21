@@ -73,8 +73,8 @@ at(1.50, 'reveal', x => {
 });
 // 2.86 "é o único monstro que se esconde dentro do armário" — he backs into the closet, hunching, and the doors fold shut on "armário"
 at(2.86, 'esconde', x => {
-  const s = bedroom(x); const L = x.L; const n = put(x, 'nfoxy', s, 0, 0, -4.25); walkPath(n, L, 0.2, 1.0, [0, -4.25], [0, -5.35], { stride: 0.6, face: false }); alive(n, x.t, 0.6); eyes(n, 1); n.jawOpen(0.3 * (1 - seg(L, 0.8, 1.2)));
-  n.torso.rotation.x += 0.18 * eo(seg(L, 0.4, 1.0)); lookCam(x, n, 0.7); x.S.setCloset(mix(1, 0.3, eio(seg(L, 1.25, 1.75))));
+  const s = bedroom(x); const L = x.L; const n = put(x, 'nfoxy', s, 0, 0, -4.25); walkPath(n, L, 0.2, 1.0, [0, -4.25], [0, -5.55], { stride: 0.6, face: false }); alive(n, x.t, 0.6); eyes(n, 1); n.jawOpen(0.3 * (1 - seg(L, 0.8, 1.2)));
+  n.torso.rotation.x += 0.1 * eo(seg(L, 0.4, 1.0)); lookCam(x, n, 0.7); x.S.setCloset(mix(1, 0.3, eio(seg(L, 1.25, 1.75))));
   camMove(x, [-1.6, 1.4, -1.2], [0, 1.9, -4.8], [-1.0, 1.6, -1.6], [0, 1.9, -5.0], eo, 46); povFlash(x, new V3(0, 1.9, -4.8), 26); punch(x, 1.7, 0.08);
 });
 // 4.84 "em FNAF 4" — the FNAF 4 bedroom: the child hugging his knees on the bed, staring at the closet where two eyes glow
@@ -122,7 +122,7 @@ at(14.06, 'dentro', x => {
 });
 // 15.50 "Trancado no escuro" — inside the closet with him: hunched, breathing, head turning slowly; light leaks through the louvers
 at(15.50, 'trancado', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(0.26); const n = nfIn(x, s, -5.35); eyes(n, 1); n.torso.rotation.x = 0.12; n.head.rotation.y = mix(-0.3, 0.1, eio(x.u));
+  const s = bedroom(x); const L = x.L; x.S.setCloset(0.26); const n = nfIn(x, s, -5.7); eyes(n, 1); n.torso.rotation.x = 0.06; n.head.rotation.y = mix(-0.3, 0.1, eio(x.u));
   camMove(x, [-0.7, 2.2, -2.6], [0, 2.4, -5.3], [-0.45, 2.3, -3.2], [0, 2.4, -5.3], eo, 40);
   spot(x, [0.4, 1.3, -1.2], [0, 2, -5.4], 12, 0.2); x.post.vig.value = 0.9;
 });
@@ -134,7 +134,7 @@ at(16.54, 'guarda', x => {
 });
 // 18.20 "pra abrir a fresta da porta" — close on the louvers: the panel creaks open on "fresta"; the eye and the hook in the gap
 at(18.20, 'fresta', x => {
-  const s = bedroom(x); const L = x.L; x.S.setCloset(mix(0.3, 0.62, eio(seg(L, 0.5, 1.1)))); const n = nfIn(x, s, -5.0); eyes(n, 1); n.head.rotation.y = 0.15;
+  const s = bedroom(x); const L = x.L; x.S.setCloset(mix(0.3, 0.62, eio(seg(L, 0.5, 1.1)))); const n = nfIn(x, s, -5.6); eyes(n, 1); n.head.rotation.y = 0.15;
   camMove(x, [0.5, 2.0, -2.2], [0, 2.1, -4.6], [0.35, 2.1, -2.6], [0, 2.2, -4.6], eo, 44); povFlash(x, new V3(0, 1.8, -4.5), 14, 0.5); x.post.vig.value = 0.85;
 });
 // 19.46 "e pular na sua cara" — JUMPSCARE on "pular": doors burst open, he lunges at the camera, jaw wide
@@ -203,13 +203,13 @@ at(39.20, 'mg_again', x => { const L = x.L; game(x, { scene: 'hallScare', jump: 
 // 39.86 "fazendo exatamente" — the Nightmare does it: bursting out of the closet, arms up, jaw wide (the minigame's pose)
 at(39.86, 'mesma', x => {
   const s = bedroom(x); const L = x.L; x.S.setCloset(1); const k = eo(seg(L, 0.05, 0.35)); const n = put(x, 'nfoxy', s, 0, 0, mix(-5.0, -3.6, k)); eyes(n, 1); n.jawOpen(k);
-  for (const [A, sx] of [[n.armR, -1], [n.armL, 1]]) { A.piv.rotation.x = -0.3 * k; A.piv.rotation.z = sx * 2.4 * k; } n.head.rotation.x = -0.1 * k; lookCam(x, n, 0.5);
+  for (const [A, sx] of [[n.armR, -1], [n.armL, 1]]) { A.piv.rotation.x = -2.55 * k; A.piv.rotation.z = sx * 0.5 * k; } n.head.rotation.x = -0.1 * k; lookCam(x, n, 0.5);
   cam(x, [mix(0.45, 0.3, eo(x.u)), 1.55, mix(-0.6, -0.9, eo(x.u))], [0, 1.8, -3.7], 54); punch(x, 0.28, 0.12); spot(x, [1.0, 1.4, -0.4], new V3(0, 1.8, -3.6), 30, 0.4); if (L > 0.1 && L < 0.5) shake(x, 0.2);
 });
 // 41.06 "a mesma coisa" — MATCH CUT: same spot, same pose, same light: it's the older brother in the Foxy mask
 at(41.06, 'mesma2', x => {
   const s = bedroom(x); const L = x.L; x.S.setCloset(1); const m = put(x, 'michael', s, 0, 0, -3.6); alive(m, x.t, 0.6); const k = 1 - 0.15 * Math.sin(Math.min(1, L / 0.3) * Math.PI);
-  for (const [A, sx] of [[m.armR, -1], [m.armL, 1]]) { A.piv.rotation.x = -0.3 * k; A.piv.rotation.z = sx * 2.4 * k; } m.pelvis.position.y += 0.03 * Math.abs(Math.sin(x.t * 8));
+  for (const [A, sx] of [[m.armR, -1], [m.armL, 1]]) { A.piv.rotation.x = -2.55 * k; A.piv.rotation.z = sx * 0.5 * k; } m.pelvis.position.y += 0.03 * Math.abs(Math.sin(x.t * 8));
   cam(x, [mix(0.3, 0.2, eo(x.u)), 1.55, mix(-0.9, -1.1, eo(x.u))], [0, 1.6, -3.7], 54); spot(x, [1.0, 1.4, -0.4], new V3(0, 1.5, -3.6), 30, 0.4);
   const gl = Math.max(0, 1 - L / 0.12); x.post.glitch.value = 0.6 * gl; x.post.chroma.value = 1.5 * gl;
 });
