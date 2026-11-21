@@ -235,3 +235,15 @@ Freddy feia**, **começo do vídeo mostrando o teto** (a lâmpada). Regras:
   transparente aditivo (fica feio).
 - Contact sheet em cena escura engana (fundo escuro parece "cabeça cortada"): conferir frames duvidosos em escala 0.4.
 - Tela/monitor numa mesa = com pé/base apoiado na mesa; nunca flutuando na frente do personagem.
+
+## APROVADO COM FESTA — Rockstar v3 ("VOCÊ APRENDEU! QUE EVOLUÇÃO! GUARDE BEM ISSO!")
+O remake v3 do Rockstar (fnaf_rockstar) é o NOVO PADRÃO de direção. O que fez dar certo — repetir sempre:
+- **Cada cena ilustra literalmente a frase** (tabela fala → cena antes de codar): "pede" = mão estendida; "5 moedas" = moedas
+  caindo + contador; "muita gente acha piada" = crianças rindo e apontando; "esconde" = mão cobrindo; "Fazbear Entertainment" =
+  letreiro 3D acendendo; "nível" = montanha de moedas subindo; "transformou" = a peça se montando no corpo; "ligou os pontos" =
+  moedas conectadas por linhas formando a estrela do personagem.
+- **Primeiro quadro = personagem principal em ação**, grande e iluminado. Final com gesto pra câmera (apontar/acenar).
+- **Sombrio sem efeitos baratos**: luz falhando + personagem aparece mais perto no escuro + luz fria de tela.
+- **Variedade de cenários** (palco, escritório, salão da empresa, pesadelo, vazio simbólico, fogo) e ângulos; callback visual no fim.
+- Animatrônico "alma" sólido com flicker/fade; partículas/fluxo de luz pra mostrar possessão; ninguém sumindo seco.
+- Storyboard em imagens enviado antes; render; corrigir colisões só nos trechos; checar quadros do vídeo final.
