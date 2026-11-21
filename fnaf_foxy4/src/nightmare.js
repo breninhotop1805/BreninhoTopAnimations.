@@ -44,9 +44,9 @@ const finish = ch => { ch.root.traverse(m => { if (m.isMesh) { m.castShadow = tr
 export function buildNFoxy(src, name = 'nfoxy') {
   const A = cleanSkin(src, { headRows: [14, 16], neckRows: [19.5, 22] });
   const ch = new Character(name, A); const H = ch.head; const red = '#7e0a08', redD = '#560504', redL = '#9a1c14', beige = '#c97a55', endo = '#3a3a40', black = '#120c0c';
-  // long snout: red top, beige under-side, black nose, upper teeth all around
+  // long snout: red top, beige under-side, black nose, upper teeth all around (no overlapping/coplanar faces -> no z-fighting)
   const sn = new THREE.Group(); sn.position.set(0, 1.4 * U, 3.6 * U); H.add(sn); ch.snout = sn;
-  bx(4.4, 2.2, 4.6, red, 0, 1.1, 2.3, sn); bx(3.6, 0.9, 4.2, beige, 0, 0.2, 2.5, sn); bx(4.6, 0.5, 1.2, redD, 0, 2.3, 0.7, sn); bx(1.6, 1.0, 0.8, black, 0, 1.9, 4.6, sn, { rough: 0.3 });
+  bx(4.4, 1.58, 4.6, red, 0, 1.41, 2.3, sn); bx(3.8, 0.9, 4.45, beige, 0, 0.16, 2.33, sn); bx(4.6, 0.5, 1.2, redD, 0, 2.3, 0.7, sn); bx(1.6, 1.0, 0.8, black, 0, 1.9, 4.6, sn, { rough: 0.3 });
   bx(4.0, 0.3, 4.0, '#160404', 0, -0.42, 2.5, sn); teethRow(sn, 4.4, 4.6, -0.3, 0, -1, 8, 5, 1.25);
   // big hinged jaw, hangs open (Nightmare Foxy's mouth is huge)
   addJaw(ch, { y: 1.2, z0: 2.6, w: 4.0, h: 1.2, d: 5.4, col: beige, under: redD, n: 8, ns: 5, th: 1.2, min: 0.18, max: 0.75 });
