@@ -21,6 +21,8 @@ const camera = new THREE.PerspectiveCamera(42, W / H, 0.03, 80);
 // ---------- assets ----------
 const sk = {}; for (const n of ['nfoxy_src', 'nfreddy_src', 'nbonnie_src', 'nchica_src', 'michael', 'cchild', 'foxy_classic', 'freddy_classic']) sk[n] = imgToCanvas(await loadImage(`/skins/${n}.png`));
 let LOGO = null; try { LOGO = await loadImage('/assets/fnaf4_logo.png'); } catch (e) { LOGO = null; }
+// Michael's skin leaves a strip of bare skin on the back face of both sleeves (visible with the arms raised): paint the sleeve there too
+{ const c = sk.michael, g = c.getContext('2d'), s = c.width / 64; for (const [x, y] of [[54, 20], [46, 52]]) { const d = g.getImageData((x - 8) * s, y * s, 1, 1).data; g.fillStyle = `rgb(${d[0]},${d[1]},${d[2]})`; g.fillRect(x * s, y * s, 2 * s, 7.25 * s); } }
 const S = {}; buildBedroom(S); buildHall(S, 'L'); buildHall(S, 'R');
 
 // ---------- characters: animatronics 1.35, the brother 1.0, the crying child 0.78, plushies 0.3 ----------
