@@ -285,7 +285,7 @@ at(56.94, 'irmao', x => {
 at(57.82, 'tiramask', x => {
   const s = hallS(x, 'L'); x.S.hallLightsL.forEach(l => l.intensity = 2.2); const L = x.L; const m = put(x, 'michael', s, 0, 0, -3.6); alive(m, x.t, 0.6); const k = eio(seg(L, 0.7, 1.12)), k2 = eio(seg(L, 1.12, 1.6));
   m.root.updateMatrixWorld(true); const head = m.head.getWorldPosition(new V3()); const above = head.clone().add(new V3(0, 0.62, 0.02)); const chest = head.clone().add(new V3(0, -0.85, 0.5));
-  if (k > 0) maskAt(x, m, s, k2 > 0 ? above.clone().lerp(chest, k2) : head.clone().lerp(above, k));
+  if (k > 0) maskAt(x, m, s, head.clone().lerp(above.clone().add(new V3(0, 0.04 * Math.sin(x.t * 3), 0)), k));   // held up above his head: the face stays visible
   lookCam(x, m, k2 > 0.3 ? 0.8 : 0.5); m.setFace({ lid: 0.3, slope: 1, mouth: k2 > 0.6 ? 0.6 : 0 }); m.noBlink = true;
   const h = hp(m); const kk = eo(x.u); cam(x, [h.x + 0.2, h.y - 0.1, h.z + mix(2.3, 1.7, kk)], [h.x, h.y - 0.2, h.z], 44); povFlash(x, h, 18, 0.4);
 });
