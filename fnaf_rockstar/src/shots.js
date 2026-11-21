@@ -171,7 +171,7 @@ at(29.94, 'alma', x => { const s = nightmare(x, new V3(0, 0, 0.6)); const L = x.
 // 31.58 "O espírito pegou essa função gananciosa" — in the office Golden Freddy appears beside Rockstar and reaches out: a stream of golden light flows into the coin slot,
 //        the star flares on "gananciosa", Rockstar jolts... and Golden Freddy fades away
 at(31.58, 'pegou', x => { const s = office(x, 0.95); const L = x.L; const r = rock(x, s, 0.15, 0, -0.75); r.armR.piv.rotation.x += 0.75; x.S.officeKey.intensity = 30; const sp = r.slotPt();
-  const g = put(x, 'golden', s, -1.45, 0, -0.9, 1.45); alive(g, x.t, 0.5); g.fadeIn(sm(seg(L, 0.0, 0.3)) * (1 - sm(seg(L, 1.55, 2.0)))); const rw = eo(seg(L, 0.15, 0.55)) * (1 - sm(seg(L, 1.5, 1.9)));
+  const g = put(x, 'golden', s, -1.55, 0, -0.9, 1.45); alive(g, x.t, 0.5); g.fadeIn(sm(seg(L, 0.0, 0.3)) * (1 - sm(seg(L, 1.55, 2.0)))); const rw = eo(seg(L, 0.15, 0.55)) * (1 - sm(seg(L, 1.38, 1.62)));
   aimArm(g, g.armR, sp.clone().add(new V3(-0.25, 0.1, 0.55)), rw); lookAt(g, sp, 0.7); g.root.updateMatrixWorld(true); const hand = g.handR.getWorldPosition(new V3());
   const st = x.FX.stream; const sa = sm(seg(L, 0.4, 0.6)) * (1 - sm(seg(L, 1.35, 1.6))); if (sa > 0) { s.add(st); st.userData.update(hand, sp, x.t, sa); }
   r.star.material.emissiveIntensity = 0.35 + 2.2 * Math.max(0, 1 - Math.abs(L - 1.22) / 0.3); const j = Math.max(0, 1 - Math.abs(L - 1.25) / 0.2); r.torso.rotation.x += -0.12 * j; r.head.rotation.x += -0.15 * j;
@@ -195,8 +195,8 @@ at(38.40, 'paga', x => { const s = office(x); const L = x.L; const r = rock(x, s
   for (let i = 0; i < 5; i++) { const k = seg(L, i * 0.12, i * 0.12 + 0.6); if (k <= 0) coinOnDesk(x, s, i, 1); else coinToSlot(x, s, i, r, k); }
   cam(x, [-2.6, 1.6, 0.9], [0.0, 1.35, -0.3], 54); ui(x, { type: 'coins', txt: String(Math.max(0, 5 - Math.floor(L / 0.12 + 0.01))), u: 0.3, v: 0.075, k: 1, a: 1 }); });
 // 39.38 "de vida" — relief: William closes his eyes, hand on his chest, breathes out
-at(39.38, 'vida', x => { const s = office(x); const L = x.L; const w = put(x, 'william', s, WX, 0, WZ, Math.PI); alive(w, x.t, 1); gesture(w, 'chest', L, 0.1, 9, 1, { face: false }); const rl = sm(seg(L, 0.15, 0.45));
-  w.setFace({ lid: 0.85 * rl * (1 - sm(seg(L, 0.8, 1.0))), slope: -0.5, mouth: 0.4 * rl }); w.noBlink = true; w.torso.rotation.x += 0.08 * rl; w.head.rotation.x += 0.12 * rl;
+at(39.38, 'vida', x => { const s = office(x); const L = x.L; const w = put(x, 'william', s, WX, 0, WZ, Math.PI); alive(w, x.t, 1); { const cw = Math.max(0, gestW(L, 0.1, 9, 0.45)); w.armR.piv.rotation.x += -1.2 * cw; w.armR.piv.rotation.z += 0.3 * cw; w.head.rotation.x += 0.06 * cw; } const rl = sm(seg(L, 0.15, 0.45));
+  w.setFace({ lid: 0.85 * rl * (1 - sm(seg(L, 0.8, 1.0))), slope: -0.5, mouth: 0.4 * rl }); w.noBlink = true; w.head.rotation.x += 0.12 * rl; w.pelvis.position.y -= 0.02 * rl;
   const h = hp(w); cam(x, [h.x - 0.45, h.y, h.z - mix(2.0, 1.6, eo(x.u))], [h.x, h.y - 0.1, h.z], 44); });
 // ================= 10. THE FIVE CHILDREN =================
 // 40.42 "O mesmo número das cinco crianças" — five Faz-Coins float in the dark, lighting up one by one (counting to five)
