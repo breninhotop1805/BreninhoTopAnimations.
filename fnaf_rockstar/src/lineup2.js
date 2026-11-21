@@ -1,0 +1,12 @@
+import * as THREE from 'three';
+import { loadImage, imgToCanvas, buildFreddy } from './skin.js';
+import { buildGolden } from './rockstar.js';
+const q = new URLSearchParams(location.search); const W = +q.get('w') || 540, H = +q.get('h') || 960;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); renderer.setSize(W, H); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; document.body.appendChild(renderer.domElement);
+const cam = new THREE.PerspectiveCamera(30, W / H, 0.05, 100);
+const sk = imgToCanvas(await loadImage('/skins/goldenfreddy.png'));
+const c = q.get('old') ? buildFreddy(sk, { name: 'golden' }) : buildGolden(sk);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#3a3e48'); scene.add(new THREE.HemisphereLight('#ffffff', '#404050', 1.4)); const d = new THREE.DirectionalLight('#fff', 2); d.position.set(3, 5, 6); scene.add(d); scene.add(c.root); c.root.scale.setScalar(1.35);
+window.APP = { ready: true, duration: 100, renderAt(t) { c.reset(); const a = Math.round(t); if (c.slump) c.slump(a >= 4 ? (a - 4) / 2 : 0);
+  const ang = [0, 0.7, 1.57, Math.PI, 0, 0.5, 0][a] || 0; const close = a >= 4; const dist = close ? 2.4 : 5.4; const ty = close ? 2.35 : 1.4;
+  cam.position.set(Math.sin(ang) * dist, ty + 0.1, Math.cos(ang) * dist); cam.lookAt(0, ty - (close ? 0.2 : 0), 0); renderer.render(scene, cam); } };
