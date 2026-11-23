@@ -117,3 +117,24 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
 - **Área segura do título também nas animações:** nada importante no terço de baixo (exemplo: o Zelda da intro do vídeo 1
   ficou baixo demais e seria coberto pelo título). Também não jogar tudo pro topo. A composição deve ficar **centralizada**,
   numa altura confortável, com movimentos fluidos, com sentido e na qualidade máxima.
+
+## Legendas (aprovado pelo dono, padrão a partir de agora)
+
+- **Fonte:** Komika Axis (`editor/fontes/KOMIKAX_.ttf`), tamanho **84 px** (em 1080x1920), branca, **contorno preto de 14 px**
+  e sombra suave.
+- **Palavra por palavra**, no **terço inferior** (centro em y ≈ 1470). Palavras curtíssimas (menos de 0,11 s, com até 2 letras, tipo
+  "o", "um", "de") se juntam com a seguinte pra não piscar.
+- **Animação:** pop com mola (nasce em 62% do tamanho, dá um leve salto e assenta) + desfoque só nos primeiros quadros.
+  **Sem fade:** a palavra já nasce opaca.
+- **Sincronia (o ponto mais importante):** alinhamento forçado por fonemas (`editor/tools/alinhar.py`, wav2vec2 em português)
+  com o texto exato da narração, conferido contra a energia do áudio. A palavra entra **2 quadros antes** (33 ms).
+  Nunca usar só os tempos do Whisper, que erram até 0,27 s.
+- Ferramenta: `editor/tools/legendar.py <video> <palavras_alinhadas.json> <saida>`.
+
+## Volume e quantidade de efeitos (regra fixa)
+
+- **Cliques do Minecraft:** cerca de **12 por vídeo de ~55 s** (o meio-termo entre 8 e 16), sempre em cortes secos.
+  **Dano:** cerca de 2 por vídeo.
+- Usar sempre as versões **limpas** (`sfx/corte_clique_limpo.wav`, `sfx/corte_dano_limpo.wav`).
+- Ganhos de referência (vídeo 1 final): clique 1,45 e dano 1,25, com limitador de pico em 0,89; whoosh ≈ 1,1;
+  pop ≈ 0,9; flash ≈ 0,9; glitch ≈ 0,85. Limitador final em 0,99 na mixagem.

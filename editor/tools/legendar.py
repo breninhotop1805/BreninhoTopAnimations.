@@ -8,7 +8,7 @@ SRC, WORDS, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
 T0 = float(sys.argv[4]) if len(sys.argv) > 4 else 0.0
 T1 = float(sys.argv[5]) if len(sys.argv) > 5 else 1e9
 Y = 1470            # centro vertical da legenda (terco inferior)
-SIZE = 96
+SIZE = 84
 LEAD = 2/60         # entra 2 quadros antes do inicio da palavra (percepcao de sincronia)
 
 words = [w for w in json.load(open(WORDS)) if w["s"] is not None]
