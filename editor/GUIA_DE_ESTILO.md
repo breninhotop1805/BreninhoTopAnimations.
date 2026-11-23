@@ -114,3 +114,6 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
 - **Sons nos cortes secos:** o **clique do Minecraft** é o favorito. Usar **bastante** e **alto**. O **dano** entra de vez em quando.
   Nas animações, os sons variam conforme o contexto.
 - Pensar sempre num vídeo **variado, confortável pro público e que prenda a atenção do início ao fim**.
+- **Área segura do título também nas animações:** nada importante no terço de baixo (exemplo: o Zelda da intro do vídeo 1
+  ficou baixo demais e seria coberto pelo título). Também não jogar tudo pro topo. A composição deve ficar **centralizada**,
+  numa altura confortável, com movimentos fluidos, com sentido e na qualidade máxima.
