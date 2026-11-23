@@ -23,7 +23,7 @@
        **Um flash por vídeo**, alternando entre os dois de um vídeo pro outro.
    - Efeitos temáticos (sirene de polícia etc.) são permitidos quando fizerem sentido, **sempre abaixo da narração**.
    - **Nunca** colocar efeito sonoro em zoom lento, em movimento de câmera dentro da cena ou em ação do jogo.
-6. **Nunca colocar música e nunca colocar legendas.** As duas coisas o dono faz.
+6. **Música e legenda agora são feitas por mim** (o dono mudou a regra): música de fundo fixa e legenda no padrão aprovado (ver abaixo).
 7. **Sem áudio do jogo.** Tirar 100% do som da gameplay (as falas em inglês ficam ruins).
 8. **Narração intocada.** Não mudar volume, EQ, ruído nem qualidade. Usar exatamente o arquivo enviado.
 9. **Texto na tela só se for necessário e clean** (por exemplo, a altura de algo). **Logo do GTA 6: no máximo 1 vez**
@@ -138,3 +138,15 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
 - Usar sempre as versões **limpas** (`sfx/corte_clique_limpo.wav`, `sfx/corte_dano_limpo.wav`).
 - Ganhos de referência (vídeo 1 final): clique 1,45 e dano 1,25, com limitador de pico em 0,89; whoosh ≈ 1,1;
   pop ≈ 0,9; flash ≈ 0,9; glitch ≈ 0,85. Limitador final em 0,99 na mixagem.
+
+## Música de fundo e master final (regra para todos os vídeos de GTA)
+
+- **Música:** sempre `editor/musica/musica_fundo_gta.mp3` (enviada pelo dono), começando no início do vídeo.
+- **Sempre mais baixa que a narração:** ganho de cerca de **-9 dB** sobre o arquivo original, ficando uns 9 dB abaixo da voz,
+  com ducking leve (sidechain, ratio 2) que abaixa a música enquanto o dono fala.
+- **Fade out de 1 s** na música, terminando junto com o vídeo.
+- **Volume geral alto** (o "400 do CapCut"): a narração do dono **já chega em cerca de -5 LUFS**, ou seja, já vem alta.
+  Não amplificar mais (iria distorcer). O master final fica em cerca de **-7 LUFS integrado**, com limitador e teto em
+  **-1,6 dBFS** (pico real abaixo de 0 dBTP): alto pra celular e sem estourar.
+- Ferramenta: `editor/tools/master.sh <voz_e_efeitos.mp4> <musica> <video_legendado> <saida> <duracao> -9`.
+- **Ordem do fluxo:** render do vídeo → mixagem (narração + efeitos) → legenda → master (música + limitador).
