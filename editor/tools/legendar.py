@@ -8,7 +8,7 @@ SRC, WORDS, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
 T0 = float(sys.argv[4]) if len(sys.argv) > 4 else 0.0
 T1 = float(sys.argv[5]) if len(sys.argv) > 5 else 1e9
 Y = 1470            # centro vertical da legenda (terco inferior)
-SIZE = 116
+SIZE = 96
 LEAD = 2/60         # entra 2 quadros antes do inicio da palavra (percepcao de sincronia)
 
 words = [w for w in json.load(open(WORDS)) if w["s"] is not None]
@@ -32,13 +32,13 @@ json.dump(caps, open(OUT + ".legendas.json", "w"), ensure_ascii=False, indent=0)
 
 font = ImageFont.truetype(FONT, SIZE)
 def sprite(txt):
-    bb = font.getbbox(txt, stroke_width=11); pad = 40
+    bb = font.getbbox(txt, stroke_width=14); pad = 40
     w, h = bb[2] - bb[0] + pad*2, bb[3] - bb[1] + pad*2
     sh = Image.new("RGBA", (w, h), (0, 0, 0, 0)); d = ImageDraw.Draw(sh)
-    d.text((pad - bb[0] + 5, pad - bb[1] + 8), txt, font=font, fill=(0, 0, 0, 150), stroke_width=11, stroke_fill=(0, 0, 0, 150))
+    d.text((pad - bb[0] + 5, pad - bb[1] + 8), txt, font=font, fill=(0, 0, 0, 150), stroke_width=14, stroke_fill=(0, 0, 0, 150))
     sh = sh.filter(ImageFilter.GaussianBlur(7))
     im = Image.new("RGBA", (w, h), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
-    d.text((pad - bb[0], pad - bb[1]), txt, font=font, fill=(255, 255, 255, 255), stroke_width=11, stroke_fill=(0, 0, 0, 255))
+    d.text((pad - bb[0], pad - bb[1]), txt, font=font, fill=(255, 255, 255, 255), stroke_width=14, stroke_fill=(0, 0, 0, 255))
     sh.alpha_composite(im)
     a = np.asarray(sh).astype(np.float32) / 255; a[..., :3] *= a[..., 3:4]
     return a[..., [2, 1, 0, 3]].copy()
@@ -54,7 +54,7 @@ def draw(f, c, t):
     if c["t"] not in SPR: SPR[c["t"]] = sprite(c["t"])
     spr = SPR[c["t"]]; u = t - c["s"]
     p = pop(u); s = 0.62 + 0.38*p
-    a = min(1.0, u/0.05)
+    a = 1.0   # sem fade: a palavra ja nasce opaca
     blur = max(0.0, 7.0*(1 - u/0.09))
     hh, ww = spr.shape[:2]
     M = cv2.getRotationMatrix2D((ww/2, hh/2), 0, s); M[0, 2] += W/2 - ww/2; M[1, 2] += Y - hh/2 - 14*(1 - p)
