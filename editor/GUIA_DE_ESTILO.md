@@ -100,3 +100,17 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
   (~25 h–26,6 h) têm as vistas aéreas de Vice City, o pôr do sol entre prédios e Jason e Lucia no terraço.
 - **Efeitos sonoros:** cada som tem que combinar com o evento (whoosh = movimento ou transição, pop = selo ou elemento
   aparecendo, glitch = erro, flash = flash, dano ou clique = corte seco). Volume audível, sempre abaixo da voz.
+
+## Enquadramento (regras do dono, a partir do vídeo 2)
+
+- **Padrão: fundo desfocado** com a gameplay **grande** (faixa de ~1,5x a largura da tela) e **um pouco acima do centro**,
+  porque **embaixo entra o título do vídeo**, que o dono coloca. Nunca deixar algo importante colado no rodapé.
+- **Mas não usar fundo desfocado o tempo todo**, pra não ficar repetitivo. Usar **tela cheia** quando:
+  - tiver **um personagem no centro** e os lados não importarem;
+  - um **carro** (ou outro objeto) couber bem no recorte vertical **sem perder qualidade nem ficar irreconhecível**.
+- **Rastreamento (segmento):** nos próximos vídeos, aplicar **acompanhamento de rosto, carro ou objeto de destaque**
+  (a câmera segue o elemento), quando ficar bom.
+- **Zoom** sempre presente e visível, alternando aproximar e afastar, sem exagero.
+- **Sons nos cortes secos:** o **clique do Minecraft** é o favorito. Usar **bastante** e **alto**. O **dano** entra de vez em quando.
+  Nas animações, os sons variam conforme o contexto.
+- Pensar sempre num vídeo **variado, confortável pro público e que prenda a atenção do início ao fim**.
