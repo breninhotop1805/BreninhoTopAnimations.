@@ -142,11 +142,11 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
 ## Música de fundo e master final (regra para todos os vídeos de GTA)
 
 - **Música:** sempre `editor/musica/musica_fundo_gta.mp3` (enviada pelo dono), começando no início do vídeo.
-- **Sempre mais baixa que a narração:** ganho de cerca de **-9 dB** sobre o arquivo original, ficando uns 9 dB abaixo da voz,
+- **Sempre mais baixa que a narração:** ganho de **-6 dB** sobre o arquivo original (aprovado pelo dono), ficando uns 6 dB abaixo da voz (uns 9 dB enquanto ele fala),
   com ducking leve (sidechain, ratio 2) que abaixa a música enquanto o dono fala.
 - **Fade out de 1 s** na música, terminando junto com o vídeo.
 - **Volume geral alto** (o "400 do CapCut"): a narração do dono **já chega em cerca de -5 LUFS**, ou seja, já vem alta.
   Não amplificar mais (iria distorcer). O master final fica em cerca de **-7 LUFS integrado**, com limitador e teto em
   **-1,6 dBFS** (pico real abaixo de 0 dBTP): alto pra celular e sem estourar.
-- Ferramenta: `editor/tools/master.sh <voz_e_efeitos.mp4> <musica> <video_legendado> <saida> <duracao> -9`.
+- Ferramenta: `editor/tools/master.sh <voz_e_efeitos.mp4> <musica> <video_legendado> <saida> <duracao> -6`.
 - **Ordem do fluxo:** render do vídeo → mixagem (narração + efeitos) → legenda → master (música + limitador).
