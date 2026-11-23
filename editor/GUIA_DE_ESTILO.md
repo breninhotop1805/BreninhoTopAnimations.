@@ -86,3 +86,17 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
   A narração entra como está, sem processamento.
 - Sincronia: transcrever a narração com marcação de tempo por palavra (whisper) pra cortar e dar zoom
   exatamente na palavra certa.
+
+## Lições do vídeo 1 (o que o dono aprovou e o que reprovou)
+
+- **Reprovado:** animações paradas, logos pequenas, zooms tímidos (7–10%), coroa e pódio "de enfeite",
+  logo passando por cima de outra, cenas associadas de forma forçada, efeitos sonoros baixos.
+- **Aprovado:** intro no estilo da referência do Metacritic (logo nascendo de dentro do sol, selo 99 encaixando,
+  medalhas 1 e 2), **câmera sempre andando**, **física de mola** em tudo (sem saltos de velocidade = sem "travadinha"),
+  **motion blur** real (média de subquadros), tremores como impulso de mola, **60 fps**.
+- **Zoom:** sempre presente e visível (15–25%), alternando aproximar e afastar entre as cenas. Nada de zoom exagerado
+  num detalhe (por exemplo, nos óculos).
+- **Cenas:** a fala manda. Procurar no mapa das 29 h a cena que *literalmente* ilustra a frase. Os capítulos finais
+  (~25 h–26,6 h) têm as vistas aéreas de Vice City, o pôr do sol entre prédios e Jason e Lucia no terraço.
+- **Efeitos sonoros:** cada som tem que combinar com o evento (whoosh = movimento ou transição, pop = selo ou elemento
+  aparecendo, glitch = erro, flash = flash, dano ou clique = corte seco). Volume audível, sempre abaixo da voz.
