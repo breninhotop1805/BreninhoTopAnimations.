@@ -223,7 +223,7 @@ def probe_size(src):
     return int(r[0]), int(r[1])
 
 # ---------- camera de gameplay ----------
-def render_gameplay(fr, mask, mode, zoom, cx, cy):
+def render_gameplay(fr, mask, mode, zoom, cx, cy, box_w=1296, cy_s=None):
     """fr uint8 BGR. mask=(x0,y0,x1,y1) area util. mode 'box' (fundo desfocado) ou 'full'.
     zoom multiplica a escala base do modo. (cx,cy) centro na fonte."""
     x0, y0, x1, y1 = mask; mw, mh = x1 - x0, y1 - y0
@@ -234,7 +234,8 @@ def render_gameplay(fr, mask, mode, zoom, cx, cy):
     bs = max(W / mw, H / mh) * 1.08
     Mb = np.float32([[bs*6, 0, W/2 - bs*mw/2], [0, bs*6, H/2 - bs*mh/2]])
     bg = cv2.warpAffine(small, Mb, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT) * 0.5
-    if mode == "box": s = 1296 / mw * zoom
+    if cy_s is None: cy_s = H/2
+    if mode == "box": s = box_w / mw * zoom
     else: s = max(H / mh, W / mw) * zoom
     lcx, lcy = cx - x0, cy - y0
     # nao deixar sair da area util no modo cheio
@@ -242,7 +243,7 @@ def render_gameplay(fr, mask, mode, zoom, cx, cy):
         hw, hh = W/2/s, H/2/s
         lcx = clamp(lcx, hw, mw - hw) if mw > 2*hw else mw/2
         lcy = clamp(lcy, hh, mh - hh) if mh > 2*hh else mh/2
-    M = np.float32([[s, 0, W/2 - s*lcx], [0, s, H/2 - s*lcy]])
+    M = np.float32([[s, 0, W/2 - s*lcx], [0, s, (cy_s if mode == "box" else H/2) - s*lcy]])
     fg = cv2.warpAffine(src, M, (W, H), flags=cv2.INTER_LANCZOS4, borderMode=cv2.BORDER_CONSTANT)
     a = cv2.warpAffine(np.ones((mh, mw), np.float32), M, (W, H), flags=cv2.INTER_LINEAR, borderValue=0)[..., None]
     sh = cv2.GaussianBlur(a[..., 0], (0, 0), 22)[..., None] * 0.55
