@@ -19,7 +19,8 @@
    - **Transições de verdade são RARAS: 2 a 4 por vídeo.** Tipos: aproximar (zoom in), afastar, arrastar
      a câmera rápido pro lado (whip) e flash.
      - Zoom e whip levam som de **vento/whoosh**.
-     - Flash leva som de **flash**.
+     - Flash leva som de **flash**: `sfx/flash_1.wav` (curto, ~0,3 s) ou `sfx/flash_2.wav` (câmera, ~1 s).
+       **Um flash por vídeo**, alternando entre os dois de um vídeo pro outro.
    - Efeitos temáticos (sirene de polícia etc.) são permitidos quando fizerem sentido, **sempre abaixo da narração**.
    - **Nunca** colocar efeito sonoro em zoom lento, em movimento de câmera dentro da cena ou em ação do jogo.
 6. **Nunca colocar música e nunca colocar legendas.** As duas coisas o dono faz.
