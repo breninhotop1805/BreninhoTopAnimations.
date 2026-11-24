@@ -213,3 +213,22 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
   subindo** com rótulo e uma pilha/grade se formando embaixo. Física de mola, 60 fps, nada sobreposto, área do título livre.
 - **Não deu certo (evitar):** blocos caindo e enchendo a logo, equações na tela, cards de interface em fundo escuro, vários
   textos coloridos empilhados, brilho no texto, reciclar a intro de outro vídeo.
+
+## NOVO ESTILO (a partir do vídeo 3) — referências do canal Sev7n Jogos (caminhão, abdução, carros)
+
+Copiar o estilo de edição quase igual, **sem o rosto falando** (onde ele aparece em tela dividida, usar gameplay em tela cheia).
+
+- **Formato:** gameplay **em tela cheia 9:16** na maior parte (não a faixa com fundo desfocado), câmera sempre andando
+  (push-in lento, panorâmica, zoom em detalhe). Cenas ~2–4 s, ligadas à fala; nunca repetitivo.
+- **Título da intro** (fonte `editor/fontes/BurbankBigCondensed-Black.otf`, a mesma "fortnite.otf"): MAIÚSCULAS, branco,
+  **contorno preto grosso + sombra**, 2 linhas, no **topo** da tela (~10–15% da altura). Entrada: **cai de cima** com
+  desfoque de movimento, quica e assenta; fica respirando/derivando de leve; **saída**: cresce e sai pelo topo.
+  Às vezes a logo do GTA VI aparece rapidinho (0,3 s) antes do título.
+- **Palavras-chave grandes no meio do vídeo** (mesma fonte, 1 ou 2 vezes por vídeo): uma palavra/expressão curta
+  ("BIZARRO", "2 DA MANHÃ", "25 OPÇÕES", "POR COMPLETO", "ENTÃO"), centralizada, entrando de lado ou com pop.
+- **Legenda do dono:** continua Komika, mas **bem menor** (as da referência são pequenas, uma palavra, discretas).
+- **Mãos de verdade (recorte de foto):** dedo apontando o detalhe, "2" com os dedos, "OK", mão aberta, entrando pela borda.
+  Usar `editor/assets/braco_apontando.png` só quando aponta algo que a fala cita.
+- **Outros recursos que aparecem:** card de UI do jogo inclinado em 3D girando num fundo preto; o vídeo encolhendo até virar
+  um "cartão" no fundo preto; elemento de HUD isolado e ampliado (ex.: "- $5"); recorte de personagem em fundo branco;
+  card do canal creditado. Tudo limpo, sem poluir.
