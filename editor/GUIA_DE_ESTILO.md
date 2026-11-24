@@ -133,8 +133,9 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
 
 ## Volume e quantidade de efeitos (regra fixa)
 
-- **Cliques do Minecraft:** cerca de **12 por vídeo de ~55 s** (o meio-termo entre 8 e 16), sempre em cortes secos.
-  **Dano:** cerca de 2 por vídeo.
+- **Cliques do Minecraft:** **não é número fixo.** Usar uma **boa quantidade** (mais pra muito do que pra pouco), na maioria
+  dos cortes secos, mas **nem todo corte leva clique**: decidir pelo ritmo do vídeo. Referência do vídeo 1: 12 em ~55 s
+  ficou bom. **Dano:** de vez em quando.
 - Usar sempre as versões **limpas** (`sfx/corte_clique_limpo.wav`, `sfx/corte_dano_limpo.wav`).
 - Ganhos de referência (vídeo 1 final): clique 1,45 e dano 1,25, com limitador de pico em 0,89; whoosh ≈ 1,1;
   pop ≈ 0,9; flash ≈ 0,9; glitch ≈ 0,85. Limitador final em 0,99 na mixagem.
