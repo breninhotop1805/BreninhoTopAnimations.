@@ -150,3 +150,18 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
   **-1,6 dBFS** (pico real abaixo de 0 dBTP): alto pra celular e sem estourar.
 - Ferramenta: `editor/tools/master.sh <voz_e_efeitos.mp4> <musica> <video_legendado> <saida> <duracao> -6`.
 - **Ordem do fluxo:** render do vídeo → mixagem (narração + efeitos) → legenda → master (música + limitador).
+
+## Fluxo de material novo (outros jogos, bugs, easter eggs)
+
+- **O dono baixa o vídeo inteiro e sobe no Drive** (subpastas por jogo: GTA 5, San Andreas, Vice City, Bugs e Easter Eggs...).
+- **Sempre que um arquivo novo chegar, eu peço o tempo da cena**, por exemplo: "Bugs de GTA 5: já recebi o arquivo, me fala só o
+  tempo certo". O dono costuma passar o tempo **2 a 3 s antes** da cena. Eu mapeio a partir dali, acho o início e o
+  **fim exato** da cena e corto só ela.
+- **Storyboard antes de renderizar (obrigatório):** mandar ao dono uma imagem com a cena escolhida pra cada frase do roteiro
+  (miniatura, tempo e origem). Só renderizar depois da aprovação.
+- **Biblioteca:** tudo que chegar é catalogado e reaproveitado em vídeos futuros. Anotar a origem pra o dono dar crédito.
+- **Gravação de tela (teste de 24/11):** 2400x1080 a ~59 fps, com área útil de 2074x1080 (barras pretas nas laterais).
+  Qualidade boa, mas surgem controles do YouTube ao tocar na tela, barra de status e notificações. Só usar os trechos limpos.
+  Recorte: `crop=2074:1080:176:0,scale=1920:1080,fps=60`, sem áudio. Arquivos pesados (~28 Mbps), então baixar o vídeo
+  inteiro costuma ser mais prático.
+- **Nunca** baixar do YouTube daqui (bloqueado e contra as regras). Sem memes por enquanto.
