@@ -166,3 +166,12 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
   Recorte: `crop=2074:1080:176:0,scale=1920:1080,fps=60`, sem áudio. Arquivos pesados (~28 Mbps), então baixar o vídeo
   inteiro costuma ser mais prático.
 - **Nunca** baixar do YouTube daqui (bloqueado e contra as regras). Sem memes por enquanto.
+
+## Biblioteca de material (Drive)
+
+- Minecraft (pasta "Minecraft."): shaders cinematográfico 1080p60 (lago no pôr do sol 6–12 s, árvore 15–21, montanha com nuvens 42–55,
+  montanha com flores 105–108, vale dourado 111–121; a partir de 122 é noite), gameplay BSL com HUD, pre-alpha 2009 em 480p
+  (cortar o topo, y≥40, por causa do texto de debug; paisagem limpa em 138–145 s, Steve no horizonte em 0–1 s, pedra e tábuas
+  em 12–18 s) e trailer oficial Village & Pillage (vila colorida em 22–48 s).
+- GTA 6 (29 h): praia com posto de salva-vidas 71579 s; arranha-céu visto de baixo 69898 s; Vice City à noite vista do alto 69660 s;
+  pôr do sol entre prédios 94078 s; helicóptero 93785 s.
