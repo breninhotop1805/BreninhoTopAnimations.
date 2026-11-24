@@ -193,3 +193,12 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
 - Variar as animações de entrada (pop, cair de cima, deslizar, bater na tela) e de **saída** (cair, ir pro lado, crescer e sumir).
 - Elementos extras (braço apontando, X, ✓ em `editor/assets/`) só quando fizerem sentido.
 - Vídeos guiados por gameplay: muitas cenas (cortes de ~1–1,5 s), intro com cortes rápidos em tela cheia + socos de zoom.
+
+## Animações no estilo das referências (vídeo 2 v5)
+
+- As animações das referências **não são desenho animado**: são **interfaces realistas** (tela de download do console,
+  armazenamento, página do Metacritic, pílula contadora) num **fundo escuro**, com **câmera deslizando devagar**, **desfoque de
+  profundidade** e um título gigante desfocado ao fundo. Usar isso nas partes de **números**, sem poluir.
+- **Intro:** sem animação. Só gameplay com cortes rápidos e a **legenda maior no centro** (Komika 128 px, mesmas cores),
+  com pop limpo. Pode ir pro alto se cobrir algo importante.
+- Não reciclar animações de vídeos já postados (ex.: a intro do Zelda).

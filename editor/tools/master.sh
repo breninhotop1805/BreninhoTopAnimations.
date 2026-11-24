@@ -9,5 +9,5 @@ ffmpeg -v error -y -i "$VID" -i "$VOZ" -i "$MUS" -filter_complex "
 [2:a]aresample=48000,aformat=channel_layouts=stereo,atrim=0:$DUR,asetpts=PTS-STARTPTS,volume=${G}dB[m0];
 [m0][sc]sidechaincompress=threshold=0.1:ratio=2:attack=25:release=400:makeup=1[m1];
 [m1]afade=t=out:st=$FO:d=1.0[mus];
-[voz][mus]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.79:attack=1:release=50:level=false[a]" \
+[voz][mus]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.75:attack=1:release=50:level=false[a]" \
   -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 320k -ar 48000 -movflags +faststart "$OUT"
