@@ -184,3 +184,12 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
   blocos grandes = 212, pixels finos = 200 mil), texto só no número final. Intro com **impacto físico** (bloco caindo e batendo
   no chão) e contraste de tamanho que já faz a pergunta.
 - Mostrar **prévia só das animações** antes do vídeo inteiro quando a ideia for nova.
+
+## Texto no centro (momentos-chave) — regras do dono
+
+- Só nos **momentos matadores** (intro e números de impacto). Fora disso, legenda normal embaixo.
+- **Uma linha/palavra por vez**, grande, centralizada. Nunca empilhar várias linhas (polui).
+- Fonte Komika Axis. Cores: **branco, amarelo e rosa** apenas. **Sem brilho/glow** no texto — só contorno preto e sombra leve.
+- Variar as animações de entrada (pop, cair de cima, deslizar, bater na tela) e de **saída** (cair, ir pro lado, crescer e sumir).
+- Elementos extras (braço apontando, X, ✓ em `editor/assets/`) só quando fizerem sentido.
+- Vídeos guiados por gameplay: muitas cenas (cortes de ~1–1,5 s), intro com cortes rápidos em tela cheia + socos de zoom.
