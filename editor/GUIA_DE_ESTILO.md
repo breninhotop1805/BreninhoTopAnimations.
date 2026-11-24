@@ -175,3 +175,12 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
   em 12–18 s) e trailer oficial Village & Pillage (vila colorida em 22–48 s).
 - GTA 6 (29 h): praia com posto de salva-vidas 71579 s; arranha-céu visto de baixo 69898 s; Vice City à noite vista do alto 69660 s;
   pôr do sol entre prédios 94078 s; helicóptero 93785 s.
+
+## Lições do vídeo 2 (Minecraft x GTA 6)
+
+- **Reprovado:** contador e equações na tela ("muito texto e matemática"); logo "fantasma" que enchia e depois **outra logo
+  surgindo por cima** (ficou embolado); intro sem impacto.
+- **Direção que substituiu:** **um elemento forte por vez**, conta mostrada **visualmente** (a mesma logo enchendo de grama:
+  blocos grandes = 212, pixels finos = 200 mil), texto só no número final. Intro com **impacto físico** (bloco caindo e batendo
+  no chão) e contraste de tamanho que já faz a pergunta.
+- Mostrar **prévia só das animações** antes do vídeo inteiro quando a ideia for nova.
