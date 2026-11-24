@@ -202,3 +202,14 @@ Meta: ser **mais profissional que as referências**. Prender do início ao fim. 
 - **Intro:** sem animação. Só gameplay com cortes rápidos e a **legenda maior no centro** (Komika 128 px, mesmas cores),
   com pop limpo. Pode ir pro alto se cobrir algo importante.
 - Não reciclar animações de vídeos já postados (ex.: a intro do Zelda).
+
+## O que funcionou no vídeo 2 (versão aprovada, "melhorou bem")
+
+- **Processo obrigatório:** storyboard (uma imagem por trecho, com a fala) ANTES de renderizar. Pular isso gerou
+  várias versões ruins seguidas.
+- **Uma cena por frase**, ligada ao que é falado. Não encher de cortes aleatórios. Nada de cena repetida.
+- **Intro = só a primeira pergunta** do roteiro, com legenda grande no centro (pop limpo) e 1–2 cenas.
+- **Animações = fundo synthwave em movimento** + logos centralizadas + **selos de número grudados nas logos** + **contador
+  subindo** com rótulo e uma pilha/grade se formando embaixo. Física de mola, 60 fps, nada sobreposto, área do título livre.
+- **Não deu certo (evitar):** blocos caindo e enchendo a logo, equações na tela, cards de interface em fundo escuro, vários
+  textos coloridos empilhados, brilho no texto, reciclar a intro de outro vídeo.
