@@ -409,3 +409,40 @@ Direção:
   motion blur em ação rápida; flashback em sépia/cinza; noite = azul + janelas quentes + lanternas coloridas.
 **Luz e cor**: saturado, sol quente com sombra suave, bloom nas luzes, fundo desfocado nos closes, interiores com luz quente de
   abajur/teto; cada cena tem uma fonte de luz plausível.
+
+## BÍBLIA DE PRODUÇÃO ROBLOX v2 — MEDIDA nas 16 referências (1.410 planos, transcrição palavra a palavra) — SEGUIR À RISCA
+### Números medidos (não chutar)
+- **Plano**: mediana 1,47 s (média 1,67); 34% < 1,2 s; 20% entre 2–3 s; 8% > 3 s. ~90 planos em 2:20.
+- **Corte ↔ fala**: o corte cai **~1 quadro ANTES do início da palavra** (mediana −0,04 s; 88% a ±0,2 s; 61% antes).
+  Corte nas fronteiras de oração (~1 corte a cada 4–6 palavras; narração ≈ 235 palavras/min).
+- **Câmera**: 94% dos planos se movem. **Push-in em 75%** (zoom mediano **4,8%/s**, p75 7,4%/s, p90 11%/s); pull-out 9%
+  (revelar/descrever, abrir parte nova); pan/tilt ~13% (acompanhar ação: "correu" = tilt/pan; "se transformou" = tilt-up).
+  Movimento sempre suave (sem tranco). Estático só em inserts e falas curtas.
+- **Gramática da fala**: gancho = 1ª frase quebrada em 2–4 planos nos primeiros 3 s; LISTAS = 1 plano por item (0,8–1,1 s);
+  números/tempo ganham plano próprio ("a cada 100 anos", "4 bilhões de votos", relógio/calendário); planos longos (3–6 s) só
+  pra descrição com várias ações dentro do mesmo plano + câmera viajando; explosões dramáticas = rajada de planos de 0,2–0,5 s
+  (flash/whip/congelar).
+### Atuação (corpo + rosto juntos, sempre exagerado)
+- chorar = mãos no rosto (`coverFace`) + rios de lágrima azuis (`cry`) + tremor; gritar = olhos em círculo (`circle`) +
+  boca escancarada (`scream`) + mãos na cabeça (`handsHead`); rir = cabeça pra trás + olhos fechados + boca aberta (`laugh`);
+  medo = olhos em círculo/encolhido (`scared`, suor) ou escondido debaixo do cobertor só com os olhos; raiva = braços cruzados
+  (`crossArms`) ou punho erguido (`fistUp`); pensar = mão no queixo (`think`); dúvida = `shrug` + "?"; susto = pulo (`startle`).
+  Poses em `roblox_base/src/poses15.js` (IK nos alvos do próprio corpo; `mirror` = braço de fora). Rostos em `drawFace`
+  (olhos: normal/wide/circle/squeeze/happy/closed/sad/angry/tired/anime; bocas: smile/grin/laugh/scream/grimace/o/smallo/frown/
+  flat/wavy; extras: cry, tears, sweat, blush, brow, browUp).
+- Ninguém parado: respiração (`alive`), cabeça viva, gesto na palavra. Mesmo gesto no máx. 2× por vídeo.
+### Personagens (padrão novo)
+- Corpos OFICIAIS (`realbody.js`) + **roupa clássica pintada no atlas oficial** (`outfit.js`: plain, tee, stripes, plaid,
+  jersey c/ número, hoodie c/ cordão e degradê, sweater, suit c/ gravata, jacket, polo, pajama de estrelas, prison c/ crachá,
+  military, camo; calças jeans/pants/shorts/skirt/track/pajama/plaid; tênis com sola/cadarço/listra; botas).
+- **Cabelo v4** (`hair4.js`): calota lisa + mechas grossas brilhantes com PONTAS (franja reta pontuda, laterais, nuca);
+  estilos long(+buns), ponytail(+laço), pigtails, bob, boy, bacon, spiky, messy, old, bun. Trocar cor entre vídeos.
+- Elenco sempre variado (pele, cabelo, roupa, estampa); crianças com escala fixa menor; idosos com óculos/cabelo grisalho.
+### Cenários (kit `roblox_base/src/kit.js`) — PROPORÇÃO FIXA (ele cobrou: "personagens do tamanho das construções")
+- Personagem ≈ 5,2. Porta 4,6 × 7,8 (≈1,5× o personagem) com batente, dobradiça, maçaneta e **corredor iluminado atrás**
+  (porta nunca abre pra parede/bloco sólido); pé-direito 12; andar 12; sobrado ≈ 26; janela peitoril 3,4 × 4 de altura;
+  mesa 2,4; assento 1,15; cama 1,8; armário escolar 7,2; poste 11; árvore ~9.
+- Personagem que entra/sai: a porta abre ANTES (sm 0–0,8 s), caminho pelo CENTRO do vão, sem encostar na folha aberta.
+- `obstacleCheck` (kit.js): toda parede, batente, folha de porta e móvel é obstáculo → zero `LOG ATRAVESSA` antes da render.
+- **Fontes**: KOMIKAX SÓ na legenda. Todo texto do mundo (placas, lousa, TV, relógio digital, hologramas, crachás) em
+  **Montserrat 900** (`assets/fonts`, `textTex()`), igual às placas das referências.
