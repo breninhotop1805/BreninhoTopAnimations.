@@ -350,3 +350,6 @@ Ele cobrou: "não está parecido com as referências; nem todos têm corpo quadr
   CILÍNDRICOS** (cápsulas, raio ~0,22–0,27), mãos C pequenas, sapatos pequenos; cotovelo e joelho. Quadradão (blocky) SÓ pro
   protagonista. `body: 'slim'` em roblox_base/src/chars.js. Cabelo = malha esculpida lisa e brilhante com mechas pontudas
   (franja com pontas, volume), NÃO blocos grossos e NÃO fios texturizados. Estudar os closes em resolução cheia, nunca só miniaturas.
+- **Render e disco:** o disco encheu durante a render do EP01 e a 2ª metade saiu ESCURA (sombra/iluminação quebrada no Chromium),
+  sem nenhum erro no log. Antes de renderizar: `df -h` (≥10 GB livres) e não rodar testes pesados em paralelo; depois: medir o
+  brilho de quadros do vídeo final contra stills dos mesmos tempos antes de entregar.
