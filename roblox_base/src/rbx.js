@@ -103,3 +103,51 @@ export function topHat(color = '#1f5fb8', band = '#d21a1a') { return (head) => {
   g.rotation.z = -0.03; return g; }; }
 
 export function protagonist() { return new Rbx('heroi', { head: '#f2f2f2', torso: '#d4141a', arms: '#f2f2f2', legs: '#141416', hat: topHat() }); }
+
+// ======================= cast builder: many Roblox characters in the same quality =======================
+// person({ name, skin, shirt, pants, shoes, hair: { style, color }, top: 'tshirt'|'hoodie'|'suit'|'dress'|'uniform'|'polo', accent, tie, glasses, cap, face })
+const HEAD_TOP = 1.27, HR = 0.62;
+function hairCap(g, col, o = {}) { const m = plastic(col, { rough: 0.75 }); // a rounded shell hugging the top/back of the head
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(HR + 0.06, 40, 20, 0, Math.PI * 2, 0, Math.PI * (o.depth || 0.42)), m); cap.scale.set(1, o.flat || 0.62, 1); cap.position.y = HEAD_TOP - 0.38; cap.castShadow = true; g.add(cap);
+  const back = new THREE.Mesh(rbox(1.3, o.backH || 0.7, 0.3, 0.12, 3), m); back.position.set(0, HEAD_TOP - 0.25 - (o.backH || 0.7) / 2 + 0.2, -0.5); back.castShadow = true; g.add(back); return m; }
+export const HAIR = {
+  short: (g, c) => { const m = hairCap(g, c); const f = new THREE.Mesh(rbox(1.22, 0.24, 0.3, 0.1, 3), m); f.position.set(0.05, HEAD_TOP - 0.12, 0.47); f.rotation.z = -0.08; f.castShadow = true; g.add(f); },
+  spiky: (g, c) => { const m = hairCap(g, c); for (let i = 0; i < 7; i++) { const a = -1.2 + i * 0.4; const s = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.55, 6), m); s.position.set(Math.sin(a) * 0.45, HEAD_TOP + 0.08, Math.cos(a) * 0.3 - 0.05); s.rotation.set(-0.5 + Math.cos(a) * 0.2, 0, -Math.sin(a) * 0.6); s.castShadow = true; g.add(s); } },
+  swoop: (g, c) => { const m = hairCap(g, c); const q = new THREE.Mesh(rbox(1.3, 0.5, 0.9, 0.22, 4), m); q.position.set(0.15, HEAD_TOP + 0.05, 0.12); q.rotation.set(0.25, 0, -0.25); q.castShadow = true; g.add(q); },
+  long: (g, c) => { const m = hairCap(g, c, { backH: 2.0 }); for (const s of [-1, 1]) { const l = new THREE.Mesh(rbox(0.28, 1.5, 0.5, 0.12, 3), m); l.position.set(s * 0.66, HEAD_TOP - 0.85, 0.1); l.castShadow = true; g.add(l); }
+    const f = new THREE.Mesh(rbox(1.24, 0.26, 0.3, 0.1, 3), m); f.position.set(0, HEAD_TOP - 0.14, 0.47); g.add(f); },
+  ponytail: (g, c) => { const m = hairCap(g, c); const f = new THREE.Mesh(rbox(1.22, 0.22, 0.3, 0.1, 3), m); f.position.set(0, HEAD_TOP - 0.12, 0.47); g.add(f);
+    const t = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.9, 6, 12), m); t.position.set(0, HEAD_TOP - 0.55, -0.85); t.rotation.x = 0.35; t.castShadow = true; g.add(t); },
+  buns: (g, c) => { const m = hairCap(g, c); for (const s of [-1, 1]) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.3, 20, 14), m); b.position.set(s * 0.5, HEAD_TOP + 0.05, -0.1); b.castShadow = true; g.add(b); } },
+  curly: (g, c) => { const m = plastic(c, { rough: 0.85 }); const r = rng2(5); for (let i = 0; i < 40; i++) { const a = r() * Math.PI * 2, e = r() * 1.1; const b = new THREE.Mesh(new THREE.SphereGeometry(0.17 + r() * 0.06, 12, 10), m);
+    b.position.set(Math.cos(a) * Math.cos(e) * 0.66, HEAD_TOP - 0.35 + Math.sin(e) * 0.5, Math.sin(a) * Math.cos(e) * 0.66 * (Math.sin(a) > 0.3 ? 0.6 : 1)); if (b.position.z > 0.4 && b.position.y < HEAD_TOP - 0.15) continue; b.castShadow = true; g.add(b); } },
+  bald: () => {},
+};
+function rng2(seed) { let s = seed; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+const deco = (p, w, h, d, col, x, y, z, r = 0.03) => mesh(rbox(w, h, d, Math.min(r, w / 2 - 0.001, h / 2 - 0.001, d / 2 - 0.001), 2), plastic(col), p, x, y, z);
+export function person(o = {}) {
+  const c = new Rbx(o.name || 'npc', { head: o.skin || '#f3c99a', torso: o.shirt || '#3a7ae8', arms: o.sleeves || (o.top === 'tshirt' || o.top === 'dress' || o.top === 'polo' ? o.skin || '#f3c99a' : o.shirt || '#3a7ae8'), legs: o.pants || '#2a3a6a', faceDefault: o.face,
+    hat: (head) => { const g = new THREE.Group(); head.add(g); (HAIR[o.hair?.style || 'short'])(g, o.hair?.color || '#3a2414');
+      if (o.glasses) { const fm = plastic('#151515'); for (const s of [-1, 1]) { const r = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.025, 8, 20), fm); r.position.set(s * 0.17, 0.72, 0.635); g.add(r); } const br = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.025, 0.025), fm); br.position.set(0, 0.74, 0.64); g.add(br); }
+      if (o.cap) { const cm = plastic(o.cap); const cp = new THREE.Mesh(new THREE.SphereGeometry(0.68, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.45), cm); cp.scale.y = 0.7; cp.position.y = HEAD_TOP - 0.3; g.add(cp); const v = new THREE.Mesh(rbox(1.0, 0.07, 0.6, 0.03, 2), cm); v.position.set(0, HEAD_TOP - 0.22, 0.72); g.add(v); } } });
+  // half sleeves: the upper part of the arm in the shirt colour when the arms are bare
+  if (o.top === 'tshirt' || o.top === 'polo') for (const A of [c.armR, c.armL]) deco(A.piv, 1.04, 0.7, 1.04, o.shirt || '#3a7ae8', 0, -0.33, 0, 0.08);
+  // shoes on the leg ends
+  for (const Lg of [c.legR, c.legL]) deco(Lg.piv, 1.04, 0.32, 1.1, o.shoes || '#f2f2f2', 0, -1.84, 0.04, 0.08);
+  const T = c.torso;
+  if (o.top === 'hoodie') { deco(T, 1.2, 0.5, 0.06, shadeHex(o.shirt, 0.85), 0, 0.45, 0.52, 0.08); for (const s of [-1, 1]) deco(T, 0.06, 0.5, 0.05, '#f2f2f2', s * 0.2, 1.55, 0.53, 0.02); deco(T, 1.9, 0.25, 1.06, shadeHex(o.shirt, 0.9), 0, 1.9, 0, 0.1); }
+  if (o.top === 'suit') { deco(T, 0.5, 1.9, 0.05, o.accent || '#f4f4f4', 0, 1.0, 0.51, 0.02); deco(T, 0.16, 1.2, 0.06, o.tie || '#c81e2a', 0, 1.25, 0.53, 0.03); for (const y of [0.5, 0.8]) deco(T, 0.08, 0.08, 0.04, '#101010', 0.4, y, 0.52, 0.03); }
+  if (o.top === 'polo') { deco(T, 0.7, 0.2, 0.06, '#f2f2f2', 0, 1.88, 0.5, 0.04); for (const y of [1.6, 1.4]) deco(T, 0.07, 0.07, 0.04, '#f2f2f2', 0, y, 0.52, 0.03); }
+  if (o.top === 'uniform') { deco(T, 2.02, 0.22, 1.02, '#1a1a1a', 0, 0.2, 0, 0.04); deco(T, 0.28, 0.3, 0.05, '#e8c040', 0.5, 1.5, 0.52, 0.04); }
+  if (o.top === 'dress') { const sk = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.35, 1.2, 24), plastic(o.shirt)); sk.position.y = -0.4; sk.castShadow = true; c.hip.add(sk); }
+  if (o.logo) deco(T, 0.6, 0.6, 0.05, o.logo, 0, 1.15, 0.52, 0.1);
+  return c; }
+function shadeHex(hex, k) { const c = new THREE.Color(hex || '#888'); c.multiplyScalar(k); return '#' + c.getHexString(); }
+export const CAST = {
+  menina: () => person({ name: 'menina', skin: '#f6d2b0', shirt: '#e85a9a', top: 'tshirt', pants: '#3a4ab0', shoes: '#ffffff', hair: { style: 'long', color: '#3a1e12' }, face: { eyes: 'normal', mouth: 'smile', blush: 0.6 } }),
+  amigo: () => person({ name: 'amigo', skin: '#8a5a3a', shirt: '#2ab07a', top: 'polo', pants: '#3a3a40', shoes: '#e83a2a', hair: { style: 'curly', color: '#1a120c' } }),
+  valentao: () => person({ name: 'valentao', skin: '#f0c08a', shirt: '#3a6ae8', top: 'hoodie', pants: '#1a1a22', shoes: '#101010', hair: { style: 'spiky', color: '#e8a020' } }),
+  chefe: () => person({ name: 'chefe', skin: '#f3c99a', shirt: '#1e2230', top: 'suit', pants: '#1e2230', shoes: '#101010', tie: '#c81e2a', hair: { style: 'swoop', color: '#5a5a5a' }, glasses: true }),
+  policial: () => person({ name: 'policial', skin: '#c88a5a', shirt: '#1f3a8a', top: 'uniform', pants: '#152a60', shoes: '#101010', hair: { style: 'short', color: '#20140c' }, cap: '#152a60' }),
+  vovo: () => person({ name: 'vovo', skin: '#f3d0b0', shirt: '#8a6ab0', top: 'dress', pants: '#8a6ab0', shoes: '#5a3a2a', hair: { style: 'buns', color: '#e8e8e8' }, glasses: true }),
+};

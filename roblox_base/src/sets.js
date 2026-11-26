@@ -44,7 +44,7 @@ export function buildStreet(S) {
   for (const px of [-11, -3.5, 3.6, 11]) { B(g, 0.9, 0.8, 0.9, '#c8643a', px, 0.75, -5.5, 0.12); const bush = new THREE.Mesh(new THREE.SphereGeometry(0.62, 16, 12), plastic('#3ea84a', { rough: 0.8 })); bush.position.set(px, 1.5, -5.5); bush.castShadow = true; g.add(bush); }
   cloud(g, -10, 16, -30, 2.2); cloud(g, 8, 19, -34, 2.8); cloud(g, 22, 15, -28, 1.8);
   // light: warm sun (soft shadows), sky/ground bounce
-  const sun = new THREE.DirectionalLight('#fff1dc', 3.2); sun.position.set(-12, 22, 16); sun.target.position.set(0, 0, -2); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.radius = 6; sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03;
+  const sun = new THREE.DirectionalLight('#fff1dc', 3.2); sun.position.set(-12, 22, 16); sun.target.position.set(0, 0, -2); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.radius = 6; sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.06;
   Object.assign(sun.shadow.camera, { left: -18, right: 18, top: 18, bottom: -10, near: 1, far: 60 }); s.add(sun, sun.target); S.sun = sun;
   s.add(new THREE.HemisphereLight('#cfe6ff', '#b89a7a', 1.4)); const fill = new THREE.DirectionalLight('#dfe8ff', 0.6); fill.position.set(10, 8, 12); s.add(fill);
   S.street = s; return s; }
