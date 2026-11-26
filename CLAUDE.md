@@ -318,3 +318,30 @@ Ajuste pedido por ele: cartola **mais baixa e encaixada** (a cabeça entra na co
 - **Render rápido (Roblox, CPU/swiftshader):** GTAO em meia resolução + 6 amostras, render interno a 0,8 (`RS=0.8`, 864×1536)
   e upscale lanczos pra 1080×1920 no ffmpeg (igual a olho nu); no máximo 2 processos em paralelo (4 ficava MAIS lento).
   ~1,3 s/quadro → ~70 min pra 2 min de vídeo. Ele reclamou de 3 h ("os de FNAF eram 30 min") — medir s/quadro ANTES de renderizar.
+
+## ANÁLISE PROFUNDA DAS REFERÊNCIAS ROBLOX (16 vídeos, quadro a quadro) — PADRÃO PROS PRÓXIMOS (pedido: "fidelidade máxima")
+Ele cobrou: "não está parecido com as referências; nem todos têm corpo quadrado R6 — a maioria é o PADRÃO do Roblox".
+- **Rig = R15 em TODOS** (inclusive os "quadradões"): ombro, COTOVELO, pulso, quadril, JOELHO, tornozelo. Sentados dobram o
+  joelho (perna de baixo vertical), braços dobram no cotovelo (mão no queixo, mão na cintura, segurar objeto na frente do peito).
+  Mãos = bloco "C" com polegar (pega objetos de verdade). Pés com tênis/sapato separados.
+- **Dois tipos de corpo** (mesma altura base, tamanhos fixos por categoria):
+  1. *Blocky* (o protagonista deles e o MEU): peças quadradas com chanfro leve; ombros largos.
+  2. *Padrão Roblox 2.0 / "Woman"* (a MAIORIA): tronco levemente afunilado (ombro > cintura), braços/pernas mais finos e
+     arredondados, cabeça clássica. Crianças = mesmo corpo em escala menor; adultos/velhos maiores.
+- **Rostos**: decal 2D clássico (sorriso, "o", sobrancelha brava, lágrima azul, rubor) + rostos ANIME pras meninas (olhos grandes
+  coloridos com brilho, cílios, boca pequena) + rostos detalhados de vilão (rugas/dentes). Óculos 3D grossos.
+- **Cabelos**: malhas 3D GROSSAS e lisas, em blocos/mechas largas (não fios finos): rabo de cavalo com elástico, maria-chiquinha
+  com laço, franja reta, espetado de anime, liso longo até a cintura, careca/grisalho com entradas, coque. Chapéus: ushanka, boné,
+  coroa, capacete de bombeiro, chef. Proporção: cabelo encaixa na cabeça, volume moderado.
+- **Roupas**: texturas "Classic shirt/pants" (moletom com bolso, camisa xadrez, listras, terno, pijama estampado de estrelas,
+  uniforme de futebol com número, macacão) + peças 3D às vezes (saia, colete, capa).
+- **Variedade**: cada personagem diferente (pele clara/morena/negra, cabelo, roupa); figurantes também.
+- **Cenários**: MUITO detalhados, cheios e coerentes (quarto com cama/abajur/quadros/tapete/cortina; sala com poltrona estampada,
+  relógio, estante; bunker com prateleiras de latas, placas "REGRAS", porta blindada com volante, faixas de alerta; rua com casas
+  de 2 andares com sacada, calçada de pedra, postes, árvores low-poly arredondadas; cidade noturna com prédios iluminados; estádio
+  com torcida; sala de aula com carteiras). Cores saturadas, luz quente de lâmpadas, DOF forte, bloom.
+- **Elementos gráficos 3D**: relógios de parede, placas/painéis LED com texto, balão de pensamento, "Z z z" de sono, "?" "!",
+  círculo destacando objeto, corações. Legenda branca com borda (vermelho nas palavras-chave).
+- **Movimento**: caminhada natural com joelho e cotovelo; gestos com antebraço; sentar dobrando o joelho; abraços com braços
+  dobrados (sem atravessar); câmera perto, altura dos olhos, close de rosto nas reações.
+- Protagonista dele: cartola AINDA MENOR (pedido depois do EP01).
