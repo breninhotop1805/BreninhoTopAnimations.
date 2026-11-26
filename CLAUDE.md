@@ -285,3 +285,13 @@ Ajuste pedido por ele: cartola **mais baixa e encaixada** (a cabeça entra na co
 - `subs.js`: legendas KOMIKAX palavra a palavra (pop elástico + blur), vermelho nas palavras-chave.
 - `main.js`: câmera em 2 passadas, pós: GTAO + Bokeh (foco no personagem) + bloom + grade (saturação/vinheta) + legendas.
 - Render pesado (AO + DOF em 1080×1920): ~3–5 s/quadro → renderizar em 4 partes em paralelo; testar com stills antes.
+- **Skins v1 REPROVADAS** ("MUITO FEIAS": blocos lisos, cabelo = touca simples). Padrão agora = `roblox_base/src/chars.js`
+  (`dressed()`, `hero()`, `CAST2`): mãos em C, roupas com textura desenhada em cada face (listras, xadrez, camuflado, jaqueta
+  aberta + camiseta, terno com lapela/gravata, moletom com bolso/cordão/degradê, blusa, shorts/jeans com costura), tênis 3D com
+  sola, **cabelo = touca no formato da cabeça cortada na linha do cabelo (nunca cobrir olhos) + dezenas de mechas 3D curvas e
+  afiladas com textura de fios** (mechas sobre a touca até a franja recortada + mechas longas/espetadas/coque conforme o estilo).
+  Referências de cabelo/skin que ele mandou: liso longo com mechas claras, ondulado loiro, liso preto, "Pal hair", espetado,
+  bagunçado preto, Bacon, Acorn (coque ruivo), menina com space buns, menino com moletom degradê e topete.
+  Variar MUITO entre personagens (cor de pele, cabelo, roupa, estampa), sempre nesse nível.
+- **NUNCA personagem sobreposto a personagem ou objeto** (nem em lineup/teste): espaçar, um por vez no quadro de apresentação,
+  e checar colisão nas cenas.
