@@ -16,7 +16,7 @@ page.on('pageerror', e => { console.log('[pageerror]', e.message); process.exit(
 await page.goto(`http://localhost:${port}/${process.env.PAGE||'index.html'}?${process.env.QX||''}&w=${Math.round(W * scale)}&h=${Math.round(H * scale)}`);
 await page.waitForFunction(() => window.APP && window.APP.ready, null, { timeout: 120000 }); if (process.env.DBG) await page.evaluate(() => window.DBG = 1);
 const FPS = 30;
-async function grab(t) { await page.evaluate(t => window.APP.renderAt(t), t); return page.screenshot({ type: 'jpeg', quality: 95 }); }
+async function grab(t) { for (let k = 0; ; k++) { try { await page.evaluate(t => window.APP.renderAt(t), t); return await page.screenshot({ type: 'jpeg', quality: 95 }); } catch (e) { if (k >= 4) throw e; console.log('retry', t, e.message); await new Promise(r => setTimeout(r, 2000)); } } }
 if (mode === 'stills') {
   const out = a2 || 'stills'; fs.mkdirSync(out, { recursive: true });
   for (const t of a1.split(',').map(Number)) { const b = await grab(t); fs.writeFileSync(`${out}/t${t.toFixed(2).padStart(6, '0')}.jpg`, b); }
