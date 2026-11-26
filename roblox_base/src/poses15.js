@@ -12,7 +12,7 @@ export const POSE15 = {
   crossArms: { arms: c => [[c.armR, c.torso, V(0.3, 1.18, 0.7)], [c.armL, c.torso, V(-0.3, 1.3, 0.82)]], head: [0.06, 0, 0.1], face: { mouth: 'frown', eyes: 'angry', brow: 1 } },
   laugh: { arms: c => [[c.armR, c.torso, V(-0.28, 0.78, 0.66)], [c.armL, c.torso, V(0.28, 0.78, 0.66)]], head: [-0.38, 0, 0.05], torso: [-0.12, 0, 0], bounce: 0.035, face: { eyes: 'happy', mouth: 'laugh' } },
   fistUp: { arms: c => [[c.armR, c.torso, V(-0.75, 2.9, 0.35)]], head: [-0.12, 0, 0], torso: [-0.04, 0, 0.05], face: { eyes: 'angry', mouth: 'open', brow: 1 } },
-  think: { arms: c => c.body === 'bloco' ? [[c.armR, c.head, V(-0.1, 0.12, 0.8)]] : [[c.armR, c.head, V(-0.04, 0.16, 0.82)], [c.armL, c.torso, V(0.06, 1.0, 0.72)]], head: [0.1, 0.16, 0.12], face: { mouth: 'flat', brow: 0.4, look: [0.6, -0.8] } },
+  think: { arms: c => c.body === 'bloco' ? [[c.armR, c.head, V(-0.1, -0.3, 0.8)]] : [[c.armR, c.head, V(-0.04, -0.42, 0.8)], [c.armL, c.torso, V(0.06, 1.0, 0.72)]], head: [0.1, 0.16, 0.12], face: { mouth: 'flat', brow: 0.4, look: [0.6, -0.8] } },
   shrug: { arms: c => [[c.armR, c.torso, V(-1.2, 1.25, 0.55)], [c.armL, c.torso, V(1.2, 1.25, 0.55)]], head: [0.06, 0, 0.22], lift: 0.05, face: { mouth: 'flat', brow: -0.5 } },
   cheer: { arms: c => [[c.armR, c.torso, V(-1.05, 3.3, 0.25)], [c.armL, c.torso, V(1.05, 3.3, 0.25)]], head: [-0.25, 0, 0], torso: [-0.05, 0, 0], bounce: 0.06, face: { eyes: 'happy', mouth: 'laugh' } },
   scared: { arms: c => [[c.armR, c.head, V(-0.55, 0.45, 0.95)], [c.armL, c.head, V(0.55, 0.45, 0.95)]], head: [0.06, 0, 0], torso: [-0.16, 0, 0], shake: 0.018, face: { eyes: 'circle', mouth: 'grimace', brow: -0.8, sweat: 1 } },

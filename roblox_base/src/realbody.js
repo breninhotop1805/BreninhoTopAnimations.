@@ -44,3 +44,7 @@ export function realChar(o) { const t = T[o.body || 'fem']; if (!t) throw new Er
     const an = new THREE.Group(); an.position.copy(sub(An, K)); kn.add(an); Lg.ankle = an; Lg.foot = part(G[s + 'Foot'], An, shoes, an); }
   const hipY = R.y; const r0 = c.reset.bind(c); c.reset = () => { r0(); c.hip.position.set(0, hipY, 0); for (const X of [c.armR, c.armL]) { X.elbow.rotation.set(0, 0, 0); X.wrist.rotation.set(0, 0, 0); } for (const X of [c.legR, c.legL]) { X.knee.rotation.set(0, 0, 0); X.ankle.rotation.set(0, 0, 0); } };
   c.hipY = hipY; c.body = o.body || 'fem'; c.baseScale = o.scale || 1; c.reset(); c.root.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } }); return c; }
+
+// the protagonist (him) on the STANDARD male body (decision after the demo): white skin, red sleeveless top, black pants/shoes, blue top hat
+import { topHat } from './rbx.js';
+export const heroStd = () => realChar({ name: 'heroi', body: 'masc', skin: '#f2f2f2', top: { type: 'plain', color: '#d4141a', sleeves: 'none' }, bottom: { type: 'pants', color: '#141416', belt: '#141416', buckle: false }, shoesO: { color: '#141416', sole: '#e8e8e8' }, hat: topHat() });

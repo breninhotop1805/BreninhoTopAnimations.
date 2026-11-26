@@ -452,3 +452,7 @@ Direção:
   demo (câmera atrás da parede na cena da porta).
 - Gestos por tipo de corpo: o quadradão (braços grossos) usa alvos mais abertos/à frente (poses15 ajusta sozinho) e "pensar"
   só com uma mão. Base de referência visual: `roblox_base/src/demo.js` (DEMO_NOVO_PADRAO).
+- **Decisões dele (depois da demo):** protagonista no **corpo masculino PADRÃO** (`heroStd()` em realbody.js: pele branca,
+  regata vermelha, calça/tênis pretos, cartola azul) — não mais o quadradão. **Cabelos = HAIR4 (v4)**; a tentativa HAIR5
+  (cabelos de catálogo com textura de fios) foi REPROVADA ("pontas, tufos, calvícies, feio") — não usar HAIR5.
+  Ele não quer testes/renders extras sem pedir: renderizar só o que ele pedir.

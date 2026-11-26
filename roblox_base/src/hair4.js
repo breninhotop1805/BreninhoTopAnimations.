@@ -95,3 +95,88 @@ export const HAIR4 = {
   // granny bun
   bun: (g, c, c2, o = {}) => { HAIR4.bob(g, c, c2, { fringe: 1.0 }); const b = new THREE.Mesh(ball(0.33), hairMat(c)); b.position.set(0, HT + 0.12, -0.34); b.scale.set(1, 0.88, 0.95); b.castShadow = true; g.add(b); },
 };
+
+// ======================= HAIR v5 — the catalog hairs he sent (Pal, Messy, Spiky, Bacon, Quiff, Long straight, Long wavy,
+// Two-tone, Acorn bun, Space buns): layered lock sheets with a fine catalog STRAND texture, wavy ends, long hair draped OVER
+// the shoulders (torso-clearance radius, never through the body) =======================
+const STR5 = (() => { const c = document.createElement('canvas'); c.width = 512; c.height = 256; const g = c.getContext('2d'); g.fillStyle = '#ffffff'; g.fillRect(0, 0, 512, 256);
+  for (let i = 0; i < 260; i++) { const x = hash(i * 3.1) * 512, w = 0.6 + hash(i + 1.7) * 1.8; const dark = hash(i + 9.2) < 0.7; g.strokeStyle = dark ? `rgba(0,0,0,${0.05 + hash(i + 2) * 0.12})` : `rgba(255,255,255,${0.08 + hash(i + 4) * 0.15})`; g.lineWidth = w; g.beginPath(); g.moveTo(x, 0); g.bezierCurveTo(x + (hash(i + 5) - 0.5) * 8, 90, x + (hash(i + 6) - 0.5) * 8, 170, x + (hash(i + 7) - 0.5) * 6, 256); g.stroke(); }
+  const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, 'rgba(0,0,0,0.18)'); gr.addColorStop(0.25, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,0.05)'); g.fillStyle = gr; g.fillRect(0, 0, 512, 256);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; })();
+const M5 = new Map(); function mat5(col) { if (!M5.has(col)) M5.set(col, new THREE.MeshPhysicalMaterial({ color: col, map: STR5, vertexColors: true, roughness: 0.48, clearcoat: 0.45, clearcoatRoughness: 0.35, sheen: 0.5, sheenRoughness: 0.45, sheenColor: new THREE.Color(col).lerp(new THREE.Color('#ffffff'), 0.2), side: THREE.DoubleSide })); return M5.get(col); }
+// torso clearance (head space, neck at y≈0): hair below the neck must stay outside an ellipse around the chest/back
+const torsoR = th => 1 / Math.sqrt((Math.sin(th) / 1.0) ** 2 + (Math.cos(th) / 0.62) ** 2) + 0.07;
+export function lockSheet5(o) { if (o.th1 < o.th0) { const t = o.th0; o.th0 = o.th1; o.th1 = t; } const L = o.locks, NU = Math.max(30, L * 8), NV = o.nv || 34; const pos = [], uv = [], col = [], idx = [];
+  const P = o.path, th = o.thick ?? 0.08, lift = o.lift ?? 0.05, bulge = o.bulge ?? 0.04, wave = o.wave || 0, wn = o.waves || 2.2;
+  const vEnd = u => { const k = Math.min(L - 1, Math.floor(u * L)); const fr = u * L - k; const tri = 1 - Math.abs(2 * fr - 1); return 1 - (o.vary ?? 0.12) * hash(k * 1.7 + (o.seed || 0)) - (o.tip ?? 0.3) * (1 - Math.pow(tri, o.tipPow ?? 0.7)); };
+  const point = (u, v, inner) => { const k = Math.min(L - 1, Math.floor(u * L)); const fr = u * L - k; const ph = hash(k + 3.3 + (o.seed || 0)) * 6.28;
+    let th_ = o.th0 + (o.th1 - o.th0) * u + (o.sweep || 0) * sm(v) + wave * 0.5 * Math.sin(v * Math.PI * wn + ph) * v * v;
+    const [r0, y] = catmull(P, v); const ridge = Math.pow(Math.sin(Math.PI * fr), 0.6); const thick = th * (1 - 0.6 * v) * (0.5 + 0.5 * ridge);
+    let r = Math.max(r0, headR(y) + lift); const tb = sm((0.12 - y) / 0.35); if (tb > 0) r = Math.max(r, r * (1 - tb) + torsoR(th_) * tb);
+    r += bulge * ridge * (0.4 + 0.6 * Math.min(1, v * 3)) + (o.outFlare || 0) * v * v + wave * 0.12 * Math.cos(v * Math.PI * wn * 1.3 + ph) * v * v; if (inner) r -= thick;
+    return [Math.sin(th_) * r, y - (o.curlUp || 0) * Math.pow(Math.max(0, v - 0.85) / 0.15, 2) * -1, Math.cos(th_) * r]; };
+  const cfn = o.colors; const add = (p, uu, vv, c) => { pos.push(...p); uv.push(uu * (o.uvRepeat || L * 0.6), vv); col.push(...c); return pos.length / 3 - 1; };
+  const grid = inner => { const base = pos.length / 3; for (let j = 0; j <= NV; j++) for (let i = 0; i <= NU; i++) { const u = i / NU, ve = vEnd(u), v = (j / NV) * ve; const k = Math.min(L - 1, Math.floor(u * L));
+      const sh = (0.78 + 0.22 * sm(v * 5)) * (1 - 0.06 * sm((v - 0.8) * 5)) * (inner ? 0.72 : 1); const cc = cfn ? cfn(k, u) : [1, 1, 1]; add(point(u, v, inner), u, v, [cc[0] * sh, cc[1] * sh, cc[2] * sh]); } return base; };
+  const A = grid(false), B = grid(true); const id = (b, i, j) => b + j * (NU + 1) + i;
+  for (let j = 0; j < NV; j++) for (let i = 0; i < NU; i++) { const a = id(A, i, j), b = id(A, i + 1, j), c = id(A, i, j + 1), d = id(A, i + 1, j + 1); idx.push(a, c, b, b, c, d); const a2 = id(B, i, j), b2 = id(B, i + 1, j), c2 = id(B, i, j + 1), d2 = id(B, i + 1, j + 1); idx.push(a2, b2, c2, b2, d2, c2); }
+  for (let i = 0; i < NU; i++) { const a = id(A, i, NV), b = id(A, i + 1, NV), c = id(B, i, NV), d = id(B, i + 1, NV); idx.push(a, c, b, b, c, d); }
+  for (const i of [0, NU]) for (let j = 0; j < NV; j++) { const a = id(A, i, j), b = id(A, i, j + 1), c = id(B, i, j), d = id(B, i, j + 1); if (i === 0) idx.push(a, c, b, b, c, d); else idx.push(a, b, c, c, b, d); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); g.setIndex(idx); g.computeVertexNormals(); return g; }
+const S5 = (g, o, c) => { const m = new THREE.Mesh(lockSheet5(o), mat5(c)); m.castShadow = true; m.receiveShadow = true; g.add(m); return m; };
+const C5 = (g, c, a, b, cc) => { const m = new THREE.Mesh(cap(a, b, cc, 0.04), mat5(c)); m.castShadow = true; g.add(m); return m; };
+const T5 = (g, c, pts, r0, r1, fl, tip) => { const m = new THREE.Mesh(tube(pts, r0, r1, fl, tip), mat5(c)); m.castShadow = true; g.add(m); return m; };
+const B5 = (g, c, r, p, sc = [1, 1, 1]) => { const m = new THREE.Mesh(ball(r, 28, 20), mat5(c)); m.position.copy(p); m.scale.set(...sc); m.castShadow = true; g.add(m); return m; };
+const rgb = h => { const c = new THREE.Color(h); return [c.r, c.g, c.b]; };
+// long hair paths (head space): crown -> over the head -> past the ear -> over the shoulder -> down the chest/back
+const LONG5 = (yEnd, rEnd = 0.95) => [[0.08, HT + 0.08], [0.45, HT + 0.0], [0.68, 1.08], [0.74, 0.7], [0.8, 0.25], [0.9, -0.2], [rEnd, (yEnd - 0.2) / 2 - 0.1], [rEnd + 0.02, yEnd]];
+const CURT5 = (yEnd) => [[0.1, HT + 0.08], [0.5, HT - 0.02], [0.7, 1.02], [0.74, 0.6], [0.76, 0.2], [0.8, -0.3], [0.82, yEnd]];
+export const HAIR5 = {
+  // long straight black hair, centre part, curtains framing the face, cut straight at the waist (ref 2679fb73)
+  longStraight: (g, c, c2, o = {}) => HAIR5._long(g, c, c2, Object.assign({ yEnd: -2.3, wave: 0, tip: 0.05, vary: 0.04, flare: 0 }, o)),
+  // long wavy light-blonde hair, layered wavy ends (ref 18904fc1)
+  longWavy: (g, c, c2, o = {}) => HAIR5._long(g, c, c2, Object.assign({ yEnd: -2.0, wave: 0.32, tip: 0.13, vary: 0.1, flare: 0.14, locks: 9 }, o)),
+  // two-tone brown with blonde "money piece" (ref e7607e1a)
+  twoTone: (g, c, c2, o = {}) => HAIR5._long(g, c, c2, Object.assign({ yEnd: -1.8, wave: 0.25, tip: 0.12, vary: 0.1, flare: 0.12, locks: 9, hl: c2 || '#f0d8b0' }, o)),
+  _long: (g, c, c2, o) => { C5(g, c, 1.06, 0.62, 0.3); const yE = o.yEnd; const base = { thick: 0.12, bulge: 0.015, lift: 0.06, wave: o.wave, waves: 2.3, tip: o.tip, vary: o.vary, tipPow: 0.8 };
+    // top: from the centre part swept to each side, ending at the hairline (never over the face)
+    for (const s of [-1, 1]) S5(g, { ...base, th0: s * 0.04, th1: s * 0.7, path: [[0.08, HT + 0.08], [0.5, HT + 0.02], [0.71, 1.1], [0.73, 1.0]], locks: 4, tip: 0.1, vary: 0.05, wave: 0, sweep: s * 0.35, seed: 5 + s }, c);
+    // curtains beside the face (in front of the ears) falling over the shoulders onto the chest
+    const hlc = o.hl ? rgb(o.hl) : null, bc = rgb(c);
+    const CP = [[0.2, HT + 0.06], [0.62, HT - 0.06], [0.74, 1.0], [0.76, 0.5], [0.8, 0.0], [0.86, -0.5], [0.88, yE + 0.25]];
+    for (const s of [-1, 1]) { if (o.hl) { S5(g, { ...base, th0: s * 0.66, th1: s * 0.88, path: CP, locks: 1, thick: 0.15, outFlare: o.flare * 0.6, seed: 8 + s }, o.hl); S5(g, { ...base, th0: s * 0.86, th1: s * 1.25, path: CP, locks: 2, thick: 0.14, outFlare: o.flare * 0.6, seed: 9 + s }, c); }
+      else S5(g, { ...base, th0: s * 0.68, th1: s * 1.25, path: CP, locks: 3, thick: 0.14, outFlare: o.flare * 0.6, seed: 9 + s }, c); }
+    // back mass (behind the shoulders) down to yEnd
+    S5(g, { ...base, th0: Math.PI * 0.42, th1: Math.PI * 1.58, path: LONG5(yE, 0.95), locks: o.locks || 12, thick: 0.15, outFlare: o.flare, seed: 13 }, c); },
+  // Pal Hair: thick layered swept locks over the forehead to one side, covering the ears, nape-length back (ref 0236fb1b)
+  pal: (g, c, c2, o = {}) => { C5(g, c, 1.04, 0.62, 0.4);
+    S5(g, { th0: -0.95, th1: 0.95, path: [[0.08, HT + 0.12], [0.5, HT + 0.06], [0.72, 1.1], [0.78, 0.84], [0.8, 0.74]], locks: 7, tip: 0.4, vary: 0.25, thick: 0.13, bulge: 0.06, lift: 0.07, sweep: 0.45, seed: 31 }, c);
+    S5(g, { th0: 0.8, th1: Math.PI * 2 - 0.8, path: [[0.08, HT + 0.12], [0.5, HT + 0.06], [0.74, 1.0], [0.8, 0.6], [0.8, 0.3], [0.78, 0.18]], locks: 12, tip: 0.35, vary: 0.22, thick: 0.13, bulge: 0.06, lift: 0.07, outFlare: 0.06, seed: 33 }, c); },
+  // Messy black emo hair: dozens of thin sharp locks pointing out and down, a few up on the crown (ref 0ba8502d)
+  messy5: (g, c, c2, o = {}) => { C5(g, c, 1.0, 0.6, 0.38);
+    for (let L = 0; L < 3; L++) S5(g, { th0: -Math.PI + L * 0.2, th1: Math.PI + L * 0.2, path: [[0.08, HT + 0.1 - L * 0.04], [0.48, HT + 0.04 - L * 0.06], [0.74, 1.06 - L * 0.1], [0.84 + L * 0.03, 0.72 - L * 0.1], [0.9 + L * 0.05, 0.55 - L * 0.12]], locks: 18 - L * 3, tip: 0.6, vary: 0.35, thick: 0.08, bulge: 0.04, lift: 0.06 + L * 0.02, outFlare: 0.12 + L * 0.05, seed: 41 + L * 7, tipPow: 0.5 }, c);
+    for (let k = 0; k < 7; k++) { const a = -2.4 + k * 0.8 + hash(k) * 0.3; const b = new THREE.Vector3(Math.sin(a) * 0.3, HT + 0.05, Math.cos(a) * 0.3 - 0.1); const d = new THREE.Vector3(Math.sin(a) * 0.6, 0.5 + hash(k + 2) * 0.4, Math.cos(a) * 0.5).normalize(); T5(g, c, [b, b.clone().addScaledVector(d, 0.25), b.clone().addScaledVector(d, 0.48).add(new THREE.Vector3(0, -0.06, 0))], 0.1, 0.05, 0.35, 0.8); }
+    // front fringe falling over the forehead (pointed)
+    S5(g, { th0: -0.7, th1: 0.7, path: [[0.1, HT + 0.08], [0.55, HT - 0.02], [0.76, 1.02], [0.8, 0.86]], locks: 8, tip: 0.55, vary: 0.3, thick: 0.08, bulge: 0.04, lift: 0.07, sweep: 0.2, seed: 61, tipPow: 0.5 }, c); },
+  // Short dark spiky swept back (ref 2d28f5a7)
+  spiky5: (g, c, c2, o = {}) => { C5(g, c, 1.1, 0.72, 0.5);
+    S5(g, { th0: -0.95, th1: 0.95, path: [[0.1, HT + 0.12], [0.5, HT + 0.12], [0.72, 1.18], [0.76, 1.08]], locks: 6, tip: 0.5, vary: 0.2, thick: 0.1, bulge: 0.04, lift: 0.07, sweep: -0.15, seed: 71 }, c);
+    S5(g, { th0: 0.9, th1: Math.PI * 2 - 0.9, path: [[0.1, HT + 0.1], [0.5, HT + 0.06], [0.72, 1.0], [0.74, 0.68], [0.74, 0.55]], locks: 10, tip: 0.45, vary: 0.2, thick: 0.1, bulge: 0.04, lift: 0.06, seed: 73 }, c);
+    for (let k = 0; k < 9; k++) { const a = Math.PI + (k - 4) * 0.32; const r0 = 0.2 + (k % 3) * 0.12; const b = new THREE.Vector3(Math.sin(a) * r0 * 0.6, HT + 0.08, -0.05 - (k % 3) * 0.12);
+      const d = new THREE.Vector3(Math.sin(a) * 0.35, 0.55, Math.cos(a) * 0.75).normalize(); const L = 0.45 + hash(k) * 0.25; T5(g, c, [b, b.clone().addScaledVector(d, L * 0.5).add(new THREE.Vector3(0, -0.02, 0)), b.clone().addScaledVector(d, L)], 0.2, 0.12, 0.4, 0.75); } },
+  // Bacon hair: puffy brown/ginger swoop, side part, locks over the right forehead, covering the ears (ref 5de7ccef)
+  bacon5: (g, c, c2, o = {}) => { C5(g, c, 1.04, 0.62, 0.42);
+    S5(g, { th0: -1.05, th1: 0.85, path: [[0.08, HT + 0.18], [0.5, HT + 0.16], [0.8, 1.12], [0.84, 0.86], [0.84, 0.76]], locks: 6, tip: 0.35, vary: 0.2, thick: 0.18, bulge: 0.09, lift: 0.1, sweep: 0.5, seed: 81 }, c);
+    S5(g, { th0: 0.8, th1: Math.PI * 2 - 1.0, path: [[0.08, HT + 0.18], [0.55, HT + 0.12], [0.84, 0.96], [0.86, 0.55], [0.82, 0.35]], locks: 11, tip: 0.3, vary: 0.15, thick: 0.18, bulge: 0.08, lift: 0.1, outFlare: 0.04, seed: 83 }, c); },
+  // Quiff: short sides, front swept up and back (ref e31eccc6)
+  quiff5: (g, c, c2, o = {}) => { C5(g, c, 1.12, 0.78, 0.5);
+    S5(g, { th0: 0.85, th1: Math.PI * 2 - 0.85, path: [[0.08, HT + 0.06], [0.5, HT - 0.02], [0.7, 1.0], [0.72, 0.72], [0.72, 0.58]], locks: 10, tip: 0.3, thick: 0.08, lift: 0.05, seed: 91 }, c);
+    for (let k = 0; k < 6; k++) { const a = -0.5 + k * 0.2; const b = new THREE.Vector3(Math.sin(a) * 0.62, 1.12, Math.cos(a) * 0.62); T5(g, c, [b, b.clone().add(new THREE.Vector3(0.02, 0.22, 0.04)), b.clone().add(new THREE.Vector3(0.0, 0.36 + hash(k) * 0.1, -0.22)), b.clone().add(new THREE.Vector3(-0.02, 0.26, -0.62))], 0.17, 0.11, 0.35, 0.45); } },
+  // Acorn: ginger messy top bun + loose strands framing the face, short bob around (ref dc9e08fc)
+  acorn: (g, c, c2, o = {}) => { C5(g, c, 1.06, 0.6, 0.35);
+    S5(g, { th0: -0.75, th1: 0.75, path: [[0.1, HT + 0.08], [0.55, HT - 0.02], [0.74, 1.02], [0.78, 0.86]], locks: 6, tip: 0.5, vary: 0.25, thick: 0.1, bulge: 0.05, lift: 0.06, sweep: 0.15, seed: 101 }, c);
+    S5(g, { th0: 0.7, th1: Math.PI * 2 - 0.7, path: [[0.1, HT + 0.08], [0.55, HT - 0.02], [0.78, 0.95], [0.84, 0.45], [0.86, 0.22]], locks: 11, tip: 0.45, vary: 0.25, thick: 0.12, bulge: 0.06, lift: 0.07, outFlare: 0.1, seed: 103 }, c);
+    B5(g, c, 0.38, new THREE.Vector3(0, HT + 0.22, -0.1), [1, 0.9, 1]); for (let k = 0; k < 6; k++) { const a = k * 1.05; const b = new THREE.Vector3(Math.cos(a) * 0.25, HT + 0.35, -0.1 + Math.sin(a) * 0.25); T5(g, c, [b, b.clone().add(new THREE.Vector3(Math.cos(a) * 0.14, 0.12, Math.sin(a) * 0.14)), b.clone().add(new THREE.Vector3(Math.cos(a) * 0.24, 0.04, Math.sin(a) * 0.24))], 0.07, 0.04, 0.45, 0.7); } },
+  // Space buns: long blonde hair + two buns on top + small bows (ref e3ed3a0e)
+  spaceBuns: (g, c, c2, o = {}) => { HAIR5.longWavy(g, c, c2, { yEnd: -1.6 }); for (const s of [-1, 1]) { B5(g, c, 0.3, new THREE.Vector3(s * 0.45, HT + 0.08, -0.05), [1, 0.92, 1]); if (o.bow !== false) B5(g, o.bowCol || '#8ad0f0', 0.09, new THREE.Vector3(s * 0.62, HT + 0.2, 0.12)); } },
+};
