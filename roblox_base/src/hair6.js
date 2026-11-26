@@ -29,7 +29,8 @@ export function shell(o) { const NU = 128, NV = 48, T = o.T ?? 0.1; const pos = 
   const P = (c, v, inner) => { const s = c.smax * v; const [r0, y] = prof(s, T, c.th, flare, 0); let r = r0 + (o.puff ? o.puff(c.th, s, y) : 0);
     if (o.relief && !inner) { const f = ((wrapA(c.th) + Math.PI) / (Math.PI * 2) * o.locks) % 1; r += o.relief * Math.pow(Math.sin(Math.PI * f), 0.7) * sm(0.15, 0.7, s); }
     if (inner) { const hang = y < 0.25; r = hang ? r - (o.panel ?? 0.13) : Math.max(0.05, r - T - (o.puff ? o.puff(c.th, s, y) : 0) + 0.01); }
-    const ws = o.sweep ? o.sweep * Math.min(1, s / 0.9) : 0; const th = c.th + ws * (Math.abs(wrapA(c.th)) < 1.3 ? 1 : 0); return [Math.sin(th) * r, y, Math.cos(th) * r, s]; };
+    const ly = (!inner && o.liftY) ? o.liftY(c.th, s) : 0;
+    const ws = o.sweep ? o.sweep * Math.min(1, s / 0.9) : 0; const th = c.th + ws * (Math.abs(wrapA(c.th)) < 1.3 ? 1 : 0); return [Math.sin(th) * r, y + ly, Math.cos(th) * r, s]; };
   for (const inner of [false, true]) for (let j = 0; j <= NV; j++) for (const [i, c] of cols.entries()) { const v = j / NV; const p = P(c, v, inner); pos.push(p[0], p[1], p[2]); uv.push(i / NU, p[3] / 3.2); }
   const id = (k, i, j) => k * (NV + 1) * (NU + 1) + j * (NU + 1) + i;
   for (let j = 0; j < NV; j++) for (let i = 0; i < NU; i++) { const a = id(0, i, j), b = id(0, i + 1, j), c = id(0, i, j + 1), d = id(0, i + 1, j + 1); idx.push(a, b, c, b, d, c);
@@ -50,6 +51,27 @@ const scallop = (th, f, n, d, off = 0) => { const a = wrapA(th); if (Math.abs(a)
 export const HAIR6 = {
   // short neat boy hair: soft side-swept fringe, covers the top of the ears, short nape
   boy: (g, col, c2, o = {}) => { add(g, shell({ T: 0.1, n: 16, sweep: 0.12, relief: 0.035, locks: 22, yb: th => lerpA(th, 0.55, 1.03, 0.6, 0.36) - scallop(th, 0.62, 9, 0.085, 0.2) - 0.03 * Math.max(0, Math.sin(th * 11)), puff: (th, s, y) => 0.06 * Math.exp(-((s - 0.55) ** 2) / 0.12) * (Math.cos(th) * 0.5 + 0.5) }), hairMat6(col, 16)); },
+  // ---- more boy shapes (same clean method: one smooth volume + light 3D relief) ----
+  // quiff / topete: short sides, front swept UP with volume
+  quiff: (g, col, c2, o = {}) => { add(g, shell({ T: 0.08, n: 16, relief: 0.03, locks: 20, sweep: -0.05, yb: th => lerpA(th, 0.55, 1.12, 0.68, 0.42) - scallop(th, 0.5, 7, 0.04),
+    liftY: (th, s) => 0.32 * Math.exp(-((s - 0.42) ** 2) / 0.05) * Math.max(0, Math.cos(th)) ** 3, puff: (th, s, y) => 0.12 * Math.exp(-((s - 0.5) ** 2) / 0.05) * Math.max(0, Math.cos(th)) ** 3 + 0.04 * Math.exp(-((s - 0.5) ** 2) / 0.2) }), hairMat6(col, 16)); },
+  // curtains / middle part: fringe parted in the middle falling to both sides, covers the ears
+  curtains: (g, col, c2, o = {}) => { add(g, shell({ T: 0.1, n: 18, relief: 0.03, locks: 22, yb: th => { const a = Math.abs(wrapA(th)); return (a < 0.6 ? 1.12 - 0.2 * sm(0.0, 0.6, a) : lerpA(th, 0.6, 0.92, 0.5, 0.34)) - 0.025 * Math.max(0, Math.sin(th * 13)); },
+    puff: (th, s, y) => 0.05 * Math.exp(-((s - 0.55) ** 2) / 0.12) }), hairMat6(col, 18)); },
+  // buzz cut: very short, hugs the head, clean hairline
+  buzz: (g, col, c2, o = {}) => { add(g, shell({ T: 0.035, n: 30, yb: th => lerpA(th, 0.55, 1.1, 0.72, 0.42) }), hairMat6(col, 30)); },
+  // messy (tidy): longer, soft wavy outline at the nape and fringe, more volume and relief
+  messy: (g, col, c2, o = {}) => { add(g, shell({ T: 0.11, n: 16, relief: 0.05, locks: 18, sweep: 0.2, yb: th => lerpA(th, 0.55, 0.98, 0.5, 0.26) - 0.07 * Math.max(0, Math.sin(th * 9 + 0.5)) - scallop(th, 0.6, 8, 0.06),
+    puff: (th, s, y) => 0.08 * Math.exp(-((s - 0.5) ** 2) / 0.15) }), hairMat6(col, 16)); },
+  // soft spiky: a few rounded peaks on top (not horns)
+  spiky: (g, col, c2, o = {}) => { add(g, shell({ T: 0.09, n: 14, relief: 0.04, locks: 14, yb: th => lerpA(th, 0.55, 1.04, 0.62, 0.38) - scallop(th, 0.6, 8, 0.08),
+    liftY: (th, s) => 0.22 * Math.pow(Math.max(0, Math.sin(th * 3.5 + 0.6)), 4) * Math.exp(-((s - 0.2) ** 2) / 0.05), puff: (th, s, y) => 0.05 * Math.exp(-((s - 0.5) ** 2) / 0.15) }), hairMat6(col, 14)); },
+  // shoulder-length (surfer): center-ish part, ends above the shoulders, rounded
+  surfer: (g, col, c2, o = {}) => { add(g, shell({ T: 0.1, n: 20, relief: 0.035, locks: 24, sweep: 0.08, yb: th => { const a = Math.abs(wrapA(th)); return (a < 0.55 ? 1.0 - 0.12 * sm(0, 0.55, a) : lerpA(th, 0.55, 0.88, 0.12, 0.02)) - 0.04 * Math.max(0, Math.sin(th * 15)); },
+    puff: (th, s, y) => 0.05 * Math.exp(-((s - 0.6) ** 2) / 0.2) }), hairMat6(col, 20)); },
+  // curly / afro: rounded curl bumps all over a fuller volume
+  curly: (g, col, c2, o = {}) => { add(g, shell({ T: 0.18, n: 1, yb: th => lerpA(th, 0.55, 1.06, 0.62, 0.36),
+    puff: (th, s, y) => 0.06 * Math.max(0, Math.sin(th * 9) * Math.sin(s * 11)) + 0.08 * Math.exp(-((s - 0.5) ** 2) / 0.2) }), hairMat6(col, 1)); },
   // long straight girl hair: straight soft bangs, face open, panels over the chest + long back; sides stop at the shoulders
   long: (g, col, c2, o = {}) => { const yEnd = o.yEnd ?? -1.6;
     const yb = th => { const a = Math.abs(wrapA(th)); let y; if (a < 0.5) y = 0.92 - scallop(th, 0.5, 11, 0.045); else if (a < 0.62) y = 0.92 + (yEnd + 0.5 - 0.92) * sm(0.5, 0.62, a); else if (a < 1.15) y = yEnd + 0.5; else if (a < 1.3) y = (yEnd + 0.5) + (0.3 - (yEnd + 0.5)) * sm(1.15, 1.3, a); else if (a < 1.95) y = 0.3; else if (a < 2.15) y = 0.3 + (yEnd - 0.3) * sm(1.95, 2.15, a); else y = yEnd; return y - 0.04 * Math.sin(a * 23) * (y < 0 ? 1 : 0); };

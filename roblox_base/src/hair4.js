@@ -54,21 +54,21 @@ const LONG = (yEnd, flare = 0.05) => [[0.1, HT + 0.07], [0.48, HT - 0.02], [0.7,
 export const HAIR4 = {
   // long straight girl hair with straight pointed fringe + side locks framing the face (refs: "Única garota", sonâmbula)
   long: (g, c, c2, o = {}) => { M(g, cap(1.02, 0.6, 0.3), c);
-    M(g, lockSheet({ th0: Math.PI * 0.42, th1: Math.PI * 1.58, path: LONG(o.yEnd ?? -0.9, 0.06), locks: 11, tip: 0.14, vary: 0.04, thick: 0.13, bulge: 0.03, lift: 0.06, seed: 1 }), c);
-    M(g, lockSheet({ th0: -0.62, th1: 0.62, path: FR(o.fringe ?? 0.88), locks: 6, tip: 0.3, vary: 0.06, thick: 0.1, bulge: 0.035, lift: 0.05, seed: 3 }), c);
-    for (const s of [-1, 1]) M(g, lockSheet({ th0: s * 0.62, th1: s * 1.32, path: LONG(o.side ?? -0.35, 0.02), locks: 3, tip: 0.18, vary: 0.04, thick: 0.1, bulge: 0.03, lift: 0.055, seed: 5 + s }), c2 || c);
+    M(g, lockSheet({ th0: Math.PI * 0.42, th1: Math.PI * 1.58, path: LONG(o.yEnd ?? -0.9, 0.06), locks: 7, tip: 0.22, vary: 0.1, thick: 0.13, bulge: 0.06, lift: 0.06, seed: 1 }), c);
+    M(g, lockSheet({ th0: -0.62, th1: 0.62, path: FR(o.fringe ?? 0.86), locks: 5, tip: 0.5, vary: 0.22, thick: 0.1, bulge: 0.06, lift: 0.05, seed: 3 }), c);
+    for (const s of [-1, 1]) M(g, lockSheet({ th0: s * 0.62, th1: s * 1.32, path: LONG(o.side ?? -0.35, 0.02), locks: 3, tip: 0.3, vary: 0.1, thick: 0.1, bulge: 0.035, lift: 0.055, seed: 5 + s }), c2 || c);
     if (o.buns) for (const s of [-1, 1]) { const b = new THREE.Mesh(ball(0.26), hairMat(c)); b.position.set(s * 0.42, HT - 0.02, -0.12); b.scale.set(1, 0.9, 0.95); b.castShadow = true; g.add(b);
       if (o.tieCol) tie(g, o.tieCol, new THREE.Vector3(s * 0.52, HT - 0.12, 0.05), 0.07); } },
   // side/top ponytail with a big bow/ties, straight fringe, short side locks (ref: bunker blonde girl)
   ponytail: (g, c, c2, o = {}) => { M(g, cap(1.02, 0.66, 0.42), c);
-    M(g, lockSheet({ th0: -0.7, th1: 0.7, path: FR(o.fringe ?? 0.9), locks: 6, tip: 0.3, vary: 0.06, thick: 0.1, bulge: 0.035, lift: 0.05, seed: 11 }), c);
-    for (const s of [-1, 1]) M(g, lockSheet({ th0: s * 0.7, th1: s * 1.45, path: LONG(0.42, 0.0), locks: 2, tip: 0.18, vary: 0.04, thick: 0.09, lift: 0.05, seed: 13 + s }), c);
-    M(g, lockSheet({ th0: Math.PI * 0.46, th1: Math.PI * 1.54, path: LONG(0.38, 0.0), locks: 10, tip: 0.14, vary: 0.04, thick: 0.08, bulge: 0.03, lift: 0.05, seed: 15 }), c);
-    const sx = o.side ?? 0.55; const root = new THREE.Vector3(sx * 0.66, HT - 0.12, -0.38);
-    for (let k = 0; k < 4; k++) { const dz = (k - 1.5) * 0.07; M(g, tube([root.clone().add(new THREE.Vector3(0, 0, dz)), root.clone().add(new THREE.Vector3(sx * 0.32, 0.0, -0.1 + dz)), root.clone().add(new THREE.Vector3(sx * 0.62, -0.25, -0.18 + dz)), root.clone().add(new THREE.Vector3(sx * 0.6 - 0.03 * k, -0.8, -0.1 + dz))], 0.13, 0.1, 0.75, 0.4), k % 2 ? c : (c2 || c)); }
+    M(g, lockSheet({ th0: -0.7, th1: 0.7, path: FR(o.fringe ?? 0.88), locks: 5, tip: 0.52, vary: 0.22, thick: 0.1, bulge: 0.06, lift: 0.05, seed: 11 }), c);
+    for (const s of [-1, 1]) M(g, lockSheet({ th0: s * 0.7, th1: s * 1.45, path: LONG(0.42, 0.0), locks: 2, tip: 0.3, thick: 0.09, lift: 0.05, seed: 13 + s }), c);
+    M(g, lockSheet({ th0: Math.PI * 0.46, th1: Math.PI * 1.54, path: LONG(0.38, 0.0), locks: 8, tip: 0.25, vary: 0.08, thick: 0.08, lift: 0.05, seed: 15 }), c);
+    const sx = o.side ?? 0.55; const root = new THREE.Vector3(sx * 0.7, HT - 0.02, -0.35);
+    for (let k = 0; k < 4; k++) { const dz = (k - 1.5) * 0.07; M(g, tube([root.clone().add(new THREE.Vector3(0, 0, dz)), root.clone().add(new THREE.Vector3(sx * 0.38, 0.12, -0.12 + dz)), root.clone().add(new THREE.Vector3(sx * 0.62, -0.25, -0.18 + dz)), root.clone().add(new THREE.Vector3(sx * 0.6 - 0.05 * k, -0.75 - hash(k) * 0.15, -0.1 + dz))], 0.13, 0.1, 0.75, 0.45), k % 2 ? c : (c2 || c)); }
     if (o.tieCol !== null) { tie(g, o.tieCol || '#ff4a8a', root.clone().add(new THREE.Vector3(sx * 0.06, 0.06, 0.06)), 0.085); tie(g, o.tieCol || '#ff4a8a', root.clone().add(new THREE.Vector3(sx * 0.04, -0.05, 0.12)), 0.075); } },
   // two low pigtails with ties
-  pigtails: (g, c, c2, o = {}) => { M(g, cap(1.02, 0.66, 0.42), c); M(g, lockSheet({ th0: -0.66, th1: 0.66, path: FR(o.fringe ?? 0.9), locks: 5, tip: 0.5, vary: 0.2, thick: 0.1, bulge: 0.06, lift: 0.05, seed: 21 }), c);
+  pigtails: (g, c, c2, o = {}) => { M(g, cap(1.02, 0.66, 0.42), c); { const cr = new THREE.Mesh(ball(0.5), hairMat(c)); cr.position.set(0, HT - 0.1, 0.0); cr.scale.set(1.3, 0.48, 1.3); cr.castShadow = true; g.add(cr); } M(g, lockSheet({ th0: -0.66, th1: 0.66, path: FR(o.fringe ?? 0.9), locks: 5, tip: 0.5, vary: 0.2, thick: 0.1, bulge: 0.06, lift: 0.05, seed: 21 }), c);
     M(g, lockSheet({ th0: Math.PI * 0.4, th1: Math.PI * 1.6, path: LONG(0.42, 0), locks: 9, tip: 0.2, thick: 0.08, lift: 0.05, seed: 23 }), c);
     for (const s of [-1, 1]) { const r = new THREE.Vector3(s * 0.66, 0.62, -0.18); for (let k = 0; k < 3; k++) M(g, tube([r, r.clone().add(new THREE.Vector3(s * 0.25, -0.15, -0.05 + k * 0.05)), r.clone().add(new THREE.Vector3(s * 0.32, -0.6, k * 0.06 - 0.06)), r.clone().add(new THREE.Vector3(s * 0.26, -1.0 - hash(k + s) * 0.15, k * 0.05))], 0.12, 0.09, 0.8, 0.45), c);
       tie(g, o.tieCol || '#ff4a8a', r.clone().add(new THREE.Vector3(s * 0.06, 0.02, 0.02)), 0.08); } },

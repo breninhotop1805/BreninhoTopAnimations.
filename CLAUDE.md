@@ -456,3 +456,8 @@ Direção:
   regata vermelha, calça/tênis pretos, cartola azul) — não mais o quadradão. **Cabelos = HAIR4 (v4)**; a tentativa HAIR5
   (cabelos de catálogo com textura de fios) foi REPROVADA ("pontas, tufos, calvícies, feio") — não usar HAIR5.
   Ele não quer testes/renders extras sem pedir: renderizar só o que ele pedir.
+- **Cabelos (decisão dele):** MENINOS = `hair6.js` (volume liso único + relevo 3D leve, fios pintados): boy, quiff (topete),
+  curtains (repartido), buzz (raspado), messy (bagunçado arrumado), spiky (espetado suave), surfer (médio), curly (cacheado) —
+  variar formato E cor. MENINAS = HAIR4 originais da demo (ponytail, long(+buns), pigtails, bob, bun), sem "ajeitar".
+  Catálogo de referência: `roblox_base/out/CATALOGO_CABELOS.jpg` (gerado por hairsheet.html). Mostrar 1 imagem antes de usar
+  cabelo novo; não fazer render de vídeo pra testar.
