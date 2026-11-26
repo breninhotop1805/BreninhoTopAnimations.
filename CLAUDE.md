@@ -267,7 +267,7 @@ Inspiração MÁXIMA — ficar ainda mais parecido com elas do que os vídeos de
 - **Câmera**: altura dos olhos, personagem grande e centralizado (corpo inteiro ou da cintura pra cima), push-in lento, às vezes
   travelling/lateral; atuação contínua (andar, gesticular, pular, abraçar), efeitos 3D (corações flutuando, faíscas, poderes).
 - **Legendas**: UMA palavra por vez, centralizada a ~69% da altura, branca com contorno preto grosso + sombra; palavras-chave
-  em VERMELHO. Pedido dele: fonte **KOMIKAX** (`roblox_base/assets/komikax.ttf`), **SEM desfoque**, animação de **APROXIMAR** (a palavra cresce de longe até o tamanho final) com **curva elástica profissional** (elástico PEQUENO ~6% e RÁPIDO ~0,2 s, começa em 55% do tamanho; borda preta GROSSA = 30% do tamanho da fonte — "não pode parecer CapCut"), com ORIGEM NA BASE da palavra (cresce de baixo pra cima) e um desfoque PEQUENO e profissional (máx ~2 px em 1080, some em 0,1 s) — NÃO é "pop" — (antes: leve
+  em VERMELHO. Pedido dele: fonte **KOMIKAX** (`roblox_base/assets/komikax.ttf`), **SEM desfoque**, animação de **APROXIMAR** (a palavra cresce de longe até o tamanho final) com **curva elástica profissional** (elástico PEQUENO ~6%, duração ~0,32 s — 0,2 s ficou rápido demais, 0,5 s lento —, começa em 45% do tamanho; borda preta GROSSA = 30% do tamanho da fonte — "não pode parecer CapCut"), com ORIGEM NA BASE da palavra (cresce de baixo pra cima) e um desfoque PEQUENO e profissional (máx ~2 px em 1080, some em 0,1 s) — NÃO é "pop" — (antes: leve
   desfoque** que some quando a palavra assenta; sincronia 100% com a voz (timestamps palavra a palavra do faster-whisper,
   corrigidos à mão se precisar). Voz agora é de IA.
 
