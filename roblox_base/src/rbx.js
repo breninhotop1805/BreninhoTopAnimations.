@@ -31,6 +31,15 @@ export function drawFace(g, f, S = 512) { g.clearRect(0, 0, S, S); const cx = S 
     const type = bl > 0.6 ? 'closed' : f.eyes || 'normal';
     if (type === 'closed') { g.lineWidth = S * 0.022; g.beginPath(); g.arc(x, y - S * 0.01, S * 0.04, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke(); }
     else if (type === 'happy') { g.lineWidth = S * 0.024; g.beginPath(); g.arc(x, y + S * 0.025, S * 0.045, 1.15 * Math.PI, 1.85 * Math.PI); g.stroke(); }
+    else if (f.anime && type !== 'dot') { // anime eyes (refs: girls): white sclera, big coloured iris with gradient, pupil, 2 highlights, thick upper lash
+      const big = type === 'wide' ? 1.15 : 1; const rx = S * 0.066 * big, ry = S * 0.088 * big * (1 - bl * 0.85); const ic = f.eyeColor || '#3aa0e8';
+      g.fillStyle = '#fff'; g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, 7); g.fill();
+      const gr = g.createLinearGradient(0, y - ry, 0, y + ry); gr.addColorStop(0, '#102030'); gr.addColorStop(0.45, ic); gr.addColorStop(1, '#ffffff'); g.fillStyle = gr; g.beginPath(); g.ellipse(x + s * rx * 0.05, y + ry * 0.08, rx * 0.78, ry * 0.86, 0, 0, 7); g.fill();
+      g.fillStyle = '#0a0a12'; g.beginPath(); g.ellipse(x + s * rx * 0.05, y + ry * 0.1, rx * 0.34, ry * 0.4, 0, 0, 7); g.fill();
+      g.fillStyle = '#fff'; g.beginPath(); g.ellipse(x - rx * 0.28, y - ry * 0.3, rx * 0.26, ry * 0.2, 0, 0, 7); g.fill(); g.beginPath(); g.ellipse(x + rx * 0.3, y + ry * 0.35, rx * 0.12, ry * 0.09, 0, 0, 7); g.fill();
+      g.strokeStyle = k; g.lineWidth = S * 0.022; g.beginPath(); g.ellipse(x, y, rx * 1.02, ry * 1.02, 0, 1.08 * Math.PI, 1.92 * Math.PI); g.stroke();
+      g.beginPath(); g.moveTo(x + s * rx * 0.95, y - ry * 0.45); g.lineTo(x + s * rx * 1.35, y - ry * 0.75); g.stroke();
+      if (type === 'angry' || type === 'sad') { g.fillStyle = '#f4f4f4'; g.save(); g.translate(x, y); g.rotate(s * (type === 'angry' ? -0.4 : 0.4)); g.fillRect(-rx * 1.5, -ry * 1.7, rx * 3, ry * 0.85); g.restore(); } }
     else { const big = type === 'wide' ? 1.45 : type === 'dot' ? 0.7 : 1; const rx = S * 0.032 * big, ry = S * 0.055 * big * (1 - bl * 0.8);
       g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, 7); g.fill();
       if (type === 'wide') { g.fillStyle = '#fff'; g.beginPath(); g.ellipse(x - rx * 0.3, y - ry * 0.35, rx * 0.3, ry * 0.22, 0, 0, 7); g.fill(); }
@@ -86,7 +95,7 @@ export class Rbx {
     this.reset();
   }
   reset() { for (const o of [this.hip, this.torso, this.neck, this.head, this.armR.piv, this.armL.piv, this.legR.piv, this.legL.piv]) o.rotation.set(0, 0, 0);
-    this.hip.position.set(0, 2, 0); this.root.scale.setScalar(1); this.face = Object.assign({ eyes: 'normal', mouth: 'smile', brow: null }, this.o.faceDefault || {}); }
+    this.hip.position.set(0, 2, 0); this.root.scale.setScalar(this.baseScale || 1); this.face = Object.assign({ eyes: 'normal', mouth: 'smile', brow: null }, this.o.faceDefault || {}); }
   setFace(f) { Object.assign(this.face, f); }
   applyFace() { const f = this.face; const key = JSON.stringify(f); if (key === this._fk) return; this._fk = key; drawFace(this.faceG, f); this.faceTex.needsUpdate = true; }
 }
@@ -94,11 +103,11 @@ export class Rbx {
 // ---------------- accessories ----------------
 // blue top hat with red band (protagonist): lathe crown slightly flared, rolled brim
 // worn LOW and snug (the head top goes inside the crown), shorter crown: less forehead, comfortable look
-export function topHat(color = '#1f5fb8', band = '#d21a1a') { return (head) => { const g = new THREE.Group(); g.position.set(0, 1.0, 0); head.add(g);
-  const crown = [new THREE.Vector2(0.655, 0.0), new THREE.Vector2(0.665, 0.4), new THREE.Vector2(0.7, 0.78), new THREE.Vector2(0.68, 0.84), new THREE.Vector2(0, 0.86)];
+export function topHat(color = '#1f5fb8', band = '#d21a1a') { return (head) => { const g = new THREE.Group(); g.position.set(0, 1.04, 0); head.add(g);
+  const crown = [new THREE.Vector2(0.65, 0.0), new THREE.Vector2(0.655, 0.3), new THREE.Vector2(0.675, 0.55), new THREE.Vector2(0.655, 0.6), new THREE.Vector2(0, 0.62)];
   mesh(new THREE.LatheGeometry(crown, 48), plastic(color, { rough: 0.6 }), g, 0, 0.1, 0);
-  mesh(new THREE.CylinderGeometry(0.672, 0.668, 0.15, 48), plastic(band, { rough: 0.55 }), g, 0, 0.25, 0);
-  const brim = [new THREE.Vector2(0.62, 0.06), new THREE.Vector2(1.02, 0.04), new THREE.Vector2(1.1, 0.1), new THREE.Vector2(1.08, 0.16), new THREE.Vector2(1.02, 0.14), new THREE.Vector2(0.62, 0.14)];
+  mesh(new THREE.CylinderGeometry(0.664, 0.66, 0.12, 48), plastic(band, { rough: 0.55 }), g, 0, 0.2, 0);
+  const brim = [new THREE.Vector2(0.62, 0.06), new THREE.Vector2(0.88, 0.05), new THREE.Vector2(0.94, 0.1), new THREE.Vector2(0.92, 0.15), new THREE.Vector2(0.88, 0.13), new THREE.Vector2(0.62, 0.13)];
   mesh(new THREE.LatheGeometry(brim, 48), plastic(color, { rough: 0.6 }), g, 0, 0.02, 0);
   g.rotation.z = -0.03; return g; }; }
 

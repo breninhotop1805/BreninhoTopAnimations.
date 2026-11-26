@@ -140,19 +140,96 @@ export const HAIR2 = {
   bald: () => {},
 };
 
+// ======================= HAIR v3: CHUNKY Roblox hair meshes (like the references): smooth plastic, thick rounded clumps =======================
+const CM = new Map(); const chunkMat = c => { if (!CM.has(c)) CM.set(c, new THREE.MeshStandardMaterial({ color: c, roughness: 0.42, metalness: 0.0, side: THREE.DoubleSide })); return CM.get(c); };
+function chunk(g, c, pts, w0, w1, th = 0.28, out = null, tip = 0.3) { mesh(lockGeo(pts, w0, w1, th, out, tip), chunkMat(c), g); }
+// shell for chunky hair: STRAIGHT hairline across the forehead (at yF), dropping to ear level at the sides and to the nape behind
+function scalp3(g, c, yF = 1.0, o = {}) { const R = 0.7, Hh = 1.4, E = 0.28; const prof = [new THREE.Vector2(0, -Hh / 2)];
+  for (let i = 0; i <= 8; i++) { const a = -Math.PI / 2 + i / 8 * Math.PI / 2; prof.push(new THREE.Vector2(R - E + Math.cos(a) * E, -Hh / 2 + E + Math.sin(a) * E)); }
+  for (let i = 0; i <= 10; i++) { const a = i / 10 * Math.PI / 2; prof.push(new THREE.Vector2(R - E + Math.cos(a) * E, Hh / 2 - E + Math.sin(a) * E)); } prof.push(new THREE.Vector2(0, Hh / 2));
+  const geo = new THREE.LatheGeometry(prof, 72); const p = geo.attributes.position; const v = new THREE.Vector3(); const ySide = o.side ?? HC + 0.05, yNape = o.nape ?? HC - 0.3;
+  for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); v.y = v.y + 0.66 + 0.02; const fr = Math.cos(Math.atan2(v.x, v.z));
+    const line = fr > 0.62 ? yF : fr > 0.2 ? mixN(ySide, yF, sm3((fr - 0.2) / 0.42)) : fr > -0.4 ? mixN(yNape, ySide, sm3((fr + 0.4) / 0.6)) : yNape;
+    if (v.y < line) { v.y = line; const rr = Math.hypot(v.x, v.z), k = Math.min(1, 0.645 / Math.max(rr, 1e-3)); if (fr > 0.2) { v.x *= k; v.z *= k; } } p.setXYZ(i, v.x, v.y, v.z); }
+  geo.computeVertexNormals(); mesh(geo, chunkMat(c), g, 0, 0, -0.02); }
+const mixN = (a, b, k) => a + (b - a) * k; const sm3 = x => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
+// thick clumps lying on the shell from the crown to the hairline / nape (breaks the helmet, reads as a Roblox hair mesh)
+function clumps(g, c, o = {}) { const r = rnd(o.seed || 3); const n = Math.round((o.n || 12) * 0.7); const out = new THREE.Vector3(0, HC + 0.1, 0); const hl = o.hairline ?? 0.98;
+  for (let i = 0; i < n; i++) { const a = -Math.PI + (i + 0.5) / n * Math.PI * 2; const fr = Math.max(0, Math.cos(a)); const endY = hl * fr * fr * fr + (o.nape ?? HC - 0.15) * (1 - fr * fr * fr) - 0.05;
+    const a0 = o.part === 'side' ? a - 0.6 : o.part === 'center' ? (a >= 0 ? 0.06 : -0.06) : a; const pts = [onShell(a - (o.part === 'side' ? 0.25 : 0), 1.24, 0.02), onShell(a - (o.part === 'side' ? 0.1 : 0), (1.24 + endY) / 2 + 0.06, 0.07), onShell(a, endY + 0.12, 0.09), onShell(a, endY, 0.1)];
+    chunk(g, r() < 0.25 ? col(c, 1.06) : c, pts, (o.w || 0.7) * 1.3, (o.w || 0.7) * 1.1, o.th || 0.3, out, 0.22); } }
+function fringe(g, c, o = {}) { const out = new THREE.Vector3(0, HC + 0.1, 0); const n = Math.max(3, Math.round((o.n || 6) * 0.7)), span = o.span || 1.5, y = o.y ?? 1.0;
+  for (let k = 0; k < n; k++) { const a = -span / 2 + span * (k + 0.5) / n; const sw = o.sweep || 0; chunk(g, k % 2 ? col(c, 1.06) : c, [onShell(a * 0.85, 1.27, 0.02), onShell(a * 0.95 + sw * 0.3, 1.16, 0.07), onShell(a + sw * 0.6, y + 0.12, 0.1), onShell(a + sw, y - 0.02, 0.1)], (o.w || 0.5) * 1.35, 0.62, 0.26, out, 0.18); } }
+const fallTo = (a, y, r = 0.82) => new THREE.Vector3(Math.sin(a) * r, y, Math.cos(a) * r);
+export const HAIR3 = {
+  // short boy cut, small side-swept fringe
+  short: (g, c) => { scalp3(g, c, 1.12); clumps(g, c, { n: 11, seed: 5, hairline: 1.1, w: 0.66 }); fringe(g, c, { n: 5, span: 1.2, y: 1.1, sweep: 0.15 }); },
+  // tall spiky anime/"Pal" hair
+  spiky: (g, c) => { scalp3(g, c, 1.06); clumps(g, c, { n: 10, seed: 12, hairline: 1.08 }); const r = rnd(12); const out = new THREE.Vector3(0, HC, 0);
+    for (let i = 0; i < 11; i++) { const a = (i / 11) * Math.PI * 2 + 0.2; if (Math.cos(a) > 0.75) continue; const p0 = shellPt(a, 0.7 + r() * 0.3, 0.6); const dir = new THREE.Vector3(Math.sin(a) * 0.7, 0.75, Math.cos(a) * 0.6 - 0.2).normalize();
+      chunk(g, r() < 0.3 ? col(c, 1.12) : c, [p0, p0.clone().addScaledVector(dir, 0.35), p0.clone().addScaledVector(dir, 0.7)], 0.55, 0.32, 0.3, out, 0.6); }
+    fringe(g, c, { n: 6, span: 1.4, y: 1.04 }); },
+  // straight bob to the chin with a straight fringe
+  bob: (g, c) => { scalp3(g, c); clumps(g, c, { n: 12, seed: 7, hairline: 1.0, nape: HC - 0.5, w: 0.68 }); fringe(g, c, { n: 6, span: 1.6, y: 1.0 }); },
+  // long straight to the waist (+ fringe)
+  long: (g, c, c2) => { scalp3(g, c); clumps(g, c, { n: 12, seed: 3, hairline: 1.0, part: 'center' }); fringe(g, c, { n: 6, span: 1.6, y: 1.0 }); const out = new THREE.Vector3(0, HC + 0.3, 0);
+    for (let i = 0; i < 11; i++) { const a = Math.PI * (0.32 + 1.36 * i / 10); chunk(g, c2 && (i === 0 || i === 10) ? c2 : c, [shellPt(a, 0.85, 0.66), shellPt(a, 0.35, 0.8), fallTo(a, HC - 0.6, 0.86), fallTo(a, HC - 1.75, 0.84)], 0.62, 0.48, 0.24, out, 0.25); } },
+  // high ponytail with an elastic band (refs: blonde girl, mum)
+  ponytail: (g, c, c2) => { scalp3(g, c); clumps(g, c, { n: 12, seed: 9, hairline: 1.0, w: 0.66 }); fringe(g, c, { n: 6, span: 1.5, y: 1.02, sweep: -0.12 });
+    const band = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.06, 10, 20), plastic(c2 || '#e8407a')); band.position.set(0, HT + 0.05, -0.62); band.rotation.x = 0.5; g.add(band);
+    const out = new THREE.Vector3(0, HT - 0.4, -0.3); for (let k = 0; k < 3; k++) { const dx = (k - 1) * 0.1; chunk(g, k === 1 ? col(c, 1.08) : c, [new THREE.Vector3(dx, HT + 0.08, -0.66), new THREE.Vector3(dx * 1.5, HT - 0.1, -0.98), new THREE.Vector3(dx * 2, HT - 0.7, -0.95), new THREE.Vector3(dx * 2, HT - 1.25, -0.82)], 0.34, 0.26, 0.3, out, 0.4); } },
+  // two low pigtails with bows (little girls)
+  pigtails: (g, c, c2) => { scalp3(g, c); clumps(g, c, { n: 12, seed: 4, hairline: 1.0, part: 'center' }); fringe(g, c, { n: 6, span: 1.5, y: 1.0 });
+    for (const sd of [-1, 1]) { const b = new THREE.Group(); b.position.set(sd * 0.72, HC + 0.25, -0.15); g.add(b); const bow = plastic(c2 || '#e8407a'); for (const k of [-1, 1]) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 10), bow); m.scale.set(1, 0.7, 0.5); m.position.set(0, k * 0.1, 0); b.add(m); }
+      const out = new THREE.Vector3(sd * 0.4, HC + 0.2, -0.1); for (let k = 0; k < 2; k++) chunk(g, c, [new THREE.Vector3(sd * 0.74, HC + 0.25, -0.12 - k * 0.12), new THREE.Vector3(sd * 0.98, HC + 0.05, -0.2 - k * 0.1), new THREE.Vector3(sd * 1.02, HC - 0.45, -0.18), new THREE.Vector3(sd * 0.95, HC - 0.85, -0.12)], 0.3, 0.24, 0.28, out, 0.4); } },
+  // top bun
+  bun: (g, c) => { HAIR3.bob(g, c); const b = new THREE.Mesh(new THREE.SphereGeometry(0.36, 24, 18), chunkMat(c)); b.position.set(0, HT + 0.3, -0.12); b.scale.set(1, 0.85, 1); b.castShadow = true; g.add(b); },
+  // grey grandpa hair: short sides, thin top
+  old: (g, c) => { scalp3(g, c, 1.2); clumps(g, c, { n: 10, seed: 15, hairline: 1.18, w: 0.62 }); for (const sd of [-1, 1]) chunk(g, col(c, 1.05), [shellPt(sd * 1.2, 0.75, 0.7), shellPt(sd * 1.45, 0.35, 0.8), shellPt(sd * 1.65, 0.05, 0.78)], 0.6, 0.45, 0.3, new THREE.Vector3(0, HC, 0), 0.4); },
+  // curly / afro: rounded bumps all over
+  afro: (g, c) => { scalp3(g, c, 1.06); const r = rnd(31); for (let i = 0; i < 46; i++) { const a = r() * Math.PI * 2, e = 0.25 + r() * 0.8; if (Math.cos(a) > 0.6 && e < 0.85) continue; const p = shellPt(a, e, 0.86); const m = new THREE.Mesh(new THREE.SphereGeometry(0.24 + r() * 0.08, 14, 10), chunkMat(r() < 0.3 ? col(c, 1.12) : c)); m.position.copy(p); m.castShadow = true; g.add(m); } },
+  // long wavy with side part
+  wavy: (g, c, c2) => { scalp3(g, c); clumps(g, c, { n: 12, seed: 8, hairline: 1.0, part: 'side' }); fringe(g, c, { n: 6, span: 1.5, y: 1.0, sweep: 0.25 }); const out = new THREE.Vector3(0, HC + 0.3, 0);
+    for (let i = 0; i < 10; i++) { const a = Math.PI * (0.34 + 1.32 * i / 9); const pts = [shellPt(a, 0.85, 0.66), shellPt(a, 0.35, 0.8)]; for (let k = 1; k <= 3; k++) pts.push(fallTo(a + 0.08 * Math.sin(k * 2 + i), HC - 0.45 * k, 0.84 + 0.06 * Math.sin(k * 2.3 + i))); chunk(g, c2 && i % 4 === 0 ? c2 : c, pts, 0.6, 0.44, 0.24, out, 0.25); } },
+  bald: () => {},
+};
+
 // ---------- the dressed character ----------
 // o = { name, skin, shirt: {type,color,color2,inner,print,tie,sleeve}, pants: {type,color}, shoes: {color,sole,stripe}, hair: {style,color,color2}, face, extra(head, ch) }
+// UV slice of a rounded box: the side faces show only the [v0,v1] band of the canvas (canvas top = v 1) -> upper/lower limb parts
+function sliceGeo(w, h, d, r, v0, v1) { const g = rb(w, h, d, r); const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setY(i, v0 + uv.getY(i) * (v1 - v0)); return g; }
+// ---- R15 rig (like the references): shoulder -> upper arm -> ELBOW -> forearm -> hand; hip -> thigh -> KNEE -> shin -> shoe.
+// body 'blocky' (square R15, like the protagonist) or 'std' (default Roblox body: tapered torso, slimmer rounded limbs).
+// API kept from the R6 rig (armR.piv / armR.mesh / armR.handMesh ...) + armR.elbow, armR.lower, legR.knee, legR.lower.
 export function dressed(o) {
-  const skin = o.skin || '#f3c99a'; const c = new Rbx(o.name, { head: skin, torso: '#ffffff', arms: '#ffffff', legs: '#ffffff', faceDefault: o.face, hat: (head, ch) => { const g = new THREE.Group(); head.add(g); if (o.hair && HAIR2[o.hair.style]) HAIR2[o.hair.style](g, o.hair.color, o.hair.color2); if (o.extra) o.extra(head, ch); } });
-  c.torsoMesh.material = torsoMats(o.shirt || {}, skin); const am = armMats(o.shirt || {}, skin);
-  for (const [A, sd] of [[c.armR, -1], [c.armL, 1]]) { A.mesh.geometry = rb(1, 1.55, 1, 0.08); A.mesh.position.y = -0.78; A.mesh.material = am; const h = cHand(A.piv, skin, sd); h.position.y = -1.67; A.handMesh = h; }
-  for (const [Lg, sd] of [[c.legR, -1], [c.legL, 1]]) { Lg.mesh.geometry = rb(1, 1.7, 1, 0.08); Lg.mesh.position.y = -0.85; Lg.mesh.material = legMats(Object.assign({ skin }, o.pants || {}), sd); const sh = shoe(Lg.piv, o.shoes || {}); sh.position.y = -1.82; }
-  if (o.shirt?.type === 'dress') { const sk = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.4, 1.25, 32, 1, true), plastic(o.shirt.color)); sk.material.side = THREE.DoubleSide; sk.position.y = -0.45; sk.castShadow = true; c.hip.add(sk); }
+  const skin = o.skin || '#f3c99a'; const std = (o.body || 'std') === 'std';
+  const c = new Rbx(o.name, { head: skin, torso: '#ffffff', arms: '#ffffff', legs: '#ffffff', faceDefault: o.face, hat: (head, ch) => { const g = new THREE.Group(); head.add(g); const HS = o.hair && (HAIR3[o.hair.style] || HAIR2[o.hair.style]); if (HS) HS(g, o.hair.color, o.hair.color2); if (o.extra) o.extra(head, ch); } });
+  const tm = torsoMats(o.shirt || {}, skin);
+  if (std) { // chest (shoulders) + waist, slightly tapered, softer corners
+    c.torsoMesh.geometry = sliceGeo(1.9, 1.3, 0.92, 0.16, 0.38, 1); c.torsoMesh.position.y = 1.33;
+    const waist = new THREE.Mesh(sliceGeo(1.62, 0.78, 0.86, 0.14, 0, 0.42), tm); waist.position.y = 0.42; c.torso.add(waist); c.waistMesh = waist; }
+  else c.torsoMesh.geometry = rb(2, 2, 1, 0.08);
+  c.torsoMesh.material = tm; const am = armMats(o.shirt || {}, skin);
+  const aw = std ? 0.78 : 1, ar = std ? 0.2 : 0.08, sx = std ? 1.3 : 1.5;
+  for (const [A, sd] of [[c.armR, -1], [c.armL, 1]]) { A.piv.position.x = sd * sx; A.piv.position.y = std ? 1.86 : 1.9;
+    A.mesh.geometry = sliceGeo(aw, 0.98, aw, ar, 0.47, 1); A.mesh.position.y = -0.45; A.mesh.material = am;
+    const el = new THREE.Group(); el.position.y = -0.86; A.piv.add(el); A.elbow = el;
+    A.lower = mesh(sliceGeo(aw * 0.97, 0.9, aw * 0.97, ar, 0.03, 0.53), am, el, 0, -0.36, 0);
+    const h = cHand(el, skin, sd); h.position.y = -0.82; if (std) h.scale.setScalar(0.84); A.handMesh = h; }
+  const lw = std ? 0.84 : 1, lr = std ? 0.18 : 0.08, lx = std ? 0.43 : 0.5; const lm = (sd) => legMats(Object.assign({ skin }, o.pants || {}), sd);
+  for (const [Lg, sd] of [[c.legR, -1], [c.legL, 1]]) { Lg.piv.position.x = sd * lx; const m = lm(sd);
+    Lg.mesh.geometry = sliceGeo(lw, 1.0, lw, lr, 0.47, 1); Lg.mesh.position.y = -0.46; Lg.mesh.material = m;
+    const kn = new THREE.Group(); kn.position.y = -0.9; Lg.piv.add(kn); Lg.knee = kn;
+    Lg.lower = mesh(sliceGeo(lw * 0.97, 0.92, lw * 0.97, lr, 0.0, 0.5), m, kn, 0, -0.4, 0);
+    const sh = shoe(kn, o.shoes || {}); sh.position.y = -0.92; if (std) sh.scale.set(0.86, 1, 0.9); }
+  if (o.shirt?.type === 'dress') { const sk = new THREE.Mesh(new THREE.CylinderGeometry(std ? 0.9 : 1.05, std ? 1.25 : 1.4, 1.25, 32, 1, true), plastic(o.shirt.color)); sk.material.side = THREE.DoubleSide; sk.position.y = -0.45; sk.castShadow = true; c.hip.add(sk); }
+  const r0 = c.reset.bind(c); c.reset = () => { r0(); for (const X of [c.armR, c.armL]) X.elbow.rotation.set(0, 0, 0); for (const X of [c.legR, c.legL]) X.knee.rotation.set(0, 0, 0); };
+  c.body = std ? 'std' : 'blocky'; c.baseScale = o.scale || 1; c.reset();
   c.root.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } }); return c; }
 
 // the protagonist in the same quality: white head + arms (+ white C-hands), plain red torso, black legs, black sneakers, blue top hat
 import { topHat } from './rbx.js';
-export function hero() { return dressed({ name: 'heroi', skin: '#f2f2f2', shirt: { type: 'plain', color: '#d4141a', sleeve: 0 }, pants: { type: 'pants', color: '#141416' }, shoes: { color: '#141416', sole: '#e8e8e8' }, extra: (head, ch) => topHat()(head, ch) }); }
+export function hero() { return dressed({ name: 'heroi', body: 'blocky', skin: '#f2f2f2', shirt: { type: 'plain', color: '#d4141a', sleeve: 0 }, pants: { type: 'pants', color: '#141416' }, shoes: { color: '#141416', sole: '#e8e8e8' }, extra: (head, ch) => topHat()(head, ch) }); }
 export const CAST2 = {
   bacon: () => dressed({ name: 'bacon', skin: '#e8d2c0', shirt: { type: 'jacket', color: '#1c1c22', inner: '#3a9ee0', print: '🏍' }, pants: { type: 'jeans', color: '#25333a' }, shoes: { color: '#f2ece4' }, hair: { style: 'swoop', color: '#b8501a' } }),
   ruiva: () => dressed({ name: 'ruiva', skin: '#f6f0ea', shirt: { type: 'jacket', color: '#2a5a8a', inner: '#e8e8e8' }, pants: { type: 'jeans', color: '#6a2a3a' }, shoes: { color: '#151515', sole: '#e0e0e0' }, hair: { style: 'bun', color: '#c8401a' } }),
@@ -162,4 +239,20 @@ export const CAST2 = {
   xadrez: () => dressed({ name: 'xadrez', skin: '#e8b890', shirt: { type: 'plaid', color: '#2a9a4a', color2: '#155a28' }, pants: { type: 'jeans', color: '#b89a5a' }, shoes: { color: '#5a3a20' }, hair: { style: 'spiky', color: '#151515' } }),
   morena: () => dressed({ name: 'morena', skin: '#f3d0b0', shirt: { type: 'tee', color: '#e85a9a' }, pants: { type: 'jeans', color: '#2a3a8a' }, shoes: { color: '#ffffff', stripe: '#e85a9a' }, hair: { style: 'long', color: '#4a2c1c', color2: '#e8c8a0' }, face: { blush: 0.5 } }),
   seguranca: () => dressed({ name: 'seguranca', skin: '#c88a5a', shirt: { type: 'suit', color: '#151518', inner: '#f4f4f4', tie: '#151518', badge: true }, pants: { type: 'pants', color: '#151518' }, shoes: { color: '#101010' }, hair: { style: 'quiff', color: '#151515' } }),
+};
+
+// ======================= CAST v3 (refs): R15, mostly the STANDARD Roblox body, all different =======================
+// sizes fixed per category: adults 1.0, kids 0.82, elders 0.98 (never per scene)
+export const CAST3 = {
+  mae: () => dressed({ name: 'mae', skin: '#f3d0b0', shirt: { type: 'blouse', color: '#e8749a' }, pants: { type: 'jeans', color: '#3a5aa8' }, shoes: { color: '#ffffff' }, hair: { style: 'ponytail', color: '#e8c070', color2: '#ff5a9a' }, face: { anime: true, eyeColor: '#3aa8e8', lashes: true } }),
+  menina: () => dressed({ name: 'menina', scale: 0.82, skin: '#f3d0b0', shirt: { type: 'tee', color: '#ff7ab0' }, pants: { type: 'skirt', color: '#f2f2f2' }, shoes: { color: '#151515' }, hair: { style: 'pigtails', color: '#5a3420', color2: '#ff4a8a' }, face: { anime: true, eyeColor: '#38c070' } }),
+  garoto: () => dressed({ name: 'garoto', scale: 0.82, skin: '#8a5a3a', shirt: { type: 'stripes', color: '#2a62d8', color2: '#f4f4f4', n: 8 }, pants: { type: 'shorts', color: '#2a4ab8' }, shoes: { color: '#f2f2f2', stripe: '#2a62d8' }, hair: { style: 'short', color: '#151515' } }),
+  avo: () => dressed({ name: 'avo', scale: 0.98, skin: '#f0c8a0', shirt: { type: 'jacket', color: '#c8642a', inner: '#f0d8a0' }, pants: { type: 'pants', color: '#8a8a8a' }, shoes: { color: '#7a2a2a' }, hair: { style: 'old', color: '#d8d8d8' }, face: { mustache: '#e8e8e8', wrinkles: true } }),
+  vizinha: () => dressed({ name: 'vizinha', skin: '#6a4028', shirt: { type: 'tee', color: '#2ab0a0' }, pants: { type: 'jeans', color: '#2a2a3a' }, shoes: { color: '#f2f2f2' }, hair: { style: 'afro', color: '#1a1410' }, face: { lashes: true } }),
+  roqueiro: () => dressed({ name: 'roqueiro', skin: '#f3c99a', shirt: { type: 'jacket', color: '#151518', inner: '#f2f2f2' }, pants: { type: 'jeans', color: '#2a4a9a' }, shoes: { color: '#f2f2f2', stripe: '#2a62d8' }, hair: { style: 'spiky', color: '#c0501a' }, face: { mouth: 'grin', eyes: 'happy' } }),
+  estudante: () => dressed({ name: 'estudante', skin: '#f6e0c8', shirt: { type: 'hoodie', color: '#e8e0d0' }, pants: { type: 'pants', color: '#3a2a5a' }, shoes: { color: '#5a3a8a' }, hair: { style: 'long', color: '#3a1a10' }, face: { anime: true, eyeColor: '#8a4ad8', lashes: true } }),
+  jogador: () => dressed({ name: 'jogador', skin: '#c88a5a', shirt: { type: 'polo', color: '#1f4fd8' }, pants: { type: 'shorts', color: '#f2f2f2' }, shoes: { color: '#151515' }, hair: { style: 'short', color: '#2a1a10' } }),
+  tia: () => dressed({ name: 'tia', skin: '#e8b890', shirt: { type: 'dress', color: '#5a9a4a' }, pants: { type: 'skirt', color: '#5a9a4a' }, shoes: { color: '#3a2a1a' }, hair: { style: 'bun', color: '#7a4a2a' }, face: { lashes: true } }),
+  wavy: () => dressed({ name: 'wavy', skin: '#d8a070', shirt: { type: 'plaid', color: '#c83a3a', color2: '#5a1010' }, pants: { type: 'jeans', color: '#1a2a4a' }, shoes: { color: '#e8e0d0' }, hair: { style: 'wavy', color: '#e8c890', color2: '#f6e0b0' }, face: { anime: true, eyeColor: '#2a9a5a', lashes: true } }),
+  bob: () => dressed({ name: 'bob', skin: '#f3d0b0', shirt: { type: 'tee', color: '#f6c23a' }, pants: { type: 'jeans', color: '#3a3a3a' }, shoes: { color: '#e83a3a' }, hair: { style: 'bob', color: '#151515' }, face: { lashes: true } }),
 };
