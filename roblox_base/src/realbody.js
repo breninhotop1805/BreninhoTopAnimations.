@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Rbx, plastic } from './rbx.js';
+import { bakeOutfit } from './outfit.js';
 const FILES = { fem: 'Feminino', masc: 'Masculino', bloco: 'Masculino quadrado' };
 const T = {}; // templates: { parts: {name: geometry (baked, world coords facing +z)}, P: {att: Vector3} }
 export async function loadBodies(base = '/assets/roblox_export/ROBLOX_EXPORT/') { const L = new GLTFLoader();
@@ -26,11 +27,13 @@ export function realChar(o) { const t = T[o.body || 'fem']; if (!t) throw new Er
   const c = new Rbx(o.name, { head: o.skin, torso: '#fff', arms: '#fff', legs: '#fff', faceDefault: o.face, hat: o.hat });
   // remove the R6 meshes, keep the groups
   for (const m of [c.torsoMesh, c.armR.mesh, c.armL.mesh, c.legR.mesh, c.legL.mesh]) m.removeFromParent();
-  const skin = plastic(o.skin || '#f3c99a'), shirt = plastic(o.shirt || '#3a7ae8'), pants = plastic(o.pants || '#2a3a6a'), shoes = plastic(o.shoes || '#f2f2f2');
-  const sl = o.sleeves || 'long'; const upperArmM = sl === 'none' ? skin : shirt, lowerArmM = sl === 'long' ? shirt : skin, lowerLegM = o.shorts ? skin : pants;
+  // ONE baked texture (classic shirt/pants composited in the official R15 atlas) shared by every body part
+  const fit = { skin: o.skin || '#f3c99a', top: o.top || { type: 'plain', color: o.shirt || '#3a7ae8', sleeves: o.sleeves || 'long' }, bottom: o.bottom || { type: o.shorts ? 'shorts' : 'pants', color: o.pants || '#2a3a6a' }, shoes: o.shoesO || { color: o.shoes || '#f2f2f2' }, gloves: o.gloves };
+  const bodyMat = new THREE.MeshStandardMaterial({ map: bakeOutfit(G, P, fit), roughness: 0.62, metalness: 0 });
+  const skin = bodyMat, shirt = bodyMat, pants = bodyMat, shoes = bodyMat; const upperArmM = bodyMat, lowerArmM = bodyMat, lowerLegM = bodyMat;
   const R = P.RootRig; c.hip.position.copy(R); c.torso.position.set(0, 0, 0);
-  c.lowerTorso = part(G.LowerTorso, R, o.belt ? plastic(o.belt) : pants, c.hip); c.torsoMesh = part(G.UpperTorso, R, shirt, c.torso);
-  c.neck.position.copy(sub(P.NeckRig, R)); c.headMesh.position.y = 0.6; c.faceMesh.position.y = 0.6;
+  c.lowerTorso = part(G.LowerTorso, R, pants, c.hip); c.torsoMesh = part(G.UpperTorso, R, shirt, c.torso);
+  c.neck.position.copy(sub(P.NeckRig, R)); c.head.position.y = -0.06;
   for (const [A, s] of [[c.armR, 'Right'], [c.armL, 'Left']]) { const S = P[s + 'ShoulderRig'], E = P[s + 'ElbowRig'], W = P[s + 'WristRig'];
     A.piv.position.copy(sub(S, R)); A.mesh = part(G[s + 'UpperArm'], S, upperArmM, A.piv);
     const el = new THREE.Group(); el.position.copy(sub(E, S)); A.piv.add(el); A.elbow = el; A.lower = part(G[s + 'LowerArm'], E, lowerArmM, el);
