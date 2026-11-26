@@ -19,4 +19,4 @@ window.L = [
   F('#c88a5a', { type: 'tee', color: '#2ab0a0' }, H4('pigtails', '#2a1a10', { tieCol: '#ffd040' })), F('#f6e0d0', { type: 'blouse', color: '#f6f2ee' }, H4('bob', '#151515')), F('#e8b890', { type: 'dress', color: '#5a9a4a' }, H4('bun', '#7a4a2a')),
 ];
 window.APP = { ready: true, duration: 40, renderAt(t) { const i = Math.floor(t / 2), v = Math.round(t % 2); for (const c of window.L) c.root.removeFromParent(); const c = window.L[i]; c.reset(); s.add(c.root); c.root.rotation.y = v ? 0.9 : 0.12; alive(c, 1, 1, 2); c.applyFace();
-  const cam = new THREE.PerspectiveCamera(30, W / H, 0.1, 100); cam.position.set(0, 4.5, 8.6); cam.lookAt(0, 3.85, 0); renderer.render(s, cam); } };
+  const cam = new THREE.PerspectiveCamera(30, W / H, 0.1, 100); if (q.get('full')) { cam.position.set(0, 3.0, 15.5); cam.lookAt(0, 2.75, 0); } else { cam.position.set(0, 4.5, 8.6); cam.lookAt(0, 3.85, 0); } renderer.render(s, cam); } };
