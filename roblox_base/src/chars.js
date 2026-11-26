@@ -206,21 +206,25 @@ function sliceGeo(w, h, d, r, v0, v1) { const g = rb(w, h, d, r); const uv = g.a
 // ---- SLIM body (refs: girls and most boys = Roblox R15 "Woman/Man"): torso about as wide as the head, thin CYLINDRICAL limbs,
 // small C hands and small shoes; elbows and knees like R15. Same API as the other bodies.
 function capsule(r, len, v0, v1) { const g = new THREE.CapsuleGeometry(r, len, 6, 20); const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setY(i, v0 + uv.getY(i) * (v1 - v0)); return g; }
+// ONE-PIECE limb that bends in a smooth CURVE (rubber-hose, like Roblox meshes animated in the refs): capsule skinned to 2 bones,
+// with a wide blend zone around the middle -> no visible elbow/knee, the limb just curves. Returns { mesh, mid (bend bone), end }.
+function bendyLimb(parent, r, len, matl, blend = 0.32) { const T = len + 2 * r; const g = new THREE.CapsuleGeometry(r, len, 10, 22); g.translate(0, -T / 2, 0);
+  const p = g.attributes.position, n = p.count, si = new Uint16Array(n * 4), sw = new Float32Array(n * 4);
+  for (let i = 0; i < n; i++) { const t = -p.getY(i) / T; const w1 = Math.min(1, Math.max(0, (t - (0.5 - blend)) / (2 * blend))); const w = w1 * w1 * (3 - 2 * w1); si[i * 4] = 0; si[i * 4 + 1] = 1; sw[i * 4] = 1 - w; sw[i * 4 + 1] = w; }
+  g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(si, 4)); g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(sw, 4));
+  const b0 = new THREE.Bone(), b1 = new THREE.Bone(); b1.position.y = -T / 2; b0.add(b1); const end = new THREE.Group(); end.position.y = -T / 2 + r * 0.2; b1.add(end);
+  const m = new THREE.SkinnedMesh(g, matl); m.add(b0); m.bind(new THREE.Skeleton([b0, b1])); m.castShadow = m.receiveShadow = true; m.frustumCulled = false; parent.add(m); return { mesh: m, mid: b1, end }; }
 function slimBody(c, o, skin, tm) {
   { const g = sliceGeo(1.34, 1.8, 0.74, 0.24, 0, 1); const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i); const k = 0.86 + 0.14 * Math.min(1, Math.max(0, (y + 0.3) / 0.9)); p.setX(i, p.getX(i) * k); p.setZ(i, p.getZ(i) * (0.94 + 0.06 * k)); } g.computeVertexNormals();
     c.torsoMesh.geometry = g; c.torsoMesh.position.y = 0.98; c.torsoMesh.material = tm; }
-  const am = armMats(o.shirt || {}, skin)[0]; const AR = 0.22;
-  for (const [A, sd] of [[c.armR, -1], [c.armL, 1]]) { A.piv.position.set(sd * 0.88, 1.72, 0);
-    A.mesh.geometry = capsule(AR, 0.62, 0.48, 1); A.mesh.position.y = -0.36; A.mesh.material = am;
-    const el = new THREE.Group(); el.position.y = -0.78; A.piv.add(el); A.elbow = el;
-    A.lower = mesh(capsule(AR * 0.95, 0.6, 0.0, 0.52), am, el, 0, -0.34, 0);
-    const h = cHand(el, skin, sd); h.position.y = -0.76; h.scale.setScalar(0.58); A.handMesh = h; }
-  const pm = Object.assign({ skin }, o.pants || {}); const LR = 0.27;
-  for (const [Lg, sd] of [[c.legR, -1], [c.legL, 1]]) { Lg.piv.position.x = sd * 0.3; const m = legMats(pm, sd)[4];
-    Lg.mesh.geometry = capsule(LR, 0.58, 0.48, 1); Lg.mesh.position.y = -0.42; Lg.mesh.material = m;
-    const kn = new THREE.Group(); kn.position.y = -0.92; Lg.piv.add(kn); Lg.knee = kn;
-    Lg.lower = mesh(capsule(LR * 0.92, 0.6, 0.0, 0.52), m, kn, 0, -0.42, 0);
-    const sh = shoe(kn, o.shoes || {}); sh.position.y = -0.9; sh.scale.set(0.6, 0.95, 0.68); }
+  const am = armMats(o.shirt || {}, skin)[0];
+  for (const [A, sd] of [[c.armR, -1], [c.armL, 1]]) { A.piv.position.set(sd * 0.88, 1.7, 0); A.mesh.visible = false; A.mesh.geometry.dispose(); A.piv.remove(A.mesh);
+    const L = bendyLimb(A.piv, 0.22, 1.2, am); A.mesh = L.mesh; A.elbow = L.mid; A.lower = null;
+    const h = cHand(L.end, skin, sd); h.position.y = -0.05; h.scale.setScalar(0.58); A.handMesh = h; }
+  const pm = Object.assign({ skin }, o.pants || {});
+  for (const [Lg, sd] of [[c.legR, -1], [c.legL, 1]]) { Lg.piv.position.x = sd * 0.3; Lg.mesh.visible = false; Lg.piv.remove(Lg.mesh);
+    const L = bendyLimb(Lg.piv, 0.27, 1.32, legMats(pm, sd)[4], 0.28); Lg.mesh = L.mesh; Lg.knee = L.mid; Lg.lower = null;
+    const sh = shoe(L.end, o.shoes || {}); sh.position.y = -0.02; sh.scale.set(0.6, 0.95, 0.68); }
   if (o.shirt?.type === 'dress' || o.pants?.type === 'skirt') { const colr = o.shirt?.type === 'dress' ? o.shirt.color : o.pants.color; const sk = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.86, 0.95, 32, 1, true), plastic(colr)); sk.material.side = THREE.DoubleSide; sk.position.y = -0.3; sk.castShadow = true; c.hip.add(sk); }
   const r0 = c.reset.bind(c); c.reset = () => { r0(); for (const X of [c.armR, c.armL]) X.elbow.rotation.set(0, 0, 0); for (const X of [c.legR, c.legL]) X.knee.rotation.set(0, 0, 0); };
   c.neck.position.y = 1.9; c.body = 'slim'; c.baseScale = o.scale || 1; c.reset(); c.root.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } }); return c; }
