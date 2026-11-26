@@ -461,3 +461,7 @@ Direção:
   variar formato E cor. MENINAS = HAIR4 originais da demo (ponytail, long(+buns), pigtails, bob, bun), sem "ajeitar".
   Catálogo de referência: `roblox_base/out/CATALOGO_CABELOS.jpg` (gerado por hairsheet.html). Mostrar 1 imagem antes de usar
   cabelo novo; não fazer render de vídeo pra testar.
+- **QA único por quadro (`qa()` em kit.js)** = `charCheck` (todas as peças R15 entre personagens) + `obstacleCheck` (paredes,
+  batentes, folhas de porta, móveis) + `cameraCheck` (oclusão/enquadramento). Todo episódio novo chama `qa()` no renderAt e só
+  renderiza com `node render.mjs check` dando ZERO logs. Portas: abrir ANTES de alguém passar, para o lado oposto de quem vem.
+  Animações: poses15 (IK) + walkPath com parada suave; câmera push-in ~5%/s; sempre comparar com as referências (bíblia v2).

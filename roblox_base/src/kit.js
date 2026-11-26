@@ -160,3 +160,11 @@ export function cameraCheck(t, s, cam, live, log = console.log) { let n = 0; s.u
     if (ndc.z > 1 || Math.abs(ndc.x) > 0.92 || ndc.y > 0.95 || ndc.y < -0.9) { n++; log(`LOG FORA_DO_QUADRO t=${t.toFixed(2)} ${c.name} ndc=${ndc.x.toFixed(2)},${ndc.y.toFixed(2)}`); continue; }
     const dir = hp.clone().sub(cam.position); const dist = dir.length(); _ray.set(cam.position, dir.normalize()); _ray.far = dist - 0.6; const hit = _ray.intersectObjects(targets, false)[0];
     if (hit) { n++; log(`LOG OCLUSAO t=${t.toFixed(2)} ${c.name} tapado por ${hit.object.name || hit.object.parent?.name || 'objeto'} a ${hit.distance.toFixed(1)}`); } } return n; }
+// ---------------- character x character check (all R15 parts: torso, head, upper/lower arms, hands, legs, feet) ----------------
+const _p = new THREE.Box3(), _q = new THREE.Box3();
+export function charCheck(t, live, log = console.log) { let n = 0; const parts = c => [c.torsoMesh, c.lowerTorso, c.headMesh, c.armR.mesh, c.armL.mesh, c.armR.lower, c.armL.lower, c.armR.handMesh, c.armL.handMesh, c.legR.mesh, c.legL.mesh, c.legR.lower, c.legL.lower, c.legR.foot, c.legL.foot].filter(Boolean);
+  for (const c of live) c.root.updateMatrixWorld(true);
+  for (let i = 0; i < live.length; i++) for (let j = i + 1; j < live.length; j++) { const A = live[i], B = live[j]; if (!A.root.visible || !B.root.visible || A.noCollide?.has(B.name) || B.noCollide?.has(A.name)) continue;
+    for (const pa of parts(A)) { _p.setFromObject(pa).expandByScalar(-0.05); for (const pb of parts(B)) { _q.setFromObject(pb).expandByScalar(-0.05); if (_p.intersectsBox(_q)) { n++; if (n < 4) log(`LOG ATRAVESSA t=${t.toFixed(2)} ${A.name} x ${B.name}`); break; } } } } return n; }
+// one call per frame before rendering: people x people, people x walls/doors/furniture, camera occlusion/framing
+export function qa(t, s, cam, live, log = console.log) { return charCheck(t, live, log) + obstacleCheck(t, s, live, log) + cameraCheck(t, s, cam, live, log); }
