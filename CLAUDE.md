@@ -299,3 +299,19 @@ Ajuste pedido por ele: cartola **mais baixa e encaixada** (a cabeça entra na co
   baixar o que precisar; baixa sozinho do HF se o container for novo, ~1,6 GB) + **ajuste do início de cada palavra no ataque
   real do som** (envelope RMS, janela −120/+80 ms). Testado na narração do Foxy: 24 s pra 60 s de áudio e acertou palavras que
   o 'small' errava ("encolhe", "invadir"). Legenda e corte de cena usam esses tempos; conferir o vídeo com áudio no fim.
+
+## Regras dele pra TODO vídeo Roblox (EP01 "relógio da mãe")
+1. Estudar as referências; movimento fluido seguindo o personagem/foco; sem bugs.
+2. Cenas com sentido pro contexto, profissionais, sincronizadas com a fala.
+3. Bastante movimento e cenários diferentes, nada repetitivo (prender o espectador).
+4. **Cortar os silêncios da narração** (`roblox_ep01/cut_silence.py`: pausas ≥0,16 s viram 0,09 s, fades de 8 ms).
+5. Qualidade máxima: nada atravessando nada, personagem nunca sobre outro nem dentro de objeto, skins bonitas.
+6. Expressões coerentes, estilo Roblox, fluidas.
+7. **Sempre a música dele** (`roblox_base/assets/music/temporex_numbers.wav`) **abaixo da voz**, mas audível.
+8. **Voz 3× mais alta sem estourar**: `highpass=f=70,acompressor=threshold=-26dB:ratio=3.5:attack=4:release=100:makeup=2,
+   loudnorm=I=-14:TP=-1.2:LRA=7,alimiter=limit=0.87` → média ≈ −13,6 dB. Música com `volume=-14dB` (média ≈ −29 dB, ~15 dB
+   abaixo da voz), fade-in 0,3 s e fade-out 2,5 s no fim; voz mono → `pan=stereo|c0=c0|c1=c0` antes do amix (normalize=0).
+- Lições de enquadramento (vertical!): dois personagens lado a lado precisam de ~4,2–4,8 de distância entre centros (braços R6
+  ocupam ±2) e câmera a ~8–10 de distância; braço R6 é reto (alcance fixo 2) → posicionar o personagem pra que a mão chegue no
+  alvo; câmera sempre do lado pra onde o rosto aponta; nada de luz só por trás (rosto vira silhueta); sprites (corações, "!")
+  ficam fora do GTAO (senão aparece um quadrado escuro).
