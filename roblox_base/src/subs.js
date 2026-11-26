@@ -1,11 +1,11 @@
 // Word-by-word subtitles (KOMIKAX): white with a thick black outline + soft drop shadow; every word APPROACHES the viewer
-// (grows from far away to its size) on a smooth professional elastic curve (~15% overshoot, settles in ~0.5 s). No blur.
+// (grows from far away to its size) on a smooth professional elastic curve (~15% overshoot, settles in ~0.28 s). No blur.
 // Key words in red. One word on screen at a time, exactly on its timestamp.
 export const approach = x => { if (x <= 0) return 0; if (x >= 1) return 1; return 1 - Math.exp(-6 * x) * Math.cos(10 * x) * (1 - x * 0.05); };
 export async function loadSubFont() { const f = new FontFace('Komikax', 'url(/assets/komikax.ttf)'); await f.load(); document.fonts.add(f); }
 // words: [{ w, t0, t1, red }]
 export function drawSubs(ui, W, H, words, t, o = {}) { if (!words || !words.length) return; let cur = null; for (const w of words) { if (w.t0 <= t + 1e-4) cur = w; else break; }
-  if (!cur || t > cur.t1 + (o.hold ?? 0.25)) return; const age = t - cur.t0; const k = approach(Math.min(1, age / 0.5)); const s = 0.35 + 0.65 * k; const a = Math.min(1, age / 0.05);
+  if (!cur || t > cur.t1 + (o.hold ?? 0.25)) return; const age = t - cur.t0; const k = approach(Math.min(1, age / 0.28)); const s = 0.35 + 0.65 * k; const a = Math.min(1, age / 0.03);
   const size = (o.size || 0.088) * W; const y = (o.y ?? 0.69) * H; const txt = cur.w;
   ui.save(); ui.globalAlpha = a; ui.translate(W / 2, y); ui.scale(s, s);
   ui.font = `${Math.round(size)}px Komikax`; ui.textAlign = 'center'; ui.textBaseline = 'middle'; ui.lineJoin = 'round'; ui.miterLimit = 2;

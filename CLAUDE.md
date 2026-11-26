@@ -267,7 +267,7 @@ Inspiração MÁXIMA — ficar ainda mais parecido com elas do que os vídeos de
 - **Câmera**: altura dos olhos, personagem grande e centralizado (corpo inteiro ou da cintura pra cima), push-in lento, às vezes
   travelling/lateral; atuação contínua (andar, gesticular, pular, abraçar), efeitos 3D (corações flutuando, faíscas, poderes).
 - **Legendas**: UMA palavra por vez, centralizada a ~69% da altura, branca com contorno preto grosso + sombra; palavras-chave
-  em VERMELHO. Pedido dele: fonte **KOMIKAX** (`roblox_base/assets/komikax.ttf`), **SEM desfoque**, animação de **APROXIMAR** (a palavra cresce de longe até o tamanho final) com **curva elástica profissional** (~15% de passagem e assenta em ~0,5 s) — NÃO é "pop" — (antes: leve
+  em VERMELHO. Pedido dele: fonte **KOMIKAX** (`roblox_base/assets/komikax.ttf`), **SEM desfoque**, animação de **APROXIMAR** (a palavra cresce de longe até o tamanho final) com **curva elástica profissional** (~15% de passagem e assenta RÁPIDO, ~0,28 s — ele pediu mais rápido) — NÃO é "pop" — (antes: leve
   desfoque** que some quando a palavra assenta; sincronia 100% com a voz (timestamps palavra a palavra do faster-whisper,
   corrigidos à mão se precisar). Voz agora é de IA.
 
