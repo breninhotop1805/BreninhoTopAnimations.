@@ -27,6 +27,7 @@ const sOfY = (y, T) => { const L1 = R - E, L2 = Math.PI / 2 * (E + T); if (y >= 
 export function shell(o) { const NU = 128, NV = 48, T = o.T ?? 0.1; const pos = [], uv = [], idx = []; const flare = o.flare || 0;
   const cols = []; for (let i = 0; i <= NU; i++) { const th = -Math.PI + i / NU * Math.PI * 2; cols.push({ th, smax: sOfY(o.yb(th), T) }); }
   const P = (c, v, inner) => { const s = c.smax * v; const [r0, y] = prof(s, T, c.th, flare, 0); let r = r0 + (o.puff ? o.puff(c.th, s, y) : 0);
+    if (o.relief && !inner) { const f = ((wrapA(c.th) + Math.PI) / (Math.PI * 2) * o.locks) % 1; r += o.relief * Math.pow(Math.sin(Math.PI * f), 0.7) * sm(0.15, 0.7, s); }
     if (inner) { const hang = y < 0.25; r = hang ? r - (o.panel ?? 0.13) : Math.max(0.05, r - T - (o.puff ? o.puff(c.th, s, y) : 0) + 0.01); }
     const ws = o.sweep ? o.sweep * Math.min(1, s / 0.9) : 0; const th = c.th + ws * (Math.abs(wrapA(c.th)) < 1.3 ? 1 : 0); return [Math.sin(th) * r, y, Math.cos(th) * r, s]; };
   for (const inner of [false, true]) for (let j = 0; j <= NV; j++) for (const [i, c] of cols.entries()) { const v = j / NV; const p = P(c, v, inner); pos.push(p[0], p[1], p[2]); uv.push(i / NU, p[3] / 3.2); }
@@ -48,7 +49,7 @@ const lerpA = (th, f, yF, yS, yB) => { const a = Math.abs(wrapA(th)); if (a < f)
 const scallop = (th, f, n, d, off = 0) => { const a = wrapA(th); if (Math.abs(a) > f) return 0; const w = 1 - sm(f * 0.75, f, Math.abs(a)); return d * (0.5 - 0.5 * Math.cos((a + off) * n)) * w; };
 export const HAIR6 = {
   // short neat boy hair: soft side-swept fringe, covers the top of the ears, short nape
-  boy: (g, col, c2, o = {}) => { add(g, shell({ T: 0.1, n: 16, sweep: 0.12, yb: th => lerpA(th, 0.55, 1.03, 0.6, 0.36) - scallop(th, 0.62, 9, 0.07, 0.2), puff: (th, s, y) => 0.06 * Math.exp(-((s - 0.55) ** 2) / 0.12) * (Math.cos(th) * 0.5 + 0.5) }), hairMat6(col, 16)); },
+  boy: (g, col, c2, o = {}) => { add(g, shell({ T: 0.1, n: 16, sweep: 0.12, relief: 0.035, locks: 22, yb: th => lerpA(th, 0.55, 1.03, 0.6, 0.36) - scallop(th, 0.62, 9, 0.085, 0.2) - 0.03 * Math.max(0, Math.sin(th * 11)), puff: (th, s, y) => 0.06 * Math.exp(-((s - 0.55) ** 2) / 0.12) * (Math.cos(th) * 0.5 + 0.5) }), hairMat6(col, 16)); },
   // long straight girl hair: straight soft bangs, face open, panels over the chest + long back; sides stop at the shoulders
   long: (g, col, c2, o = {}) => { const yEnd = o.yEnd ?? -1.6;
     const yb = th => { const a = Math.abs(wrapA(th)); let y; if (a < 0.5) y = 0.92 - scallop(th, 0.5, 11, 0.045); else if (a < 0.62) y = 0.92 + (yEnd + 0.5 - 0.92) * sm(0.5, 0.62, a); else if (a < 1.15) y = yEnd + 0.5; else if (a < 1.3) y = (yEnd + 0.5) + (0.3 - (yEnd + 0.5)) * sm(1.15, 1.3, a); else if (a < 1.95) y = 0.3; else if (a < 2.15) y = 0.3 + (yEnd - 0.3) * sm(1.95, 2.15, a); else y = yEnd; return y - 0.04 * Math.sin(a * 23) * (y < 0 ? 1 : 0); };
