@@ -40,8 +40,15 @@ export function alive(c, t, a = 1, seed = 0) { const b = Math.sin(t * 2.1 + seed
   c.head.rotation.y += 0.07 * Math.sin(t * 0.6 + seed * 2) * a; c.armR.piv.rotation.z += -0.03 - 0.02 * b * a; c.armL.piv.rotation.z += 0.03 + 0.02 * b * a; c.torso.rotation.z += 0.012 * Math.sin(t * 0.8 + seed) * a; if (c.armR.elbow) { c.armR.elbow.rotation.x += -0.12 * a; c.armL.elbow.rotation.x += -0.12 * a; } }
 // mouth movement while speaking (syllable-ish rhythm)
 export function talk(c, t, on = 1) { if (on <= 0) return; const v = Math.max(0, Math.sin(t * 17) * 0.6 + Math.sin(t * 11.3 + 1) * 0.5); c.setFace({ talk: v * on }); c.head.rotation.x += 0.03 * Math.sin(t * 9) * on; }
-export function walkPath(c, L, t0, t1, a, b, o = {}) { const u = seg(L, t0, t1), k = o.linear ? u : eio(u); const d = Math.hypot(b[0] - a[0], b[1] - a[1]); const stride = o.stride || 2.0;
-  c.root.position.x = mix(a[0], b[0], k); c.root.position.z = mix(a[1], b[1], k); const sp = u > 0 && u < 1 ? (o.linear ? 1 : Math.min(1, 6 * u * (1 - u) * 1.15)) : 0;
+// Roblox-style walk: CONSTANT speed (straight progress, no S-curve), with only a short ~0.15 s ramp at start/end so it never
+// jerks; legs/arms amplitude follows the speed and the last step lands in the neutral pose. o.ease = old S-curve if wanted.
+export function walkPath(c, L, t0, t1, a, b, o = {}) { const u = seg(L, t0, t1), D = Math.max(0.05, t1 - t0); const d = Math.hypot(b[0] - a[0], b[1] - a[1]); const stride = o.stride || 2.0;
+  const r = o.linear ? 0 : Math.min(0.3, (o.ramp ?? 0.15) / D); const vm = 1 / (1 - r); let k, sp;
+  if (o.ease) { k = eio(u); sp = u > 0 && u < 1 ? Math.min(1, 6 * u * (1 - u) * 1.15) : 0; }
+  else if (r === 0) { k = u; sp = u > 0 && u < 1 ? 1 : 0; }
+  else if (u < r) { k = vm * u * u / (2 * r); sp = u / r; } else if (u > 1 - r) { k = 1 - vm * (1 - u) * (1 - u) / (2 * r); sp = (1 - u) / r; } else { k = vm * (u - r / 2); sp = 1; }
+  if (u <= 0 || u >= 1) sp = 0; sp = Math.sqrt(Math.max(0, sp));
+  c.root.position.x = mix(a[0], b[0], k); c.root.position.z = mix(a[1], b[1], k);
   if (o.face !== false && d > 0.01) c.root.rotation.y = Math.atan2(b[0] - a[0], b[1] - a[1]); const p = d * k / stride * Math.PI * 2, s = Math.sin(p), amp = sp * (1 + 0.4 * (o.run || 0));
   const aw = c.body === 'bloco' ? 0.45 : 0.6; c.legR.piv.rotation.x += 0.7 * s * amp; c.legL.piv.rotation.x -= 0.7 * s * amp; c.armR.piv.rotation.x -= aw * s * amp; c.armL.piv.rotation.x += aw * s * amp;
   if (c.legR.knee) { c.legR.knee.rotation.x += Math.max(0, -Math.sin(p - 0.9)) * 0.9 * amp; c.legL.knee.rotation.x += Math.max(0, Math.sin(p - 0.9)) * 0.9 * amp; c.armR.elbow.rotation.x += (-0.35 - 0.25 * Math.max(0, -s)) * amp; c.armL.elbow.rotation.x += (-0.35 - 0.25 * Math.max(0, s)) * amp; }

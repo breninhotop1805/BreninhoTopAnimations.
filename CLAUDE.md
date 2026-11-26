@@ -465,3 +465,6 @@ Direção:
   batentes, folhas de porta, móveis) + `cameraCheck` (oclusão/enquadramento). Todo episódio novo chama `qa()` no renderAt e só
   renderiza com `node render.mjs check` dando ZERO logs. Portas: abrir ANTES de alguém passar, para o lado oposto de quem vem.
   Animações: poses15 (IK) + walkPath com parada suave; câmera push-in ~5%/s; sempre comparar com as referências (bíblia v2).
+- **Caminhada (pedido dele):** nada de curva em "S" (devagar–rápido–devagar). Velocidade CONSTANTE, reta, estilo Roblox, só
+  com rampa curta (~0,15 s) no começo e no fim pra não dar tranco; pernas/braços acompanham a velocidade (`walkPath` em act.js;
+  `ease: true` só se pedir o jeito antigo). A suavidade vai nas ANIMAÇÕES (gestos com overshoot, cabeça viva), não no deslocamento.
