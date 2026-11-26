@@ -345,3 +345,8 @@ Ele cobrou: "não está parecido com as referências; nem todos têm corpo quadr
 - **Movimento**: caminhada natural com joelho e cotovelo; gestos com antebraço; sentar dobrando o joelho; abraços com braços
   dobrados (sem atravessar); câmera perto, altura dos olhos, close de rosto nas reações.
 - Protagonista dele: cartola AINDA MENOR (pedido depois do EP01).
+- **CORREÇÃO (ele brigou: "as meninas NÃO são assim, nem a maioria dos meninos")**: o corpo da MAIORIA é o **R15 fino
+  ("Woman/Man")**: tronco mais ou menos da largura da cabeça (uma peça só, levemente afunilada), **braços e pernas FINOS e
+  CILÍNDRICOS** (cápsulas, raio ~0,22–0,27), mãos C pequenas, sapatos pequenos; cotovelo e joelho. Quadradão (blocky) SÓ pro
+  protagonista. `body: 'slim'` em roblox_base/src/chars.js. Cabelo = malha esculpida lisa e brilhante com mechas pontudas
+  (franja com pontas, volume), NÃO blocos grossos e NÃO fios texturizados. Estudar os closes em resolução cheia, nunca só miniaturas.
