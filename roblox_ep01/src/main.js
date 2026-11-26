@@ -36,7 +36,7 @@ FX.calPages = new THREE.Group(); for (let i = 0; i < 10; i++) { const p = new TH
 
 // ---------- post ----------
 const composer = new EffectComposer(renderer); const renderPass = new RenderPass(S.street, camera); composer.addPass(renderPass);
-const gtao = new GTAOPass(S.street, camera, W, H); { const ov = gtao.overrideVisibility.bind(gtao); gtao.overrideVisibility = function () { ov(); this.scene.traverse(o => { if (o.isSprite) o.visible = false; }); }; } gtao.blendIntensity = 0.8; gtao.updateGtaoMaterial({ radius: 0.8, distanceExponent: 1.5, thickness: 1.0, scale: 1.1, samples: 12 }); composer.addPass(gtao);
+const gtao = new GTAOPass(S.street, camera, W, H); { const ov = gtao.overrideVisibility.bind(gtao); gtao.overrideVisibility = function () { ov(); this.scene.traverse(o => { if (o.isSprite) o.visible = false; }); }; } gtao.blendIntensity = 0.8; { const ss = gtao.setSize.bind(gtao); gtao.setSize = (w, h) => ss(Math.round(w / 2), Math.round(h / 2)); } gtao.updateGtaoMaterial({ radius: 0.8, distanceExponent: 1.5, thickness: 1.0, scale: 1.1, samples: 6 }); composer.addPass(gtao);
 const bokeh = new BokehPass(S.street, camera, { focus: 8, aperture: 0.0010, maxblur: 0.005 }); composer.addPass(bokeh);
 const bloom = new UnrealBloomPass(new THREE.Vector2(W / 2, H / 2), 0.22, 0.5, 0.9); composer.addPass(bloom);
 composer.addPass(new OutputPass());

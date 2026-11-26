@@ -315,3 +315,6 @@ Ajuste pedido por ele: cartola **mais baixa e encaixada** (a cabeça entra na co
   ocupam ±2) e câmera a ~8–10 de distância; braço R6 é reto (alcance fixo 2) → posicionar o personagem pra que a mão chegue no
   alvo; câmera sempre do lado pra onde o rosto aponta; nada de luz só por trás (rosto vira silhueta); sprites (corações, "!")
   ficam fora do GTAO (senão aparece um quadrado escuro).
+- **Render rápido (Roblox, CPU/swiftshader):** GTAO em meia resolução + 6 amostras, render interno a 0,8 (`RS=0.8`, 864×1536)
+  e upscale lanczos pra 1080×1920 no ffmpeg (igual a olho nu); no máximo 2 processos em paralelo (4 ficava MAIS lento).
+  ~1,3 s/quadro → ~70 min pra 2 min de vídeo. Ele reclamou de 3 h ("os de FNAF eram 30 min") — medir s/quadro ANTES de renderizar.

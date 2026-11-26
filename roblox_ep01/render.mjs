@@ -8,7 +8,7 @@ const srv = http.createServer((q, r) => { const p = path.join(root, decodeURICom
   fs.readFile(p, (e, d) => { if (e) { r.writeHead(404); r.end(); return; } r.writeHead(200, { 'Content-Type': types[path.extname(p)] || 'application/octet-stream' }); r.end(d); }); });
 await new Promise(r => srv.listen(0, r)); const port = srv.address().port;
 const [mode, a1, a2, a3] = process.argv.slice(2);
-const W = 1080, H = 1920; const scale = (mode === 'stills' || mode === 'view') ? parseFloat(a3 || '0.5') : 1;
+const W = 1080, H = 1920; const scale = (mode === 'stills' || mode === 'view') ? parseFloat(a3 || '0.5') : parseFloat(process.env.RS || '1');
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage({ viewport: { width: Math.round(W * scale), height: Math.round(H * scale) } });
 page.on('console', m => { if (m.type() === 'error' || m.text().startsWith('LOG')) console.log('[page]', m.text()); });
@@ -28,7 +28,7 @@ if (mode === 'stills') {
 } else if (mode === 'video') {
   const dur = await page.evaluate(() => window.APP.duration);
   const from = parseFloat(a2 || '0'), to = parseFloat(a3 || dur);
-  const ff = spawn('ffmpeg', ['-y', '-v', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'mjpeg', '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', '-pix_fmt', 'yuv420p', a1], { stdio: ['pipe', 'inherit', 'inherit'] });
+  const ff = spawn('ffmpeg', ['-y', '-v', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'mjpeg', '-i', '-', '-vf', 'scale=1080:1920:flags=lanczos', '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', '-pix_fmt', 'yuv420p', a1], { stdio: ['pipe', 'inherit', 'inherit'] });
   const n0 = Math.round(from * FPS), n1 = Math.round(to * FPS); const t0 = Date.now();
   for (let i = n0; i < n1; i++) {
     const b = await grab(i / FPS); if (!ff.stdin.write(b)) await new Promise(r => ff.stdin.once('drain', r));
