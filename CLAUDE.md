@@ -247,3 +247,41 @@ O remake v3 do Rockstar (fnaf_rockstar) é o NOVO PADRÃO de direção. O que fe
 - **Variedade de cenários** (palco, escritório, salão da empresa, pesadelo, vazio simbólico, fogo) e ângulos; callback visual no fim.
 - Animatrônico "alma" sólido com flicker/fade; partículas/fluxo de luz pra mostrar possessão; ninguém sumindo seco.
 - Storyboard em imagens enviado antes; render; corrigir colisões só nos trechos; checar quadros do vídeo final.
+
+# ======================= CANAL ROBLOX (novo rumo — canal de 1 milhão) =======================
+A aba agora tem DOIS canais: **FNAF/Minecraft** (tudo acima) e **ROBLOX** (esta seção). Projetos Roblox ficam em `roblox_*`
+(base: `roblox_base/` — copiar como ponto de partida). As regras de FNAF (sincronia, movimento, colisão, nada sumindo seco,
+cena literal à fala, storyboard antes, conferir quadros finais, efeitos sem poluição, commit+push) valem aqui também — e mais.
+
+## Referências (8 vídeos que ele mandou: "NÃO CONFIE NOS SEUS HERÓIS", "NÃO VEJA O SEGREDO DELA", "MINHA CRUSH É PRESIDENTE"…)
+Inspiração MÁXIMA — ficar ainda mais parecido com elas do que os vídeos de FNAF ficaram das referências deles.
+- **Histórias** narradas em 1ª pessoa (~2:15–2:35 min), cortes a cada **~1,6 s** (85–95 cortes), CADA corte ilustra literalmente
+  a palavra/ideia falada (relógio em "segundos", calendário "DIA 3", TV de jornal em "jornal", lousa "SEMANA 2", placa "LEI 7").
+- **Visual**: bonecos Roblox R6 de plástico macio (cantos arredondados, leve textura granulada), cabeça clássica cilíndrica
+  arredondada, **rosto = decal 2D** com expressões fortes (sobrancelhas, olhos arregalados, boca "o", sorriso com dentes,
+  lágrimas, rubor), cabelos/chapéus/acessórios em 3D. Render "Blender": sol quente com sombra suave, AO de contato,
+  hemisfério claro, cores saturadas, leve profundidade de campo e bloom suave.
+- **Cenários** coloridos e cheios (ruas com casas coloridas e calçada de pedra, escola, refeitório, quarto, palácio,
+  prisão, aeroporto, ilha), tudo em 3D próprio. Textos de cenário (placas, lousa, TV, calendário) PODEM existir aqui como
+  objetos do mundo desenhados por mim (não PNG colado de fora).
+- **Câmera**: altura dos olhos, personagem grande e centralizado (corpo inteiro ou da cintura pra cima), push-in lento, às vezes
+  travelling/lateral; atuação contínua (andar, gesticular, pular, abraçar), efeitos 3D (corações flutuando, faíscas, poderes).
+- **Legendas**: UMA palavra por vez, centralizada a ~69% da altura, branca com contorno preto grosso + sombra; palavras-chave
+  em VERMELHO. Pedido dele: fonte **KOMIKAX** (`roblox_base/assets/komikax.ttf`), **pop com curva elástica** e **leve
+  desfoque** que some quando a palavra assenta; sincronia 100% com a voz (timestamps palavra a palavra do faster-whisper,
+  corrigidos à mão se precisar). Voz agora é de IA.
+
+## Protagonista (ele mesmo) — `protagonist()` em roblox_base/src/rbx.js
+Cabeça branca com rosto sorridente, **cartola azul com faixa vermelha**, tronco vermelho, braços brancos, pernas pretas.
+Ajuste pedido por ele: cartola **mais baixa e encaixada** (a cabeça entra na copa), **copa mais curta**, **menos testa**
+(olhos/boca um pouco mais baixos no decal). Vários outros personagens Roblox serão necessários em cada vídeo
+(cabelos, roupas, tons de pele variados) — sempre no mesmo padrão de qualidade.
+
+## Pipeline Roblox (roblox_base)
+- `rbx.js`: classe `Rbx` (R6: quadril/tronco/pescoço/cabeça/braços/pernas com pivôs), `drawFace` (decal com eyes/mouth/brow/
+  talk/blink/tears/blush), `topHat`, `plastic()`.
+- `act.js`: gestos com antecipação/overshoot (wave, point, think, shrug, cheer, chest, scared, facepalm, angry, sad, reach,
+  hips), `walkPath` com parada suave, `alive`, `talk` (boca falando), `startle` (pulo de susto com squash).
+- `subs.js`: legendas KOMIKAX palavra a palavra (pop elástico + blur), vermelho nas palavras-chave.
+- `main.js`: câmera em 2 passadas, pós: GTAO + Bokeh (foco no personagem) + bloom + grade (saturação/vinheta) + legendas.
+- Render pesado (AO + DOF em 1080×1920): ~3–5 s/quadro → renderizar em 4 partes em paralelo; testar com stills antes.

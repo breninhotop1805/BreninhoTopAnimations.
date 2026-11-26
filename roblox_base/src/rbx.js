@@ -21,11 +21,11 @@ function headGeo(r = 0.62, h = 1.22, e = 0.2) { const pts = [new THREE.Vector2(0
 // ---------------- face decal ----------------
 // f = { eyes: 'normal'|'wide'|'closed'|'happy'|'angry'|'sad'|'dot', brow: -1..1 (sad..angry) or null, mouth: 'smile'|'grin'|'o'|'frown'|'flat'|'open'|'wavy'|'smirk'|'teeth',
 //       talk: 0..1 (mouth opening while speaking), look: [-1..1, -1..1] pupils offset, blink: 0..1, tears: 0..1, blush: 0..1 }
-export function drawFace(g, f, S = 512) { g.clearRect(0, 0, S, S); const cx = S / 2, ey = S * 0.42, ex = S * 0.13; const k = '#111';
+export function drawFace(g, f, S = 512) { g.clearRect(0, 0, S, S); const cx = S / 2, ey = S * 0.47, ex = S * 0.13; const k = '#111';
   const lx = (f.look?.[0] || 0) * S * 0.02, ly = (f.look?.[1] || 0) * S * 0.015; const bl = Math.min(1, f.blink || 0);
   g.lineCap = 'round'; g.lineJoin = 'round';
   // blush
-  if (f.blush) { g.fillStyle = `rgba(255,120,140,${0.45 * f.blush})`; for (const s of [-1, 1]) { g.beginPath(); g.ellipse(cx + s * S * 0.2, S * 0.58, S * 0.07, S * 0.035, 0, 0, 7); g.fill(); } }
+  if (f.blush) { g.fillStyle = `rgba(255,120,140,${0.45 * f.blush})`; for (const s of [-1, 1]) { g.beginPath(); g.ellipse(cx + s * S * 0.2, S * 0.61, S * 0.07, S * 0.035, 0, 0, 7); g.fill(); } }
   // eyes
   for (const s of [-1, 1]) { const x = cx + s * ex + lx, y = ey + ly; g.fillStyle = k; g.strokeStyle = k;
     const type = bl > 0.6 ? 'closed' : f.eyes || 'normal';
@@ -42,7 +42,7 @@ export function drawFace(g, f, S = 512) { g.clearRect(0, 0, S, S); const cx = S 
   // tears
   if (f.tears) { g.fillStyle = `rgba(80,160,255,${0.9 * f.tears})`; for (const s of [-1, 1]) { g.beginPath(); g.ellipse(cx + s * ex + s * S * 0.01, ey + S * 0.1, S * 0.018, S * 0.04 * f.tears, 0, 0, 7); g.fill(); } }
   // mouth
-  const my = S * 0.64, t = Math.max(0, Math.min(1, f.talk || 0)); g.strokeStyle = k; g.fillStyle = k; g.lineWidth = S * 0.024; const m = f.mouth || 'smile';
+  const my = S * 0.67, t = Math.max(0, Math.min(1, f.talk || 0)); g.strokeStyle = k; g.fillStyle = k; g.lineWidth = S * 0.024; const m = f.mouth || 'smile';
   if (t > 0.05 && (m === 'smile' || m === 'flat' || m === 'frown')) { // talking: an open rounded mouth whose height follows t
     g.beginPath(); g.ellipse(cx, my, S * 0.07, S * 0.012 + S * 0.05 * t, 0, 0, 7); g.fill(); g.fillStyle = '#c0394a'; g.beginPath(); g.ellipse(cx, my + S * 0.03 * t, S * 0.04, S * 0.02 * t, 0, 0, 7); g.fill(); return; }
   g.beginPath();
@@ -93,11 +93,12 @@ export class Rbx {
 
 // ---------------- accessories ----------------
 // blue top hat with red band (protagonist): lathe crown slightly flared, rolled brim
-export function topHat(color = '#1f5fb8', band = '#d21a1a') { return (head) => { const g = new THREE.Group(); g.position.set(0, 1.18, 0); head.add(g);
-  const crown = [new THREE.Vector2(0, 0.0), new THREE.Vector2(0.56, 0.0), new THREE.Vector2(0.58, 0.5), new THREE.Vector2(0.63, 1.05), new THREE.Vector2(0.6, 1.12), new THREE.Vector2(0, 1.14)];
-  mesh(new THREE.LatheGeometry(crown, 48), plastic(color, { rough: 0.6 }), g, 0, 0.12, 0);
-  mesh(new THREE.CylinderGeometry(0.585, 0.575, 0.16, 48), plastic(band, { rough: 0.55 }), g, 0, 0.28, 0);
-  const brim = [new THREE.Vector2(0.5, 0.06), new THREE.Vector2(0.98, 0.04), new THREE.Vector2(1.06, 0.1), new THREE.Vector2(1.04, 0.16), new THREE.Vector2(0.98, 0.14), new THREE.Vector2(0.5, 0.14)];
+// worn LOW and snug (the head top goes inside the crown), shorter crown: less forehead, comfortable look
+export function topHat(color = '#1f5fb8', band = '#d21a1a') { return (head) => { const g = new THREE.Group(); g.position.set(0, 1.0, 0); head.add(g);
+  const crown = [new THREE.Vector2(0.655, 0.0), new THREE.Vector2(0.665, 0.4), new THREE.Vector2(0.7, 0.78), new THREE.Vector2(0.68, 0.84), new THREE.Vector2(0, 0.86)];
+  mesh(new THREE.LatheGeometry(crown, 48), plastic(color, { rough: 0.6 }), g, 0, 0.1, 0);
+  mesh(new THREE.CylinderGeometry(0.672, 0.668, 0.15, 48), plastic(band, { rough: 0.55 }), g, 0, 0.25, 0);
+  const brim = [new THREE.Vector2(0.62, 0.06), new THREE.Vector2(1.02, 0.04), new THREE.Vector2(1.1, 0.1), new THREE.Vector2(1.08, 0.16), new THREE.Vector2(1.02, 0.14), new THREE.Vector2(0.62, 0.14)];
   mesh(new THREE.LatheGeometry(brim, 48), plastic(color, { rough: 0.6 }), g, 0, 0.02, 0);
   g.rotation.z = -0.03; return g; }; }
 
