@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 // Acting kit for the Roblox R6 rig — cartoon timing: anticipation (torso/head only), overshoot + settle, follow-through,
 // walk with weight and a smooth stop, living idle. Everything is a pure function of local time L.
 export const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -42,7 +43,7 @@ export function talk(c, t, on = 1) { if (on <= 0) return; const v = Math.max(0, 
 export function walkPath(c, L, t0, t1, a, b, o = {}) { const u = seg(L, t0, t1), k = o.linear ? u : eio(u); const d = Math.hypot(b[0] - a[0], b[1] - a[1]); const stride = o.stride || 2.0;
   c.root.position.x = mix(a[0], b[0], k); c.root.position.z = mix(a[1], b[1], k); const sp = u > 0 && u < 1 ? (o.linear ? 1 : Math.min(1, 6 * u * (1 - u) * 1.15)) : 0;
   if (o.face !== false && d > 0.01) c.root.rotation.y = Math.atan2(b[0] - a[0], b[1] - a[1]); const p = d * k / stride * Math.PI * 2, s = Math.sin(p), amp = sp * (1 + 0.4 * (o.run || 0));
-  c.legR.piv.rotation.x += 0.75 * s * amp; c.legL.piv.rotation.x -= 0.75 * s * amp; c.armR.piv.rotation.x -= 0.7 * s * amp; c.armL.piv.rotation.x += 0.7 * s * amp;
+  const aw = c.body === 'bloco' ? 0.45 : 0.6; c.legR.piv.rotation.x += 0.7 * s * amp; c.legL.piv.rotation.x -= 0.7 * s * amp; c.armR.piv.rotation.x -= aw * s * amp; c.armL.piv.rotation.x += aw * s * amp;
   if (c.legR.knee) { c.legR.knee.rotation.x += Math.max(0, -Math.sin(p - 0.9)) * 0.9 * amp; c.legL.knee.rotation.x += Math.max(0, Math.sin(p - 0.9)) * 0.9 * amp; c.armR.elbow.rotation.x += (-0.35 - 0.25 * Math.max(0, -s)) * amp; c.armL.elbow.rotation.x += (-0.35 - 0.25 * Math.max(0, s)) * amp; }
   c.hip.position.y += (Math.abs(Math.cos(p)) * 0.12 - 0.06) * amp; c.torso.rotation.y += 0.08 * s * amp; c.torso.rotation.x += 0.08 * sp; c.head.rotation.y -= 0.06 * s * amp; return sp; }
 // hop of surprise with squash & stretch
@@ -52,3 +53,19 @@ export function startle(c, L, a, amt = 1) { if (L < a) return; const u = L - a; 
 // sit on a seat of height seatY (R15): thighs horizontal, shins vertical, hands resting on the thighs
 export function sit15(c, seatY, w = 1) { c.hip.position.y = mix(c.hip.position.y, seatY + 0.05, w) ; c.root.position.y = 0; for (const L of [c.legR, c.legL]) { L.piv.rotation.x += -1.55 * w; if (L.knee) L.knee.rotation.x += 1.55 * w; }
   c.armR.piv.rotation.x += -0.35 * w; c.armL.piv.rotation.x += -0.35 * w; if (c.armR.elbow) { c.armR.elbow.rotation.x += -0.5 * w; c.armL.elbow.rotation.x += -0.5 * w; } }
+// ---- 2-bone IK for R15 arms: put the HAND exactly at a world point (chin, chest, an object, someone's shoulder).
+// The elbow bends forward/down naturally (never into the body); w blends from the current pose.
+const _v = new THREE.Vector3(), _q = new THREE.Quaternion(), _m = new THREE.Matrix4();
+export function reach(c, A, target, w = 1, o = {}) { if (w <= 0 || !A.elbow) return; c.root.updateMatrixWorld(true);
+  const par = A.piv.parent; const inv = new THREE.Matrix4().copy(par.matrixWorld).invert(); const T = target.clone().applyMatrix4(inv); const S = A.piv.position.clone();
+  const a = A.elbow.position.length(), b = A.wrist ? A.wrist.position.length() + (o.palm ?? 0.3) : 0.9;
+  const D = T.clone().sub(S); let d = D.length(); d = Math.min(Math.max(d, Math.abs(a - b) + 0.05), a + b - 0.02); const dir = D.normalize(); const Tc = S.clone().addScaledVector(dir, d);
+  const alpha = Math.acos(Math.min(1, Math.max(-1, (a * a + d * d - b * b) / (2 * a * d))));
+  // elbow pole: down and a bit outward (side of this arm) and back -> natural, never into the chest
+  const side = Math.sign(S.x) || 1; const pole = new THREE.Vector3(side * (o.out ?? 0.45), -1, o.back ?? -0.25).normalize(); const po = pole.sub(dir.clone().multiplyScalar(pole.dot(dir))); if (po.lengthSq() < 1e-4) po.set(side, 0, 0); po.normalize();
+  const E = S.clone().addScaledVector(dir, a * Math.cos(alpha)).addScaledVector(po, a * Math.sin(alpha));
+  const y = S.clone().sub(E).normalize(); const fz = Tc.clone().sub(E); const z = fz.sub(y.clone().multiplyScalar(fz.dot(y))); if (z.lengthSq() < 1e-6) z.set(0, 0, 1); z.normalize(); const x = new THREE.Vector3().crossVectors(y, z).normalize();
+  _m.makeBasis(x, y, z); _q.setFromRotationMatrix(_m);
+  const rest = A.elbow.position.clone().normalize(); _q.multiply(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, -1, 0), rest).invert());
+  const bend = Math.acos(Math.min(1, Math.max(-1, E.clone().sub(S).normalize().dot(Tc.clone().sub(E).normalize()))));
+  A.piv.quaternion.slerp(_q, w); A.elbow.rotation.x = A.elbow.rotation.x * (1 - w) + (-bend) * w; }

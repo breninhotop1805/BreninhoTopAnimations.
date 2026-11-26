@@ -3,7 +3,7 @@ import { loadBodies, realChar } from './realbody.js';
 import { HAIR2, HAIR3 } from './chars.js';
 import { topHat } from './rbx.js';
 import { buildStreet } from './sets.js';
-import { gesture, walkPath, sit15, alive } from './act.js';
+import { gesture, walkPath, sit15, alive, reach } from './act.js';
 const q = new URLSearchParams(location.search); const W = +q.get('w') || 540, H = +q.get('h') || 960;
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); renderer.setSize(W, H); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; document.body.appendChild(renderer.domElement);
 const S = {}; const scene = buildStreet(S); const cam = new THREE.PerspectiveCamera(30, W / H, 0.1, 200);
@@ -19,7 +19,7 @@ const bench = new THREE.Mesh(new THREE.BoxGeometry(3, 1.6, 1.6), new THREE.MeshS
 window.APP = { ready: true, duration: 100, renderAt(t) { const i = Math.floor(t / 5), v = Math.round(t % 5); list.forEach(c => c.root.removeFromParent()); bench.removeFromParent(); const c = list[i]; c.reset(); scene.add(c.root); c.root.position.set(0, 0, 0); c.root.rotation.set(0, 0, 0);
   alive(c, 1.3, 1, 2);
   if (v === 1) { walkPath(c, 0.83, 0, 2, [-1, 0], [1, 0], { linear: true, stride: 2.2 }); c.root.position.set(0, 0, 0); c.root.rotation.y = 0.9; }
-  if (v === 2) { gesture(c, 'think', 2, 0, 99, 1); c.root.rotation.y = 0.25; }
+  if (v === 2) { c.root.rotation.y = 0.25; c.head.rotation.x = 0.1; c.head.rotation.z = 0.12; c.setFace({ mouth: 'flat', brow: 0.4, look: [0.6, -0.8] }); c.root.updateMatrixWorld(true); const TT = c.head.localToWorld(new THREE.Vector3(0.0, -0.02, 0.78)); reach(c, c.armR, TT, 1); c.root.updateMatrixWorld(true); const hw = c.armR.wrist.getWorldPosition(new THREE.Vector3()); const ew = c.armR.elbow.getWorldPosition(new THREE.Vector3()); const sw = c.armR.piv.getWorldPosition(new THREE.Vector3()); console.log('LOG IK target', TT.toArray().map(v=>v.toFixed(2)), 'wrist', hw.toArray().map(v=>v.toFixed(2)), 'elbow', ew.toArray().map(v=>v.toFixed(2)), 'sh', sw.toArray().map(v=>v.toFixed(2)), 'elb.rx', c.armR.elbow.rotation.x.toFixed(2)); reach(c, c.armL, c.torso.localToWorld(new THREE.Vector3(0.05, 1.05, 0.75)), 1); }
   if (v === 3) { scene.add(bench); c.root.position.z = -0.45; sit15(c, 1.6, 1); c.setFace({ mouth: 'grin', eyes: 'happy' }); c.root.rotation.y = 0.35; }
-  if (v === 4) { c.root.rotation.y = 1.5; }
-  c.applyFace(); cam.aspect = W / H; if (q.get('close')) { cam.position.set(0.3, 4.6, 6.0); cam.lookAt(0, 4.3, 0); } else { cam.position.set(0.4, 3.1, 11.5); cam.lookAt(0, 2.7, 0); } cam.updateProjectionMatrix(); renderer.render(scene, cam); } };
+  if (v === 4) { c.root.rotation.y = 0.2; c.root.updateMatrixWorld(true); reach(c, c.armR, c.torso.localToWorld(new THREE.Vector3(-0.3, 1.0, 0.9)), 1); reach(c, c.armL, c.torso.localToWorld(new THREE.Vector3(0.3, 1.0, 0.9)), 1); c.setFace({ mouth: 'o', eyes: 'wide' }); }
+  c.applyFace(); cam.aspect = W / H; if (q.get('close')) { cam.position.set(0.3, 4.6, 6.0); cam.lookAt(0, 4.3, 0); } else { cam.position.set(0.4, 3.0, 13.5); cam.lookAt(0, 2.9, 0); } cam.updateProjectionMatrix(); renderer.render(scene, cam); } };
