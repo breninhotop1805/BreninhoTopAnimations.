@@ -446,3 +446,9 @@ Direção:
 - `obstacleCheck` (kit.js): toda parede, batente, folha de porta e móvel é obstáculo → zero `LOG ATRAVESSA` antes da render.
 - **Fontes**: KOMIKAX SÓ na legenda. Todo texto do mundo (placas, lousa, TV, relógio digital, hologramas, crachás) em
   **Montserrat 900** (`assets/fonts`, `textTex()`), igual às placas das referências.
+- **QA de câmera automático** (`cameraCheck` em kit.js): a cada quadro, raio da câmera até o rosto de cada personagem →
+  `LOG OCLUSAO` (parede/árvore/móvel na frente) e `LOG FORA_DO_QUADRO` (rosto fora da área vertical). Junto com
+  `obstacleCheck` e a colisão entre personagens: só renderiza com ZERO logs (`node render.mjs check`). Já pegou um erro real no
+  demo (câmera atrás da parede na cena da porta).
+- Gestos por tipo de corpo: o quadradão (braços grossos) usa alvos mais abertos/à frente (poses15 ajusta sozinho) e "pensar"
+  só com uma mão. Base de referência visual: `roblox_base/src/demo.js` (DEMO_NOVO_PADRAO).

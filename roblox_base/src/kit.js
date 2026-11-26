@@ -151,3 +151,12 @@ export function obstacleCheck(t, s, live, log = console.log) { const O = s.userD
     const parts = [c.torsoMesh, c.headMesh, c.lowerTorso, c.armR.mesh, c.armL.mesh, c.armR.lower, c.armL.lower, c.armR.handMesh, c.armL.handMesh, c.legR.mesh, c.legL.mesh, c.legR.lower, c.legL.lower, c.legR.foot, c.legL.foot].filter(Boolean);
     for (const ob of O) { if (c.allowObst?.has(ob.name)) continue; ob.obj.updateMatrixWorld(true); if (!ob.dyn && !ob.box) ob.box = new THREE.Box3().setFromObject(ob.obj); const box = ob.dyn ? _b.setFromObject(ob.obj) : ob.box;
       for (const pm of parts) { _a.setFromObject(pm).expandByScalar(-0.08); if (_a.intersectsBox(box)) { n++; if (n < 4) log(`LOG ATRAVESSA t=${t.toFixed(2)} ${c.name} x ${ob.name} (${pm === c.headMesh ? 'cabeça' : pm === c.torsoMesh ? 'tronco' : 'membro'})`); break; } } } } return n; }
+// ---------------- camera QA: occlusion (something between camera and a face) + framing (face inside the vertical frame) ----------------
+const _ray = new THREE.Raycaster();
+export function cameraCheck(t, s, cam, live, log = console.log) { let n = 0; s.updateMatrixWorld(true); cam.updateMatrixWorld(true); cam.updateProjectionMatrix();
+  const charMeshes = new Set(); for (const c of live) c.root.traverse(o => charMeshes.add(o));
+  const targets = []; s.traverse(o => { if (o.isMesh && !charMeshes.has(o) && !(o.material && o.material.transparent)) targets.push(o); });
+  for (const c of live) { if (!c.root.visible) continue; const hp = c.head.localToWorld(new THREE.Vector3(0, 0.66, 0.4)); const ndc = hp.clone().project(cam);
+    if (ndc.z > 1 || Math.abs(ndc.x) > 0.92 || ndc.y > 0.95 || ndc.y < -0.9) { n++; log(`LOG FORA_DO_QUADRO t=${t.toFixed(2)} ${c.name} ndc=${ndc.x.toFixed(2)},${ndc.y.toFixed(2)}`); continue; }
+    const dir = hp.clone().sub(cam.position); const dist = dir.length(); _ray.set(cam.position, dir.normalize()); _ray.far = dist - 0.6; const hit = _ray.intersectObjects(targets, false)[0];
+    if (hit) { n++; log(`LOG OCLUSAO t=${t.toFixed(2)} ${c.name} tapado por ${hit.object.name || hit.object.parent?.name || 'objeto'} a ${hit.distance.toFixed(1)}`); } } return n; }
