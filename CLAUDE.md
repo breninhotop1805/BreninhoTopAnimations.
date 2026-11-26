@@ -353,3 +353,22 @@ Ele cobrou: "não está parecido com as referências; nem todos têm corpo quadr
 - **Render e disco:** o disco encheu durante a render do EP01 e a 2ª metade saiu ESCURA (sombra/iluminação quebrada no Chromium),
   sem nenhum erro no log. Antes de renderizar: `df -h` (≥10 GB livres) e não rodar testes pesados em paralelo; depois: medir o
   brilho de quadros do vídeo final contra stills dos mesmos tempos antes de entregar.
+
+## PADRÃO PROFISSIONAL ROBLOX (pedido dele: "o próximo vídeo já terá um nível totalmente superior") — REGRAS FIXAS
+Personagens:
+- **Corpos OFICIAIS do Roblox** exportados por ele (`roblox_base/assets/roblox_export/ROBLOX_EXPORT/`): Feminino/Masculino (2016,
+  maioria do elenco) e Masculino quadrado (2012, SÓ o protagonista). Montados em `roblox_base/src/realbody.js` (`loadBodies()`,
+  `realChar()`) com articulações nos RigAttachments oficiais. Cabeça clássica + rosto 2D nosso (a dele é protegida). Cabelos e
+  acessórios do catálogo NÃO exportam (bloqueio de permissão) → modelados por mim, fiéis às referências, cores variando entre vídeos.
+- Mãos posicionadas por **IK** (alvo no mundo: queixo, peito, objeto, ombro de outro) — nunca ângulos fixos que atravessam o corpo.
+- Expressões fortes e coerentes com a fala (decal 2D), troca suave; piscar rápido nos humanos.
+Verificação ANTES da render (pra não perder tempo):
+1. Lineup de cada personagem novo: frente, 3/4, perfil, costas, andando, sentado, gesto — conferir em close.
+2. Checagem automática de colisão (zero ATRAVESSA) + conferência visual de mãos, props e cabelo em close.
+3. Contact sheet 3 quadros por cena (15/50/90%) — enquadramento, luz (rosto iluminado, nada de silhueta), câmera fora de objetos.
+4. Medir s/quadro e `df -h` antes; nada pesado em paralelo; brilho do vídeo final conferido contra stills.
+Direção:
+- Cenas rápidas (~1,5–2 s), cada uma ilustra literalmente a fala; câmera fluida (push-in, órbita curta, punch-in na palavra-chave).
+- Cenários 3D coerentes, cheios e "cara de Roblox" (nada de PNG colado; textos só como objetos 3D do mundo: placas, telas, relógios).
+- Efeitos sonoros coerentes e discretos por baixo da voz (whoosh nos cortes fortes, plim nos números, passos, porta, multidão),
+  sem repetir o mesmo som; música dele sempre ~15 dB abaixo da voz.
