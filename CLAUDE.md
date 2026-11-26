@@ -372,3 +372,40 @@ Direção:
 - Cenários 3D coerentes, cheios e "cara de Roblox" (nada de PNG colado; textos só como objetos 3D do mundo: placas, telas, relógios).
 - Efeitos sonoros coerentes e discretos por baixo da voz (whoosh nos cortes fortes, plim nos números, passos, porta, multidão),
   sem repetir o mesmo som; música dele sempre ~15 dB abaixo da voz.
+
+## REVISÃO COMPLETA DAS 16 REFERÊNCIAS (1.511 cortes = 1 quadro por corte de cena, todos os vídeos) — aplicar FIELMENTE
+**Ritmo e lógica de corte**
+- ~55–65 cortes por minuto (1 corte a cada ~1–1,5 s). Cada corte = UMA palavra/ideia mostrada literalmente:
+  "1926" → letreiro LED; "mundo" → globo; "votos" → urna; "navios" → navios no mar; "ilha" → ilha vista de cima;
+  "churros"/"fervendo" → barraca + espiral de massa; "12:06" → relógio do painel do carro; "San Lucero" → placa da estrada;
+  "aniversário" → bolo com velas; "oitocentos" → pilha de bilhetes; "pétalas" → cerejeiras; "pedras" → Torre Eiffel (viagem).
+- **Inserts de objeto** (sem personagem) são ~20% dos cortes: relógio de parede, calendário, despertador, comida no prato, placa,
+  TV de notícias, celular/botão, porta, carta. Eles dão ritmo e explicam a fala.
+- **Planos de situação** curtos (rua inteira, estádio, mapa, estrada de cima) abrem cada nova parte da história.
+**Câmera** (variar SEMPRE, nunca 3 iguais seguidos)
+- Plano médio/corpo inteiro na altura dos olhos, personagem centralizado (maioria); close de rosto nas reações; close de mãos
+  com objeto; plano aéreo/de cima (cama, mapa, ilha, estrada); contra-plongée em gigantes/monstros; POV (de dentro do carro pelo
+  para-brisa, olhando pela janela); por cima do ombro; travelling acompanhando quem anda; push-in nas palavras-chave.
+**Personagens**
+- Protagonista (o dele) em quase todo corte, com o corpo quadradão; ele anda em direção à câmera, aponta, reage, segura objetos.
+- Elenco = corpos padrão R15 com roupas "classic" (xadrez, listras, camisa de time com NÚMERO, terno, uniforme laranja de presídio,
+  farda militar verde, avental de chef, pijama de estrelinhas, jaleco); cabelos de catálogo lisos e brilhantes; meninas com rosto
+  anime; idosos grisalhos com óculos grossos; vilões com rosto detalhado; crianças menores. Figurantes MUITOS e variados
+  (multidões na rua, torcida no estádio, sala de aula cheia, dormitório com 30 camas coloridas).
+- **Marcadores de história no corpo**: contador/plaquinha com número no peito ("12", "0", "99.996"), relógio no pulso, botão
+  PLAY/PAUSA na mão, moeda/medalha — o "objeto mágico" de cada história é sempre visível e reaparece nos momentos-chave.
+**Cenários** (um mundo coerente por vídeo + vários ambientes internos)
+- Rua colorida estilo mediterrâneo (sobrados com sacada, calçada de pedra, torre do relógio, fonte, pombos voando, árvores
+  low-poly redondas, postes, bandeirinhas); escola (corredor de armários coloridos, sala com lousa verde "PROVA", relógio,
+  cartazes); sala (poltrona estampada, abajur, quadros, tapete); quarto (cama com cobertor colorido, criado-mudo, janela);
+  hospital (monitor cardíaco); presídio (paredes cinza com faixa verde, guichê "COZINHA", bilhetes); palácio (piso xadrez
+  vermelho/branco, trono, guardas); festa noturna (bandeirinhas, lanternas, barraca de churros, palco com bateria); reino de
+  fantasia (castelo, montanhas low-poly, golens); escadaria gigante com torcida dos lados; bunker; cidade zumbi noturna.
+- Textos SÓ como objetos do mundo: placas, letreiros LED, calendários de folha ("SEGUNDA/TERÇA 14", "MARÇO SEMANA 1"),
+  lousa ("SEMANA 2", "DIA 1"), TV de notícias com faixa ("URGENTE…"), cartazes "PROCURA-SE", papel na mão.
+**Efeitos** (3D, coerentes, nunca colados)
+- Chuva, neve, pétalas, folhas; congelar (tinta azul + gelo); brilho/aura dourada (desejo, magia); raios azuis (poder); fumaça;
+  confete; dinheiro voando; corações; "Z z z" roxos sobre quem dorme; ícones "?" "!" e triângulo de alerta; etiqueta "$1";
+  motion blur em ação rápida; flashback em sépia/cinza; noite = azul + janelas quentes + lanternas coloridas.
+**Luz e cor**: saturado, sol quente com sombra suave, bloom nas luzes, fundo desfocado nos closes, interiores com luz quente de
+  abajur/teto; cada cena tem uma fonte de luz plausível.
