@@ -295,3 +295,7 @@ Ajuste pedido por ele: cartola **mais baixa e encaixada** (a cabeça entra na co
   Variar MUITO entre personagens (cor de pele, cabelo, roupa, estampa), sempre nesse nível.
 - **NUNCA personagem sobreposto a personagem ou objeto** (nem em lineup/teste): espaçar, um por vez no quadro de apresentação,
   e checar colisão nas cenas.
+- **Sincronia (Roblox)**: `roblox_base/transcribe.py <audio> [saida.json]` usa **faster-whisper large-v3-turbo** (ele liberou
+  baixar o que precisar; baixa sozinho do HF se o container for novo, ~1,6 GB) + **ajuste do início de cada palavra no ataque
+  real do som** (envelope RMS, janela −120/+80 ms). Testado na narração do Foxy: 24 s pra 60 s de áudio e acertou palavras que
+  o 'small' errava ("encolhe", "invadir"). Legenda e corte de cena usam esses tempos; conferir o vídeo com áudio no fim.
