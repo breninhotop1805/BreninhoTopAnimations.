@@ -50,7 +50,7 @@ export function door(parent, s, o = {}) { const W = o.w || SC.doorW, H = o.h || 
   const leaf = new THREE.Group(); leaf.position.set(-side * W / 2, 0, 0); hinge.add(leaf); const LW = W - 0.06;
   const slab = bx(leaf, LW, H - 0.06, 0.24, col, 0, H / 2, 0, { r: 0.04 }); slab.name = 'door';
   for (const [py, ph] of [[H * 0.72, H * 0.34], [H * 0.28, H * 0.34]]) for (const zz of [0.13, -0.13]) bx(leaf, LW * 0.62, ph, 0.05, shade(col, 0.82), 0, py, zz, { r: 0.03 });
-  for (const zz of [0.24, -0.24]) { const k = new THREE.Mesh(new THREE.SphereGeometry(0.17, 16, 12), mat('#d8b040', { metal: 0.6, rough: 0.3 })); k.position.set(side * (LW / 2 - 0.42), H * 0.47, zz); k.castShadow = true; leaf.add(k); }
+  for (const zz of [0.24, -0.24]) { const k = new THREE.Mesh(new THREE.SphereGeometry(0.17, 16, 12), mat('#d8b040', { metal: 0.6, rough: 0.3 })); k.position.set(-side * (LW / 2 - 0.42), H * 0.47, zz); /* knob on the side OPPOSITE the hinge */ k.castShadow = true; leaf.add(k); }
   if (o.sign) { const t = textTex(o.sign, { bg: '#f2f2f2', color: '#222', w: 256, h: 128 }); const p = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.6), new THREE.MeshStandardMaterial({ map: t })); p.position.set(0, H * 0.82, 0.13); leaf.add(p); }
   const open = (o.open ?? 1.75) * (o.inward ? 1 : -1) * -side; const d = { group: g, hinge, leaf, set(k) { hinge.rotation.y = open * k; } }; d.set(0); if (s) obst(s, slab, o.name || 'porta', true); return d; }
 // ---------------- window ----------------
