@@ -468,3 +468,18 @@ Direção:
 - **Caminhada (pedido dele):** nada de curva em "S" (devagar–rápido–devagar). Velocidade CONSTANTE, reta, estilo Roblox, só
   com rampa curta (~0,15 s) no começo e no fim pra não dar tranco; pernas/braços acompanham a velocidade (`walkPath` em act.js;
   `ease: true` só se pedir o jeito antigo). A suavidade vai nas ANIMAÇÕES (gestos com overshoot, cabeça viva), não no deslocamento.
+
+## EP02 "Amigo imaginário" — regras novas (valem pra todos os vídeos Roblox)
+- **Música de fundo NOVA em todos os vídeos**: "Numbers Temporex slowed/underwater" (`roblox_base/assets/music/numbers_slowed_underwater.wav`;
+  no episódio vira link `assets/musica.wav`). Ela é mais baixa que a antiga: usar `volume=-8dB` (média ≈ −29,5 dB, ~15 dB abaixo da voz
+  de −14 dB), fade-in 0,3 s e fade-out 2,5 s no fim. SEMPRE medir com volumedetect (música e efeitos 14–16 dB abaixo da média da voz).
+- **Portas (erro que ele pegou)**: maçaneta SEMPRE do lado oposto à dobradiça (corrigido no `door()` do kit) e porta NUNCA abre pra
+  parede/bloco maciço: fachada com vão de verdade (`wall()` com buraco) + corredor/vestíbulo iluminado atrás (ver `schoolFront` em
+  roblox_ep02/src/props.js). Conferir em close a porta aberta antes do render.
+- **Sentados lado a lado** (banco, mesa): mãos apoiadas nas PRÓPRIAS coxas por IK (`lap()` em roblox_ep02/src/shots.js) — braço solto faz
+  as mãos caírem no assento e encostarem na mão do vizinho. Espaço ≥4,2 entre centros e câmera 3/4 pra caberem no quadro vertical.
+- **Amigos/objetos redondos (não R15)** entram no QA com `blobQA` (esfera × peças dos personagens, × obstáculos, + rosto no quadro).
+- `node render.mjs check` do vídeo inteiro (NORENDER) leva ~25 s em 3 processos — rodar SEMPRE no vídeo inteiro antes do render
+  (o quadro do meio da cena não pega punch-in, entradas e saídas). Figurantes/segundo plano: `c.noFrame = true`.
+- Efeitos sonoros Roblox: `sfx.py` + `sfx_lib.py` procedurais (whoosh, boing, pop, passos, páginas, tic-tac, brilho, risadas), discretos,
+  máx. 3 sinos/chimes, barramento com limitador 0.32 → média ≈ −30 dB.
