@@ -507,3 +507,17 @@ Direção:
    (`reach` = meia largura da janela + persianas; janelas entre `reach` e a borda; nenhuma janela sobre o batente) e loga
    `LOG SOBREPOSTO` se não couber; (d) conferir fachadas e cenários em close, sem DOF, antes do storyboard.
    Isso vale pra tudo: móveis, objetos de cena, textos, efeitos, personagens.
+
+## EP03 "O reflexo no espelho" — técnicas novas (usar sempre que tiver espelho/reflexo)
+- **Espelho de verdade**: `roblox_ep03/src/mirror.js` (three `Reflector` + shader próprio: tom de vidro, brilho, ONDULAÇÃO quando alguém
+  toca/atravessa, flash). **Camadas**: 0 = normal (aparece na câmera E no espelho — reflexo exato automático), 1 = só câmera (ele não
+  aparece no espelho), 2 = SÓ no espelho (o reflexo agindo sozinho: trabalhando, segurando carta, sentado lá dentro). O reflexo só é
+  calculado na passada principal (`MIRRORS.live`), pra não pesar. Texto segurado pelo reflexo = textura ESPELHADA pra ler certo no vidro.
+- **Gêmeos do espelho**: cada personagem que age diferente no espelho tem um "gêmeo" (mesma skin, `C.T.*` no cast) na camada 2;
+  QA separa os dois grupos (`mirrorOnly`).
+- **Enquadramento automático** `frame(x, pontos, direção)`: afasta a câmera até todos os pontos (rostos, cantos do espelho, ponto onde o
+  reflexo aparece = `refl(espelho, p)`) caberem; se bater na parede, abre a lente em vez de sair do cômodo. Usar no lugar de chutar posição.
+- **Cômodos fechados** (com espelho tem que ter parede da frente, senão o espelho mostra o vazio): `room({ front: true, d: 30, cz: 4 })`
+  — `cz` deixa o cômodo mais comprido pra frente sem mexer nos móveis; a câmera nunca sai do cômodo (trava em main.js usa `CZ`).
+- **Portas**: `inward` define pra que lado abre — SEMPRE para o lado oposto de quem vem (quarto: ele vem do corredor → abre pra dentro
+  do quarto; banheiro: ele sai → abre pro corredor). A checagem pegou a porta batendo nele quando estava ao contrário.
