@@ -58,7 +58,8 @@ export function win(parent, o = {}) { const W = o.w || 3.4, H = o.h || 4.0; cons
   const glass = new THREE.Mesh(new THREE.PlaneGeometry(W, H), o.opaque ? new THREE.MeshStandardMaterial({ color: '#8fc6ea', roughness: 0.12, metalness: 0.25, emissive: '#26445a', emissiveIntensity: 0.25 }) : o.night ? mat('#ffd890', { em: '#ffb860', ei: 0.9 }) : new THREE.MeshPhysicalMaterial({ color: '#9fd0f0', roughness: 0.05, metalness: 0, transmission: 0, opacity: 0.55, transparent: true })); glass.position.set(0, H / 2, 0); g.add(glass);
   for (const [w, h, x, y] of [[W + 0.5, 0.28, 0, -0.1], [W + 0.5, 0.28, 0, H + 0.1], [0.28, H + 0.4, -W / 2 - 0.1, H / 2], [0.28, H + 0.4, W / 2 + 0.1, H / 2], [0.14, H, 0, H / 2], [W, 0.14, 0, H * 0.55]]) bx(g, w, h, 0.32, fr, x, y, 0.05);
   bx(g, W + 0.9, 0.22, 0.75, fr, 0, -0.25, 0.25);
-  if (o.shutters) for (const sd of [-1, 1]) { const sh = bx(g, W * 0.5, H + 0.2, 0.12, o.shutters, sd * (W * 0.75 + 0.25), H / 2, 0.15); for (let i = 0; i < 9; i++) bx(g, W * 0.46, 0.06, 0.06, shade(o.shutters, 0.8), sd * (W * 0.75 + 0.25), 0.3 + i * H / 9, 0.24, { r: 0 }); }
+  if (o.shutters) for (const sd of [-1, 1]) { const sw = W * 0.3, sx = sd * (W / 2 + 0.2 + sw / 2); bx(g, sw, H + 0.2, 0.12, o.shutters, sx, H / 2, 0.15); for (let i = 0; i < 9; i++) bx(g, sw * 0.9, 0.06, 0.06, shade(o.shutters, 0.8), sx, 0.3 + i * H / 9, 0.24, { r: 0 }); }
+  g.userData.halfW = o.shutters ? W / 2 + 0.2 + W * 0.3 : W / 2 + 0.25;  /* total half-width incl. shutters (used to keep it INSIDE the facade) */
   if (o.curtains) for (const sd of [-1, 1]) bx(g, W * 0.26, H + 0.6, 0.18, o.curtains, sd * (W / 2 - W * 0.06), H / 2, 0.45, { r: 0.08 });
   if (o.flowers) { bx(g, W, 0.5, 0.6, '#b0603a', 0, -0.6, 0.55); for (let i = 0; i < 5; i++) { const f = new THREE.Mesh(new THREE.SphereGeometry(0.28, 10, 8), mat(['#e84a6a', '#f4c03a', '#ff7aa8', '#e8743a'][i % 4])); f.position.set(-W / 2 + 0.4 + i * (W - 0.8) / 4, -0.2, 0.55); g.add(f); } }
   return g; }
@@ -117,13 +118,16 @@ export function room(s, o = {}) { const g = new THREE.Group(); s.add(g); const W
 export function house(p, s, o = {}) { const g = new THREE.Group(); p.add(g); g.position.set(o.x || 0, 0, o.z || 0); const W = o.w || 14, H = o.storeys === 1 ? 13 : 25.5, Dp = 10; const col = o.color || '#f2a4c8', trim = o.trim || '#ffffff';
   const wm = new THREE.MeshStandardMaterial({ color: '#ffffff', map: TEX.plaster(col, [W / 8, H / 8]), roughness: 0.9 }); const dx = o.doorX ?? 0;
   const holes = [{ x0: W / 2 + dx - SC.doorW / 2 - 0.35, x1: W / 2 + dx + SC.doorW / 2 + 0.35, y0: 0, y1: SC.doorH + 0.35 }];
-  const wins = []; for (const fx of [-W * 0.3, W * 0.3]) if (Math.abs(fx - dx) > 4) wins.push({ x: fx, y: SC.sill }); if (o.storeys !== 1) for (const fx of [-W * 0.3, W * 0.3]) wins.push({ x: fx, y: SC.storey + 2.2 });
+  const reach = 1.7 + 0.2 + 3.4 * 0.3; /* half-width of a window WITH its shutters */
+  const wx = Math.max(reach + 0.1, Math.min(W * 0.3, W / 2 - 0.35 - reach)); /* inside the house (never over the neighbour's) and the two windows never touching */
+  if (W / 2 - 0.35 - reach < reach + 0.1) console.log(`LOG SOBREPOSTO casa estreita demais (W=${W}) pra 2 janelas com persianas`);
+  const wins = []; for (const fx of [-wx, wx]) if (Math.abs(fx - dx) > reach + SC.doorW / 2 + 0.35 + 0.3) wins.push({ x: fx, y: SC.sill }); /* no shutter over the door frame */ if (o.storeys !== 1) for (const fx of [-wx, wx]) wins.push({ x: fx, y: SC.storey + 2.2 });
   for (const w_ of wins) holes.push({ x0: W / 2 + w_.x - 1.95, x1: W / 2 + w_.x + 1.95, y0: w_.y - 0.25, y1: w_.y + 4.25 });
   wall(g, s, W, H, 0.6, wm, holes, { pos: [-W / 2, 0, 0], name: 'casa' }); const back = bx(g, W, H, Dp - 5, wm, 0, H / 2, -5.3 - (Dp - 5) / 2, { r: 0 }); if (s) obst(s, back, 'casa');
   { const hx = o.doorX ?? 0; const dm = mat('#3a2c24'); bx(g, SC.doorW + 2.6, 0.2, 5.0, mat('#6a4a34'), hx, 0.0, -2.8, { r: 0 }); for (const sx of [-1, 1]) { const sw = bx(g, 0.4, SC.doorH + 1, 5.0, dm, hx + sx * (SC.doorW / 2 + 1.1), (SC.doorH + 1) / 2, -2.8, { r: 0 }); if (s) obst(s, sw, 'casa'); }
     bx(g, SC.doorW + 2.6, 0.4, 5.0, dm, hx, SC.doorH + 1, -2.8, { r: 0 }); const lamp = new THREE.PointLight('#ffd8a0', 12, 9, 1.5); lamp.position.set(hx, SC.doorH - 0.5, -3.5); g.add(lamp); }
   const d = door(g, s, { x: dx, z: 0, color: o.doorColor || '#8a3a2a', frame: trim, name: 'porta-casa', inward: true });
-  for (const w_ of wins) win(g, { x: w_.x, y: w_.y, z: 0.3, /* on the wall FACE: shutters/frame never buried in the wall */ w: 3.4, h: 4, shutters: o.shutters || '#3a8a5a', flowers: w_.y < 5 && o.flowers, night: o.night });
+  for (const w_ of wins) { const wg = win(g, { x: w_.x, y: w_.y, z: 0.3, /* on the wall FACE: shutters/frame never buried in the wall */ w: 3.4, h: 4, shutters: o.shutters || '#3a8a5a', flowers: w_.y < 5 && o.flowers, night: o.night }); if (Math.abs(w_.x) + wg.userData.halfW > W / 2 + 1e-3) console.log(`LOG SOBREPOSTO janela/persiana passa da borda da casa (x=${w_.x.toFixed(2)})`); }
   bx(g, W + 0.8, 0.6, 1.0, trim, 0, SC.storey - 0.1, 0.3); bx(g, W + 1.2, 0.9, 1.4, trim, 0, H - 0.2, 0.4);
   if (o.storeys !== 1 && o.balcony !== false) { const by = SC.storey + 0.3; bx(g, W * 0.55, 0.35, 2.4, trim, dx, by, 1.2); for (let i = 0; i <= 10; i++) bx(g, 0.12, 2.6, 0.12, o.rail || '#2a3a6a', dx - W * 0.27 + i * W * 0.054, by + 1.4, 2.3, { r: 0 }); bx(g, W * 0.55, 0.16, 0.2, o.rail || '#2a3a6a', dx, by + 2.75, 2.3, { r: 0 }); }
   const roof = new THREE.Mesh(new THREE.BoxGeometry(W + 1.6, 0.8, Dp + 2), new THREE.MeshStandardMaterial({ map: TEX.roof(o.roof || '#c8502a', [3, 3]) })); roof.position.set(0, H + 0.6, -Dp / 2 + 0.5); roof.castShadow = true; g.add(roof);

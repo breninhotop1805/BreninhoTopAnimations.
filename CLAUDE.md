@@ -499,3 +499,11 @@ Direção:
 6. **Desenhos/adesivos em superfícies** (mão, braço, rosto, objeto curvo): usar `DecalGeometry` (three/addons) projetado na malha —
    nunca um plano solto na frente (fica "imagem voando"). Desenho em folha/caderno: conferir a ORIENTAÇÃO do ponto de vista de quem
    desenha e da câmera (o Bolota no caderno saiu de cabeça pra baixo no EP02).
+7. **NADA sobreposto a nada — em lugar nenhum** (ele pegou as "portinhas" das janelas bugadas no EP02): as persianas eram largas
+   demais e passavam da borda da casa, ficando UMA EM CIMA DA OUTRA com a persiana da casa vizinha (mesmo plano → cintilação).
+   Regras: (a) toda peça decorativa (persiana, moldura, placa, vaso, luminária, sacada, letreiro) cabe DENTRO da fachada/parede
+   dona dela, com folga; (b) duas peças nunca no mesmo plano ocupando o mesmo espaço (z-fighting = bug); (c) peças vizinhas
+   (persianas entre duas janelas, janela ao lado de porta) com espaço calculado — no `house()` do kit isso agora é conta
+   (`reach` = meia largura da janela + persianas; janelas entre `reach` e a borda; nenhuma janela sobre o batente) e loga
+   `LOG SOBREPOSTO` se não couber; (d) conferir fachadas e cenários em close, sem DOF, antes do storyboard.
+   Isso vale pra tudo: móveis, objetos de cena, textos, efeitos, personagens.
