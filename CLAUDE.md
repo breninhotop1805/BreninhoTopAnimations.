@@ -496,3 +496,6 @@ Direção:
    Barramento: compressor + limitador 0.32 → média ≈ −30 dB; máx. 3 momentos de sino/brilho forte por vídeo; cada som marca um momento.
 5. **Re-render parcial**: `node render.mjs frames <dir> <lista.json>` renderiza só os quadros pedidos (f%05d.jpg); extrair os quadros do
    vídeo anterior, substituir, upscale lanczos e codificar de novo. Calcular a lista pelas cenas afetadas (cenário) + legendas afetadas.
+6. **Desenhos/adesivos em superfícies** (mão, braço, rosto, objeto curvo): usar `DecalGeometry` (three/addons) projetado na malha —
+   nunca um plano solto na frente (fica "imagem voando"). Desenho em folha/caderno: conferir a ORIENTAÇÃO do ponto de vista de quem
+   desenha e da câmera (o Bolota no caderno saiu de cabeça pra baixo no EP02).
