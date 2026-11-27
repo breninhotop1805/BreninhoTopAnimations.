@@ -267,7 +267,7 @@ Inspiração MÁXIMA — ficar ainda mais parecido com elas do que os vídeos de
 - **Câmera**: altura dos olhos, personagem grande e centralizado (corpo inteiro ou da cintura pra cima), push-in lento, às vezes
   travelling/lateral; atuação contínua (andar, gesticular, pular, abraçar), efeitos 3D (corações flutuando, faíscas, poderes).
 - **Legendas**: UMA palavra por vez, centralizada a ~69% da altura, branca com contorno preto grosso + sombra; palavras-chave
-  em VERMELHO. Pedido dele: fonte **KOMIKAX** (`roblox_base/assets/komikax.ttf`), **SEM desfoque**, animação de **APROXIMAR** (a palavra cresce de longe até o tamanho final) com **curva elástica profissional** (elástico PEQUENO ~6%, duração ~0,32 s — 0,2 s ficou rápido demais, 0,5 s lento —, começa em 45% do tamanho; borda preta GROSSA = 30% do tamanho da fonte — "não pode parecer CapCut"), com ORIGEM NA BASE da palavra (cresce de baixo pra cima) e um desfoque PEQUENO e profissional (máx ~2 px em 1080, some em 0,1 s) — NÃO é "pop" — (antes: leve
+  em VERMELHO [REVOGADO depois do EP02: agora TODAS as palavras BRANCAS]. Pedido dele: fonte **KOMIKAX** (`roblox_base/assets/komikax.ttf`), **SEM desfoque**, animação de **APROXIMAR** (a palavra cresce de longe até o tamanho final) com **curva elástica profissional** (elástico PEQUENO ~6%, duração ~0,32 s — 0,2 s ficou rápido demais, 0,5 s lento —, começa em 45% do tamanho; borda preta GROSSA = 30% do tamanho da fonte — "não pode parecer CapCut"), com ORIGEM NA BASE da palavra (cresce de baixo pra cima) e um desfoque PEQUENO e profissional (máx ~2 px em 1080, some em 0,1 s) — NÃO é "pop" — (antes: leve
   desfoque** que some quando a palavra assenta; sincronia 100% com a voz (timestamps palavra a palavra do faster-whisper,
   corrigidos à mão se precisar). Voz agora é de IA.
 
@@ -282,7 +282,7 @@ Ajuste pedido por ele: cartola **mais baixa e encaixada** (a cabeça entra na co
   talk/blink/tears/blush), `topHat`, `plastic()`.
 - `act.js`: gestos com antecipação/overshoot (wave, point, think, shrug, cheer, chest, scared, facepalm, angry, sad, reach,
   hips), `walkPath` com parada suave, `alive`, `talk` (boca falando), `startle` (pulo de susto com squash).
-- `subs.js`: legendas KOMIKAX palavra a palavra (pop elástico + blur), vermelho nas palavras-chave.
+- `subs.js`: legendas KOMIKAX palavra a palavra (pop elástico + blur), TODAS BRANCAS (sem vermelho — regra nova).
 - `main.js`: câmera em 2 passadas, pós: GTAO + Bokeh (foco no personagem) + bloom + grade (saturação/vinheta) + legendas.
 - Render pesado (AO + DOF em 1080×1920): ~3–5 s/quadro → renderizar em 4 partes em paralelo; testar com stills antes.
 - **Skins v1 REPROVADAS** ("MUITO FEIAS": blocos lisos, cabelo = touca simples). Padrão agora = `roblox_base/src/chars.js`
@@ -341,7 +341,7 @@ Ele cobrou: "não está parecido com as referências; nem todos têm corpo quadr
   de 2 andares com sacada, calçada de pedra, postes, árvores low-poly arredondadas; cidade noturna com prédios iluminados; estádio
   com torcida; sala de aula com carteiras). Cores saturadas, luz quente de lâmpadas, DOF forte, bloom.
 - **Elementos gráficos 3D**: relógios de parede, placas/painéis LED com texto, balão de pensamento, "Z z z" de sono, "?" "!",
-  círculo destacando objeto, corações. Legenda branca com borda (vermelho nas palavras-chave).
+  círculo destacando objeto, corações. Legenda branca com borda (TODAS brancas, nenhuma vermelha — regra dele depois do EP02).
 - **Movimento**: caminhada natural com joelho e cotovelo; gestos com antebraço; sentar dobrando o joelho; abraços com braços
   dobrados (sem atravessar); câmera perto, altura dos olhos, close de rosto nas reações.
 - Protagonista dele: cartola AINDA MENOR (pedido depois do EP01).
@@ -471,8 +471,8 @@ Direção:
 
 ## EP02 "Amigo imaginário" — regras novas (valem pra todos os vídeos Roblox)
 - **Música de fundo NOVA em todos os vídeos**: "Numbers Temporex slowed/underwater" (`roblox_base/assets/music/numbers_slowed_underwater.wav`;
-  no episódio vira link `assets/musica.wav`). Ela é mais baixa que a antiga: usar `volume=-8dB` (média ≈ −29,5 dB, ~15 dB abaixo da voz
-  de −14 dB), fade-in 0,3 s e fade-out 2,5 s no fim. SEMPRE medir com volumedetect (música e efeitos 14–16 dB abaixo da média da voz).
+  no episódio vira link `assets/musica.wav`). Ela é mais baixa que a antiga: usar `volume=-5dB` (média ≈ −26,5 dB, ~12 dB abaixo da voz de −14 dB;
+  com −8 dB ele achou "bem baixa"), fade-in 0,3 s e fade-out 2,5 s no fim. SEMPRE medir com volumedetect (música ~12 dB e efeitos ~16 dB abaixo da média da voz).
 - **Portas (erro que ele pegou)**: maçaneta SEMPRE do lado oposto à dobradiça (corrigido no `door()` do kit) e porta NUNCA abre pra
   parede/bloco maciço: fachada com vão de verdade (`wall()` com buraco) + corredor/vestíbulo iluminado atrás (ver `schoolFront` em
   roblox_ep02/src/props.js). Conferir em close a porta aberta antes do render.
@@ -481,5 +481,18 @@ Direção:
 - **Amigos/objetos redondos (não R15)** entram no QA com `blobQA` (esfera × peças dos personagens, × obstáculos, + rosto no quadro).
 - `node render.mjs check` do vídeo inteiro (NORENDER) leva ~25 s em 3 processos — rodar SEMPRE no vídeo inteiro antes do render
   (o quadro do meio da cena não pega punch-in, entradas e saídas). Figurantes/segundo plano: `c.noFrame = true`.
-- Efeitos sonoros Roblox: `sfx.py` + `sfx_lib.py` procedurais (whoosh, boing, pop, passos, páginas, tic-tac, brilho, risadas), discretos,
-  máx. 3 sinos/chimes, barramento com limitador 0.32 → média ≈ −30 dB.
+
+
+## Correções pedidas depois do EP02 (REGRAS FIXAS do canal Roblox)
+1. **Legendas: TODAS BRANCAS.** Nenhuma palavra vermelha (subs.js sempre branco; `RED_WORDS` não é mais usado).
+2. **Música um pouco mais alta**: `volume=-5dB` na "Numbers slowed/underwater" (≈ −26,5 dB de média, ~12 dB abaixo da voz).
+3. **Janelas sem bug**: janela de casa fica NA FACE da parede (`z: 0.3` no `house()` do kit) — antes as persianas ficavam enterradas na
+   parede e só apareciam os risquinhos das lâminas. Janela sobre parede maciça (escola, prefeitura) = `win({ opaque: true })` um pouco à
+   frente da face (vidro azul refletivo, sem plano transparente colado na parede → sem cintilação/z-fighting). Conferir fachadas em close.
+4. **Efeitos sonoros NOVOS, nada do FNAF** (ele ouviu "passo de animatrônico"): biblioteca própria do canal `roblox_base/rsfx.py`
+   (sons de desenho/jogo: whoosh/swish filtrados, pop/blip, boing, plop, celesta/brilho, passos de tênis em pedra/madeira, página, lápis,
+   tic-tac, porta com trinco, sino de escola curto, ronco de desenho, pássaros/brisa/ambiente de sala bem baixos, risadas de turma em
+   estéreo) + `Timeline` com estéreo e reverb de sala. NUNCA importar `sfx_lib.py` dos projetos FNAF em vídeo Roblox.
+   Barramento: compressor + limitador 0.32 → média ≈ −30 dB; máx. 3 momentos de sino/brilho forte por vídeo; cada som marca um momento.
+5. **Re-render parcial**: `node render.mjs frames <dir> <lista.json>` renderiza só os quadros pedidos (f%05d.jpg); extrair os quadros do
+   vídeo anterior, substituir, upscale lanczos e codificar de novo. Calcular a lista pelas cenas afetadas (cenário) + legendas afetadas.

@@ -1,62 +1,47 @@
-"""EP02 'Amigo imaginário' — discrete SFX under the voice (+ the music in the mix). Each sound marks one moment; nothing repeated
-back-to-back; max 3 chimes/bells; footsteps soft; harsh sounds very low. Times = video timeline (silence-cut voice)."""
-import numpy as np, wave, os
-from sfx_lib import *
-def boing(f0=180, dur=0.35):
-    n = int(dur * SR); t = np.arange(n) / SR; f = f0 * (1 + 0.8 * np.exp(-t / 0.05)) * (1 + 0.08 * np.sin(2 * np.pi * 14 * t))
-    return np.sin(2 * np.pi * np.cumsum(f) / SR) * env(n, 0.004, 0.12) * 0.8
-def shimmer(dur=1.0, f0=1800, down=False):
-    out = np.zeros(int(dur * SR) + SR)
-    for k in range(14): f = f0 * (2 ** ((-k if down else k) / 12 * 1.5)); add_at(out, bell(f, 0.5, 0.18, 1.0), k / 14 * dur, 0.5 * (1 - k / 20))
-    return out
-def add_at(buf, sig, at, g): i = int(at * SR); j = min(len(buf), i + len(sig)); buf[i:j] += sig[:j - i] * g
-def hum(dur=1.0, f=60):
-    n = int(dur * SR); t = np.arange(n) / SR; return (np.sin(2 * np.pi * f * t) + 0.4 * np.sin(2 * np.pi * 2 * f * t)) * np.minimum(1, t / 0.2) * np.minimum(1, (dur - t) / 0.2) * 0.6
-def page(): return curtain(0.35)
-def steps(ts, g=0.07, f0=95):
-    for i, t in enumerate(ts): add(footstep(f0 + (i % 2) * 8), t, g)
-def snore(at, dur=0.9, g=0.06):
-    n = int(dur * SR); t = np.arange(n) / SR; x = noise(dur)[:n]; x = lowpass(x, 0.05) - lowpass(x, 0.006); x += 0.5 * np.sin(2 * np.pi * 70 * t) * (0.5 + 0.5 * np.sin(2 * np.pi * 35 * t))
-    add(x * np.sin(np.pi * t / dur) ** 1.5 * 1.5, at, g)
-# 1 opening: whoosh in, Bolota hops (soft boings), footsteps on cobble
-add(whoosh(0.45), 0.0, 0.10); add(boing(170), 0.25, 0.06); add(boing(160), 0.85, 0.05); steps([0.15, 0.55, 0.95], 0.06)
-add(whoosh(0.3), 1.0, 0.05); add(chime(1.2), 2.5, 0.05)                                   # "de verdade" (chime 1/3)
-add(shimmer(0.7, 2200, down=True), 3.6, 0.035)                                           # "somem": the little friend dissolves
-steps([4.6, 4.9, 5.2, 5.5], 0.05); add(laugh(3, 640, 0.12), 5.6, 0.035)
+"""EP02 'Amigo imaginário' — SFX timeline (NEW Roblox library roblox_base/rsfx.py; nothing from the FNAF kit).
+Light cartoon/game sounds under the voice: each one marks a specific moment, no repetition back-to-back, ambience very low,
+max 3 bell/chime moments. Times = video timeline (silence-cut voice)."""
+import sys, os; sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'roblox_base'))
+from rsfx import *
+T = Timeline(112.4); A = T.add
+# --- ambience beds (very low): street birds, bedroom room tone, school yard, plaza breeze
+A(birds(9.5, 1), 0.0, 0.05, 0.3); A(room_tone(3.0), 6.5, 0.05); A(birds(4.5, 2), 9.5, 0.04, -0.3)
+A(room_tone(3.5), 19.3, 0.04); A(birds(3.0, 3), 25.7, 0.04, 0.4); A(room_tone(2.8), 34.2, 0.05)
+A(birds(2.6, 4), 50.5, 0.035); A(birds(5.0, 6), 55.6, 0.035, -0.4); A(birds(6.0, 7), 64.3, 0.035, 0.3); A(breeze(10.0), 70.0, 0.03); A(breeze(12.0), 80.0, 0.03); A(breeze(11.0), 92.0, 0.03)
+# 1 opening: swish in + Bolota's bouncy steps + sneaker steps
+A(swish(0.3), 0.0, 0.25); A(boing(190), 0.22, 0.12, 0.2); A(boing(175), 0.82, 0.10, 0.2); A(run_steps(3, 0.4, 'stone', 1), 0.12, 0.12, -0.2)
+A(whoosh(0.35), 1.0, 0.12); A(twinkle(2093), 2.55, 0.14)                               # "de verdade" — sparkle 1
+A(sparkle(0.6, 2093, 6, down=True, seed=1), 3.62, 0.14, 0.3)                          # "somem": the friend dissolves
+A(run_steps(4, 0.3, 'stone', 5), 4.6, 0.10, 0.3)
 # morning
-add(breath(0.7, True), 6.65, 0.06); add(tick(), 7.0, 0.05); add(pop_sfx(), 7.95, 0.08); add(whoosh(0.3, rise=False), 8.25, 0.06)
-add(chatter(1.4), 9.55, 0.03)                                                            # "todo mundo"
-add(thud(80, 0.12, 0.35), 12.2, 0.07); steps([13.2, 13.55, 13.9, 14.25, 14.6, 14.95, 15.3, 15.65], 0.045, 100); add(pop_sfx(), 14.92, 0.05)
-add(whoosh(0.35), 15.95, 0.05); snore(17.5, 1.0, 0.05); snore(18.6, 0.9, 0.045)            # dragon snoring
-add(knock(), 19.35, 0.04); add(scratch(), 19.6, 0.03)                                    # chalk / desk
-for i, t in enumerate([22.05, 22.35, 22.58]): add(pop_sfx(), t, 0.06 + 0.01 * i)            # 1, 2, 3
-add(page(), 23.25, 0.05); add(wrong(), 25.32, 0.025)                                     # no question 4
-add(whoosh(0.3), 25.75, 0.05); add(ding(), 26.88, 0.04)                                  # "Bolota" (bell 2/3)
-add(boing(150, 0.45), 27.7, 0.08); add(whoosh(0.3), 28.4, 0.04); add(hum(1.3, 55), 29.1, 0.05)
-add(whoosh(0.6), 30.4, 0.06); mbox([523, 659, 784, 659, 587, 523], 30.6, 0.42, 0.0, 0.025)   # flashback music-box
-steps([33.3, 33.6, 33.9], 0.05); add(chatter(1.6), 34.2, 0.03); add(thud(90, 0.1, 0.3), 36.38, 0.06); add(boing(120, 0.4), 36.4, 0.06)
-add(breath(0.9, False), 37.2, 0.05); snore(38.5, 0.8, 0.07); snore(39.25, 0.6, 0.06); add(laugh(3, 560, 0.11), 40.05, 0.04)
-add(page(), 40.5, 0.06); add(whir(0.7, 300, 160), 42.5, 0.02); add(page(), 43.65, 0.06); add(whoosh(0.4), 45.9, 0.05); add(page(), 46.95, 0.06)
-add(shimmer(0.5, 1500, down=True), 48.6, 0.025)
-add(whoosh(0.35), 49.9, 0.07); steps([50.65, 50.9, 51.15, 51.4, 51.65], 0.045, 110); add(laugh(2, 700, 0.12), 51.0, 0.03)
-add(typing(1.3), 52.1, 0.04); add(scratch(), 53.75, 0.05); add(scratch(), 53.95, 0.04); add(typing(0.7), 54.5, 0.035)
-add(whoosh(0.3), 55.7, 0.06); add(chatter(2.0), 57.6, 0.035)
-for i, t in enumerate([57.7, 58.0, 58.3, 58.6, 58.95]): add(laugh(3, 480 + 90 * i, 0.1 + 0.01 * i), t, 0.03)    # the whole school laughs
-add(breath(0.8, False), 59.95, 0.05)
-add(creak(0.6, 200), 60.95, 0.04); add(ring(0.35), 61.2, 0.025); steps([61.5, 61.85, 62.2, 62.55], 0.05)
-steps([62.95, 63.3, 63.65, 64.0], 0.045); add(whoosh(0.4), 64.4, 0.04); steps([64.6, 64.95, 65.3, 65.65, 66.0], 0.045)
-add(pop_sfx(), 67.3, 0.04); add(pop_sfx(), 69.1, 0.06)                                   # "espera" / "?"
-steps([69.9, 70.35, 70.8, 71.25], 0.04, 90); add(thud(90, 0.1, 0.3), 71.6, 0.05)
-add(laugh(3, 600, 0.12), 76.6, 0.035); add(laugh(3, 520, 0.12), 76.75, 0.03)
-for k in range(14): add(tick(), 77.6 + k * 0.15, 0.03)                                   # time flies
-add(shimmer(1.2, 1400), 81.2, 0.03); add(shimmer(0.6, 1700), 84.45, 0.025)
-add(whoosh(0.5), 87.5, 0.04); add(laugh(3, 600, 0.12), 90.1, 0.03)
-add(whoosh(0.7), 91.6, 0.05); add(curtain(0.6), 92.3, 0.03); add(curtain(0.6), 93.2, 0.03)  # leaves
-add(pop_sfx(), 97.33, 0.05); add(chime(1.6), 98.1, 0.05); add(shimmer(1.0, 2000), 98.2, 0.04)  # wink + disappears (chime 3/3)
-add(whoosh(0.3, rise=False), 100.3, 0.03); add(pop_sfx(), 102.45, 0.05)
-add(whoosh(0.6), 103.3, 0.06); mbox([523, 659, 784], 103.6, 0.5, 0.0, 0.02); add(boing(150, 0.45), 106.0, 0.07); add(whoosh(0.35), 106.75, 0.05); add(hum(1.0, 55), 107.45, 0.05)
-add(pop_sfx(), 108.95, 0.05); add(whoosh(0.9), 110.3, 0.05); add(shimmer(1.3, 1600), 110.6, 0.03)
-mix[:] = np.tanh(mix * 1.15) * 0.8
-pcm = (np.clip(mix, -1, 1) * 32767).astype(np.int16); os.makedirs('out', exist_ok=True)
-with wave.open('out/sfx.wav', 'wb') as w: w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR); w.writeframes(np.stack([pcm, pcm], 1).tobytes())
-print('ok', np.abs(mix).max())
+A(blip((660, 990)), 6.6, 0.12); A(whoosh(0.3, up=False), 7.4, 0.08); A(pop(360, 900), 7.9, 0.16); A(swish(0.25), 8.25, 0.12)
+A(run_steps(6, 0.33, 'stone', 9), 9.6, 0.07, -0.3)                                      # everybody walking
+A(plop(), 12.2, 0.18); A(run_steps(8, 0.35, 'stone', 20), 13.2, 0.08, 0.2); A(pop(500, 1300), 14.92, 0.12, 0.3)
+A(swish(0.25), 15.95, 0.1); A(big_snore(1.4), 17.45, 0.14); A(big_snore(1.2), 18.75, 0.12)      # dragon asleep
+A(step('wood', 3), 19.4, 0.1); A(scribble(0.6, 4), 19.6, 0.07)                          # chalk
+for i, t in enumerate([22.04, 22.34, 22.57]): A(pop(400 + 150 * i, 1000 + 300 * i), t, 0.16)   # 1, 2, 3
+A(page_flip(), 23.25, 0.16); A(fail(), 25.32, 0.1)                                      # no question 4
+A(swish(0.25), 25.75, 0.1); A(blip((784, 1175)), 26.88, 0.12)                           # "Bolota"
+A(boing(150, 0.5), 27.7, 0.2); A(pop(300, 700, 0.12), 28.42, 0.12); A(hum(1.3), 29.1, 0.07)
+A(magic_rise(0.8), 30.0, 0.08); A(run_steps(5, 0.36, 'stone', 30), 30.7, 0.06)          # flashback
+A(run_steps(3, 0.32, 'stone', 40), 33.3, 0.09); A(plop(), 36.38, 0.2); A(boing(120, 0.4), 36.42, 0.1)
+A(hum(1.0, 52), 37.1, 0.04); A(snore_cartoon(1.3), 38.45, 0.16)                         # fake snore
+A(page_flip(0.3, 2), 40.45, 0.18); A(magic_rise(0.6), 42.3, 0.05); A(page_flip(0.3, 3), 43.62, 0.18); A(whoosh(0.4), 45.9, 0.1); A(page_flip(0.3, 4), 46.93, 0.18)
+A(sparkle(0.5, 1760, 5, down=True, seed=2), 48.6, 0.08)
+A(swish(0.3), 49.9, 0.16); A(run_steps(6, 0.24, 'stone', 50), 50.6, 0.08); A(boing(200, 0.3), 51.0, 0.07)
+A(scribble(1.4, 6), 52.1, 0.12); A(scribble(0.7, 7), 53.72, 0.12); A(scribble(0.6, 8), 54.5, 0.1)
+A(whoosh(0.3), 55.7, 0.1); A(crowd_laugh(1.8, 10, 3), 57.65, 0.1)                       # the whole school laughs
+A(whoosh(0.5, up=False), 59.9, 0.07)
+A(door_open(), 60.9, 0.16); A(school_bell(0.8), 61.25, 0.05); A(run_steps(4, 0.35, 'stone', 60), 61.5, 0.09)
+A(run_steps(4, 0.35, 'stone', 70), 62.95, 0.08); A(swish(0.25), 64.4, 0.08); A(run_steps(5, 0.35, 'stone', 80), 64.6, 0.08)
+A(blip((587, 784)), 67.3, 0.09); A(pop(420, 1000), 69.1, 0.12)                          # "espera" / "?"
+A(run_steps(4, 0.45, 'stone', 90), 69.9, 0.07); A(plop(), 71.6, 0.14)
+A(clock_fast(2.0, 9), 77.6, 0.07)                                                        # time flies
+A(magic_rise(1.2), 81.1, 0.06); A(twinkle(1760), 84.48, 0.1)                            # fading / smiling
+A(whoosh(0.6), 91.6, 0.08); A(page_flip(0.5, 5), 92.4, 0.06)                             # months go by
+A(blip((1046, 1568)), 97.33, 0.1)                                                        # wink
+A(sparkle(1.1, 1568, 9, seed=7), 98.05, 0.16); A(magic_rise(1.0), 98.0, 0.05)            # disappears — sparkle 2
+A(whoosh(0.3, up=False), 100.3, 0.05); A(pop(420, 1000), 102.45, 0.12)
+A(magic_rise(0.7), 103.0, 0.07); A(run_steps(5, 0.36, 'stone', 99), 103.5, 0.05); A(boing(150, 0.5), 106.0, 0.18); A(swish(0.3), 106.73, 0.1); A(hum(1.0), 107.45, 0.07)
+A(pop(300, 800, 0.12), 108.95, 0.12); A(whoosh(1.0), 110.25, 0.08); A(chord_bell(), 110.6, 0.08)   # final — bell 3
+print('peak', T.save('out/sfx.wav'))

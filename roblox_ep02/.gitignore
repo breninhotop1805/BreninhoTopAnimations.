@@ -10,3 +10,7 @@ out/list.txt
 out/video_noaudio.mp4
 out/*.mp4
 out/fin/
+out/rr/
+out/orig/
+out/*.json
+out/chk*.jpg

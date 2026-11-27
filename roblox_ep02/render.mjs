@@ -25,6 +25,10 @@ if (mode === 'stills') {
 } else if (mode === 'check') {
   await page.evaluate(() => window.NORENDER = 1); const dur = await page.evaluate(() => window.APP.duration); const from = parseFloat(a1 || '0'), to = parseFloat(a2 || dur);
   for (let i = Math.round(from * FPS); i < Math.round(to * FPS); i++) await page.evaluate(t => window.APP.renderAt(t), i / FPS);
+} else if (mode === 'frames') {  // node render.mjs frames <outdir> <list.json of frame numbers>  (RS scale) -> f%05d.jpg
+  fs.mkdirSync(a1, { recursive: true }); const L = JSON.parse(fs.readFileSync(a2, 'utf8')); const t0 = Date.now(); let k = 0;
+  for (const i of L) { const f = `${a1}/f${String(i).padStart(5, '0')}.jpg`; if (fs.existsSync(f)) continue; fs.writeFileSync(f, await grab(i / FPS)); if (++k % 60 === 0) console.log(`frame ${k}/${L.length}  ${((Date.now() - t0) / 1000 / k).toFixed(2)}s/f`); }
+  console.log('FRAMES_DONE');
 } else if (mode === 'video') {
   const dur = await page.evaluate(() => window.APP.duration);
   const from = parseFloat(a2 || '0'), to = parseFloat(a3 || dur);
