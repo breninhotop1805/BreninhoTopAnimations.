@@ -8,9 +8,10 @@
 
 ## Protagonista (skin do canal) — NUNCA ERRAR
 - Cabeça branca com rosto clássico do Roblox (olhos pretos ovais + sorriso simples).
-- Cartola AZUL com faixa VERMELHA. Camisa VERMELHA.
-- NÃO TEM CABELO e os olhos são pontinhos pretos (sem cor de olho).
-- Qualquer poder/mudança no protagonista acontece na cartola, roupa, mãos ou expressão — nunca em cabelo ou cor dos olhos.
+- A CARTOLA é a marca do personagem: está sempre presente (padrão: azul com faixa vermelha). Pode mudar de cor ou de formato na história.
+- A roupa pode variar livremente (padrão: camisa vermelha).
+- NUNCA tem cabelo. Os olhos são pontinhos pretos (sem cor de olho).
+- Qualquer poder/mudança no protagonista acontece na cartola, roupa, mãos ou expressão — nunca em cabelo.
 
 ## Fórmula que funciona (análise de ~18 vídeos virais)
 1. Primeira frase = mundo + regra absurda + "e hoje aconteceu comigo" ("Nesta cidade...", "Neste mundo...", "Neste reino...").
