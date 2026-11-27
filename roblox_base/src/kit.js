@@ -128,9 +128,9 @@ export function house(p, s, o = {}) { const g = new THREE.Group(); p.add(g); g.p
     bx(g, SC.doorW + 2.6, 0.4, 5.0, dm, hx, SC.doorH + 1, -2.8, { r: 0 }); const lamp = new THREE.PointLight('#ffd8a0', 12, 9, 1.5); lamp.position.set(hx, SC.doorH - 0.5, -3.5); g.add(lamp); }
   const d = door(g, s, { x: dx, z: 0, color: o.doorColor || '#8a3a2a', frame: trim, name: 'porta-casa', inward: true });
   for (const w_ of wins) { const wg = win(g, { x: w_.x, y: w_.y, z: 0.3, /* on the wall FACE: shutters/frame never buried in the wall */ w: 3.4, h: 4, shutters: o.shutters || '#3a8a5a', flowers: w_.y < 5 && o.flowers, night: o.night }); if (Math.abs(w_.x) + wg.userData.halfW > W / 2 + 1e-3) console.log(`LOG SOBREPOSTO janela/persiana passa da borda da casa (x=${w_.x.toFixed(2)})`); }
-  bx(g, W + 0.8, 0.6, 1.0, trim, 0, SC.storey - 0.1, 0.3); bx(g, W + 1.2, 0.9, 1.4, trim, 0, H - 0.2, 0.4);
+  const alt = o.alt ? 1 : 0; /* neighbours: alternate offsets -> overlapping eaves/bands are NEVER coplanar (no z-fighting) */ bx(g, W + 0.8, 0.6, 1.0, trim, 0, SC.storey - 0.1 + alt * 0.12, 0.32 + alt * 0.08); bx(g, W + 1.2, 0.9, 1.4, trim, 0, H - 0.2 + alt * 0.15, 0.47 + alt * 0.1);
   if (o.storeys !== 1 && o.balcony !== false) { const by = SC.storey + 0.3; bx(g, W * 0.55, 0.35, 2.4, trim, dx, by, 1.2); for (let i = 0; i <= 10; i++) bx(g, 0.12, 2.6, 0.12, o.rail || '#2a3a6a', dx - W * 0.27 + i * W * 0.054, by + 1.4, 2.3, { r: 0 }); bx(g, W * 0.55, 0.16, 0.2, o.rail || '#2a3a6a', dx, by + 2.75, 2.3, { r: 0 }); }
-  const roof = new THREE.Mesh(new THREE.BoxGeometry(W + 1.6, 0.8, Dp + 2), new THREE.MeshStandardMaterial({ map: TEX.roof(o.roof || '#c8502a', [3, 3]) })); roof.position.set(0, H + 0.6, -Dp / 2 + 0.5); roof.castShadow = true; g.add(roof);
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(W + 1.6, 0.8, Dp + 2), new THREE.MeshStandardMaterial({ map: TEX.roof(o.roof || '#c8502a', [3, 3]) })); roof.position.set(0, H + 0.6 + alt * 0.35, -Dp / 2 + 0.5 + alt * 0.25); roof.castShadow = true; g.add(roof);
   bx(g, 1.2, 0.6, 0.6, '#c0c4cc', -W / 2 + 1.2, SC.doorH + 1.2, 0.6); // lamp box
   return { group: g, door: d, W, H }; }
 // ---------------- street (cobblestone, sidewalks, curb, lamps, trees, benches) ----------------
@@ -139,7 +139,7 @@ export function street(s, o = {}) { const g = new THREE.Group(); s.add(g); const
   const walk = new THREE.Mesh(new THREE.BoxGeometry(L, 0.3, 8.25), new THREE.MeshStandardMaterial({ map: TEX.tiles('#e8e2d8', '#d8d0c4', [L / 4, 2]) })); walk.position.set(0, -0.15, 4.1); walk.receiveShadow = true; g.add(walk);
   bx(g, L, 0.4, 0.5, '#c8c4bc', 0, -0.15, 8.2, { r: 0.08 });
   const cols = [['#f2a4c8', '#3a8a5a'], ['#7ec8f0', '#2a5ab0'], ['#f6c25a', '#c83a2a'], ['#8fd47a', '#2a6ab0'], ['#f08a5a', '#2a8a8a'], ['#b89cf0', '#3a6a3a']]; const H_ = [];
-  let x = -L / 2 + 2; let i = 0; while (x < L / 2 - 8) { const w = 13 + (i % 3) * 2; const [c, sh] = cols[(i + (o.seed || 0)) % cols.length]; H_.push(house(g, s, { x: x + w / 2, z: 0, w, color: c, shutters: sh, doorX: ((i % 2) ? -1 : 1) * (w * 0.18), night: o.night, flowers: i % 2 === 0, roof: ['#c8502a', '#a84a3a', '#d8603a'][i % 3] })); x += w; i++; }
+  let x = -L / 2 + 2; let i = 0; while (x < L / 2 - 8) { const w = 13 + (i % 3) * 2; const [c, sh] = cols[(i + (o.seed || 0)) % cols.length]; H_.push(house(g, s, { x: x + w / 2, z: 0, w, color: c, shutters: sh, doorX: ((i % 2) ? -1 : 1) * (w * 0.18), night: o.night, flowers: i % 2 === 0, roof: ['#c8502a', '#a84a3a', '#d8603a'][i % 3], alt: i % 2 })); x += w; i++; }
   for (const lx of o.lamps || [-30, -10, 10, 30]) { const lp = new THREE.Group(); g.add(lp); lp.position.set(lx, 0, 7); bx(lp, 0.35, 11, 0.35, '#2a2a30', 0, 5.5, 0); bx(lp, 1.0, 1.3, 1.0, '#2a2a30', 0, 11.4, 0); const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.4, 14, 10), mat('#fff4d0', { em: '#ffe8a0', ei: o.night ? 2.5 : 0.4 })); bulb.position.set(0, 10.8, 0); lp.add(bulb); if (s) obst(s, lp.children[0], 'poste'); if (o.night) { const pl = new THREE.PointLight('#ffd8a0', 60, 26, 1.6); pl.position.set(lx, 10.4, 7.6); g.add(pl); } }
   for (const tx of o.trees || [-20, 20]) { const t = new THREE.Group(); g.add(t); t.position.set(tx, 0, 6.2); bx(t, 0.7, 5, 0.7, '#7a4a2a', 0, 2.5, 0); for (const [px, py, r] of [[0, 6.5, 2.6], [1.4, 5.6, 1.8], [-1.4, 5.7, 1.9]]) { const m = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), mat('#3ea84a', { rough: 0.8 })); m.position.set(px, py, 0); m.castShadow = true; t.add(m); } if (s) obst(s, t.children[0], 'árvore'); }
   return { group: g, houses: H_ }; }
@@ -172,4 +172,70 @@ export function charCheck(t, live, log = console.log) { let n = 0; const parts =
     const PA = parts(A), PB = parts(B); for (let ia = 0; ia < PA.length; ia++) { _p.setFromObject(PA[ia]).expandByScalar(-0.05); for (let ib = 0; ib < PB.length; ib++) { _q.setFromObject(PB[ib]).expandByScalar(-0.05); if (_p.intersectsBox(_q)) { n++; if (n < 4) log(`LOG ATRAVESSA t=${t.toFixed(2)} ${A.name} x ${B.name} [peça ${PN[ia]} x ${PN[ib]}]`); break; } } } } return n; }
 const PN = ['tronco', 'quadril', 'cabeça', 'braçoD', 'braçoE', 'antebraçoD', 'antebraçoE', 'mãoD', 'mãoE', 'coxaD', 'coxaE', 'canelaD', 'canelaE', 'péD', 'péE'];
 // one call per frame before rendering: people x people, people x walls/doors/furniture, camera occlusion/framing
-export function qa(t, s, cam, live, log = console.log) { return charCheck(t, live, log) + obstacleCheck(t, s, live, log) + cameraCheck(t, s, cam, live, log); }
+export function qa(t, s, cam, live, log = console.log) { if (!s.userData.zchecked) { s.userData.zchecked = true; const roots = new Set(live.map(c => c.root)); sceneCheck(s, { quiet: true, skip: m => { for (let p = m; p; p = p.parent) if (roots.has(p) || p.userData.dyn || p.userData.isChar) return true; return false; } }); }
+  return charCheck(t, live, log) + obstacleCheck(t, s, live, log) + cameraCheck(t, s, cam, live, log) + flickerCheck(t, s, cam, log) + cameraInsideCheck(t, s, cam, log); }
+// ---------------- STATIC SCENE QA (run once per set, before the storyboard): flicker + objects inside objects ----------------
+// sceneCheck(scene) -> number of problems. Logs:
+//   LOG CINTILACAO  two DIFFERENT meshes with coplanar, overlapping, same-facing faces (z-fighting = flicker), or nearly coplanar (< eps)
+//   LOG ATRAVESSA_OBJETO  a mesh of one obstacle (obst) sunk into a mesh of another obstacle deeper than `pen` (furniture through a wall, prop inside prop)
+// Skips sprites, transparent/additive/no-depth-write materials, polygonOffset decals and meshes with userData.noQA / noZ.
+const _v3 = () => new THREE.Vector3();
+function meshLabel(m) { const n = []; for (let o = m; o && n.length < 3; o = o.parent) if (o.name) n.push(o.name); const g = m.geometry; if (!g.boundingBox) g.computeBoundingBox(); const z = g.boundingBox.getSize(new THREE.Vector3());
+  const mt = Array.isArray(m.material) ? m.material[0] : m.material; return `${n.join('<') || 'mesh'}(${z.x.toFixed(2)}x${z.y.toFixed(2)}x${z.z.toFixed(2)} #${mt.color ? mt.color.getHexString() : '?'}${mt.map ? '+tex' : ''})`; }
+const sameLook = (a, b) => { const x = Array.isArray(a.material) ? a.material[0] : a.material, y = Array.isArray(b.material) ? b.material[0] : b.material; return x === y || (x.color && y.color && x.color.equals(y.color) && x.map === y.map && (x.emissive?.equals?.(y.emissive) ?? true)); };
+function qaMeshes(s, skip) { const out = []; s.updateMatrixWorld(true);
+  s.traverseVisible(m => { if (!m.isMesh || m.isSprite || m.isInstancedMesh || m.userData.noQA || m.userData.noZ || (skip && skip(m))) return; const mt = Array.isArray(m.material) ? m.material[0] : m.material;
+    if (!mt || mt.polygonOffset || mt.depthWrite === false || mt.depthTest === false || (mt.transparent && mt.opacity < 0.98) || mt.blending === THREE.AdditiveBlending || m.name === 'ceu' || m.name === 'espelho') return; out.push(m); }); return out; }
+export function sceneCheck(s, o = {}) { const log = o.log || console.log, eps = o.eps ?? 0.006, pen = o.pen ?? 0.08, tag = o.tag || s.name || 'cena'; let n = 0;
+  const M = qaMeshes(s, o.skip); const B = new Map(); const q = 30, dq = 0.02; const P = [_v3(), _v3(), _v3()], e1 = _v3(), e2 = _v3(), nn = _v3();
+  // 1) z-fighting: hash every triangle by (normal, plane offset); compare triangles of different meshes in the same/adjacent bucket
+  M.forEach((m, mi) => { const g = m.geometry, pos = g.attributes.position; if (!pos) return; const idx = g.index; const nt = idx ? idx.count / 3 : pos.count / 3; if (nt > 20000) return;
+    const two = (Array.isArray(m.material) ? m.material[0] : m.material).side === THREE.DoubleSide;
+    for (let t = 0; t < nt; t++) { for (let k = 0; k < 3; k++) P[k].fromBufferAttribute(pos, idx ? idx.getX(t * 3 + k) : t * 3 + k).applyMatrix4(m.matrixWorld);
+      e1.subVectors(P[1], P[0]); e2.subVectors(P[2], P[0]); nn.crossVectors(e1, e2); const A = nn.length() / 2; if (A < 0.004) continue; nn.normalize();
+      for (const sg of two ? [1, -1] : [1]) { const nx = nn.x * sg, ny = nn.y * sg, nz = nn.z * sg; const d = nx * P[0].x + ny * P[0].y + nz * P[0].z;
+        const key = `${Math.round(nx * q)},${Math.round(ny * q)},${Math.round(nz * q)}`; const bd = Math.floor(d / dq);
+        const rec = { mi, n: [nx, ny, nz], d, p: P.map(p => p.clone()) }; const k2 = key + '|' + bd; if (!B.has(k2)) B.set(k2, []); B.get(k2).push(rec); } } });
+  const basis = nv => { const a = Math.abs(nv[0]) < 0.9 ? [1, 0, 0] : [0, 1, 0]; const u = new THREE.Vector3(...a).cross(new THREE.Vector3(...nv)).normalize(); const v = new THREE.Vector3(...nv).cross(u); return [u, v]; };
+  const P2 = (tri, u, v) => tri.map(p => [p.dot(u), p.dot(v)]);
+  const area2 = poly => { let a = 0; for (let i = 0; i < poly.length; i++) { const p = poly[i], q2 = poly[(i + 1) % poly.length]; a += p[0] * q2[1] - q2[0] * p[1]; } return a / 2; };
+  const clip = (subj, clipT) => { let out = subj; const cw = area2(clipT) < 0 ? -1 : 1; for (let i = 0; i < 3 && out.length; i++) { const a = clipT[i], b = clipT[(i + 1) % 3]; const inside = p => cw * ((b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0])) > 1e-9; const inp = out; out = [];
+      for (let k = 0; k < inp.length; k++) { const P_ = inp[k], Q = inp[(k + 1) % inp.length]; const pi = inside(P_), qi = inside(Q); if (pi) out.push(P_); if (pi !== qi) { const d1 = (b[0] - a[0]) * (P_[1] - a[1]) - (b[1] - a[1]) * (P_[0] - a[0]), d2 = (b[0] - a[0]) * (Q[1] - a[1]) - (b[1] - a[1]) * (Q[0] - a[0]); const tt = d1 / (d1 - d2); out.push([P_[0] + (Q[0] - P_[0]) * tt, P_[1] + (Q[1] - P_[1]) * tt]); } } } return out; };
+  const PR = new Map();  // mesh pair -> { area, best:{a,p,n,d} }
+  for (const [k2, L] of B) { const [key, bd] = k2.split('|'); const cand = [...L, ...(B.get(key + '|' + (+bd + 1)) || [])];
+    for (let i = 0; i < L.length; i++) for (let j = 0; j < cand.length; j++) { const a = L[i], b = cand[j]; if (a.mi === b.mi || (j < L.length && j <= i)) continue;
+      if (Math.abs(a.d - b.d) > eps) continue; if (a.n[0] * b.n[0] + a.n[1] * b.n[1] + a.n[2] * b.n[2] < 0.9995) continue; if (!o.strict && sameLook(M[a.mi], M[b.mi])) continue;
+      const [u, v] = basis(a.n); const poly = clip(P2(a.p, u, v), P2(b.p, u, v)); if (poly.length < 3) continue; const ar = Math.abs(area2(poly)); if (ar < 1e-4) continue;
+      const pk = a.mi < b.mi ? a.mi + ':' + b.mi : b.mi + ':' + a.mi; const c2 = poly.reduce((s2, p) => [s2[0] + p[0] / poly.length, s2[1] + p[1] / poly.length], [0, 0]);
+      const nv = new THREE.Vector3(...a.n); const c = u.clone().multiplyScalar(c2[0]).addScaledVector(v, c2[1]).addScaledVector(nv, a.d);
+      const r = PR.get(pk) || { area: 0, a: Math.min(a.mi, b.mi), b: Math.max(a.mi, b.mi), best: null, bestA: 0, dz: Math.abs(a.d - b.d) }; r.area += ar; if (ar > r.bestA) { r.bestA = ar; r.best = { p: c, n: nv }; } PR.set(pk, r); } }
+  const spots = (s.userData.zspots = []); if (o.quiet && o.debug !== false) log(`LOG ZSCAN [${tag}] ${PR.size} pares coplanares`);
+  for (const r of PR.values()) { if (r.area < (o.minArea ?? 0.01)) continue; n++; spots.push({ p: r.best.p, n: r.best.n, a: M[r.a], b: M[r.b], area: r.area, lab: `${meshLabel(M[r.a])} x ${meshLabel(M[r.b])}` });
+    if (!o.quiet) log(`LOG CINTILACAO [${tag}] ${meshLabel(M[r.a])} x ${meshLabel(M[r.b])} area=${r.area.toFixed(3)} @${r.best.p.x.toFixed(2)},${r.best.p.y.toFixed(2)},${r.best.p.z.toFixed(2)} dz=${r.dz.toFixed(4)}`); }
+  // 2) interpenetration between DIFFERENT obstacles (oriented boxes of their meshes, SAT penetration depth)
+  const O = s.userData.obst || []; const obb = m => { const g = m.geometry; if (!g.boundingBox) g.computeBoundingBox(); const bb = g.boundingBox; const c = bb.getCenter(_v3()).applyMatrix4(m.matrixWorld);
+    const e = m.matrixWorld.elements; const ax = [_v3().set(e[0], e[1], e[2]), _v3().set(e[4], e[5], e[6]), _v3().set(e[8], e[9], e[10])]; const sz = bb.getSize(_v3()); const h = [sz.x / 2 * ax[0].length(), sz.y / 2 * ax[1].length(), sz.z / 2 * ax[2].length()]; ax.forEach(a => a.normalize()); return { c, ax, h }; };
+  const depth = (A, Bo) => { const axes = [...A.ax, ...Bo.ax]; for (const a of A.ax) for (const b of Bo.ax) { const c = _v3().crossVectors(a, b); if (c.lengthSq() > 1e-6) axes.push(c.normalize()); } let best = Infinity; const d = _v3().subVectors(Bo.c, A.c);
+    for (const L of axes) { const ra = A.h.reduce((s2, h, i) => s2 + h * Math.abs(A.ax[i].dot(L)), 0), rb2 = Bo.h.reduce((s2, h, i) => s2 + h * Math.abs(Bo.ax[i].dot(L)), 0); const ov = ra + rb2 - Math.abs(d.dot(L)); if (ov <= 0) return 0; best = Math.min(best, ov); } return best; };
+  const OM = O.filter(ob => !ob.dyn && !o.allowObst?.has(ob.name)).map(ob => { const ms = []; ob.obj.updateMatrixWorld(true); ob.obj.traverse(m => { if (m.isMesh && !m.userData.noQA) ms.push({ m, b: obb(m), box: new THREE.Box3().setFromObject(m) }); }); return { ob, ms }; });
+  const thinAx = b => { const k = b.h.indexOf(Math.min(...b.h)); const big = b.h.filter((h, i) => i !== k); return b.h[k] <= 0.45 && big.every(h => h > 1.2) ? k : -1; }; // wall-like slab -> index of its thin axis
+  const pairs = new Set();
+  for (let i = 0; i < OM.length; i++) for (let j = i + 1; j < OM.length; j++) { const A = OM[i], Bo = OM[j]; if (A.ob.obj === Bo.ob.obj || A.ob.name === Bo.ob.name) continue; if (o.allowPair && o.allowPair(A.ob.name, Bo.ob.name)) continue;
+    for (const a of A.ms) for (const b of Bo.ms) { if (!a.box.intersectsBox(b.box)) continue; const wa = thinAx(a.b), wb = thinAx(b.b); if (wa >= 0 && wb >= 0) continue; // wall x wall corners: fine
+      let dp; if (wa >= 0 || wb >= 0) { const [W_, X_, k] = wa >= 0 ? [a.b, b.b, wa] : [b.b, a.b, wb]; const other = wa >= 0 ? Bo.ob.name : A.ob.name; if (/batente|porta|janela|door/i.test(other)) continue; const L = W_.ax[k]; const r = X_.h.reduce((s2, h, i) => s2 + h * Math.abs(X_.ax[i].dot(L)), 0); const c = X_.c.clone().sub(W_.c).dot(L);
+        // object sunk into a wall is hidden; only a PUNCH-THROUGH (sticks out of the other face) or an object centred inside the wall is a bug
+        if (depth(a.b, b.b) <= 0) continue; const lo = c - r, hi = c + r; dp = (lo < -W_.h[k] + 0.02 && hi > W_.h[k] - 0.02) ? Math.min(hi - W_.h[k], -W_.h[k] - lo) + 2 * W_.h[k] : Math.abs(c) < W_.h[k] ? 1 : 0; if (dp <= 0.05) continue; } else dp = depth(a.b, b.b);
+      if (dp > pen) { const pk = i + ':' + j; if (pairs.has(pk)) continue; pairs.add(pk); n++;
+      log(`LOG ATRAVESSA_OBJETO [${tag}] ${A.ob.name} x ${Bo.ob.name} prof=${dp.toFixed(2)} @${a.b.c.x.toFixed(1)},${a.b.c.y.toFixed(1)},${a.b.c.z.toFixed(1)} / ${b.b.c.x.toFixed(1)},${b.b.c.y.toFixed(1)},${b.b.c.z.toFixed(1)}`); } } }
+  return n; }
+// camera inside / grazing an object (near-plane clipping): call per frame with the scene obstacles
+export function cameraInsideCheck(t, s, cam, log = console.log) { const O = s.userData.obst || []; let n = 0; const p = cam.getWorldPosition(_v3()); const m = cam.near + 0.25;
+  for (const ob of O) { ob.obj.updateMatrixWorld(true); const box = ob.dyn ? new THREE.Box3().setFromObject(ob.obj) : (ob.box ||= new THREE.Box3().setFromObject(ob.obj)); if (box.distanceToPoint(p) < m && !box.isEmpty()) {
+      let hit = false; ob.obj.traverse(me => { if (hit || !me.isMesh) return; const bb = new THREE.Box3().setFromObject(me); if (bb.distanceToPoint(p) < m) hit = true; }); if (hit) { n++; log(`LOG CAMERA_DENTRO t=${t.toFixed(2)} ${ob.name}`); } } } return n; }
+// per frame: only the flicker spots the camera REALLY sees (facing it, inside the frame, not hidden behind something, big enough on screen)
+const _rc = new THREE.Raycaster();
+export function flickerCheck(t, s, cam, log = console.log, o = {}) { const S = s.userData.zspots; if (!S || !S.length) return 0; let n = 0; const cp = cam.getWorldPosition(_v3()); cam.updateMatrixWorld(true); const f = (o.hpx || 1920) / 2 / Math.tan(cam.fov * Math.PI / 360);
+  for (const z of S) { const toC = cp.clone().sub(z.p); const dist = toC.length(); if (toC.dot(z.n) <= 0 || dist > (o.maxDist || 90)) continue; const nd = z.p.clone().project(cam); if (nd.z > 1 || Math.abs(nd.x) > 1 || Math.abs(nd.y) > 1) continue;
+    const px = z.area * (f / dist) ** 2 * Math.abs(toC.normalize().dot(z.n)); if (px < (o.minPx || 40)) continue;
+    _rc.set(cp, z.p.clone().sub(cp).normalize()); _rc.camera = cam; _rc.far = dist + 0.05; _rc.layers.mask = cam.layers.mask; const hit = _rc.intersectObject(s, true).find(h => h.object.visible && !h.object.isSprite && (!h.object.material || h.object.material.opacity > 0.5));
+    if (!hit || (hit.object !== z.a && hit.object !== z.b && hit.distance < dist - 0.03)) continue; n++; if (!z.lastLog || Math.abs(z.lastLog - t) > 1) { z.lastLog = t; log(`LOG CINTILACAO_VISIVEL t=${t.toFixed(2)} ${z.lab} ~${Math.round(px)}px`); } } return n; }

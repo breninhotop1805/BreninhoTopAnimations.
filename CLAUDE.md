@@ -521,3 +521,38 @@ Direção:
   — `cz` deixa o cômodo mais comprido pra frente sem mexer nos móveis; a câmera nunca sai do cômodo (trava em main.js usa `CZ`).
 - **Portas**: `inward` define pra que lado abre — SEMPRE para o lado oposto de quem vem (quarto: ele vem do corredor → abre pra dentro
   do quarto; banheiro: ele sai → abre pro corredor). A checagem pegou a porta batendo nele quando estava ao contrário.
+
+## 10 REFERÊNCIAS NOVAS (nov/2026) — REGRAS FIXAS (pedido: "siga sempre tudo isso como regra, sem nada tosco e sem sentido")
+Análise completa com números em `roblox_base/ANALISE_REFERENCIAS_v3.md` (1.035 planos medidos). Resumo do que vira regra:
+1. **COR (o EP03 ficou pálido: saturação 0,33 × 0,50 das refs; 18% × 32% de pixels vivos).** Nenhum cômodo branco/bege liso:
+   paredes de cor (verde, azul, roxo, vermelho), piso estampado/xadrez, tapete colorido, móveis estampados, armários arco-íris,
+   objetos coloridos no fundo. Clínica/banheiro = azulejo colorido + luz quente. Flashback NÃO é sépia lavada (usar tom quente
+   saturado ou vinheta). Noite = azul/roxo profundo + janelas quentes + varal de lâmpadas + chão molhado refletindo. Luz de clima:
+   dourado (magia), vermelho (perigo), roxo (pesadelo), ciano (congelado). Sempre `python3 roblox_base/colorqa.py stills/*.jpg`
+   no storyboard e no vídeo final: média sat ≥ 0,47 e colorido ≥ 68, e zero `LOG POUCA_COR` (exceto plano escuro intencional).
+2. **NADA ATRAVESSANDO, NADA SOBREPOSTO (cintilação) — zero tolerância, checado por máquina:** `node scenechk.mjs .` em todo
+   cenário novo ANTES do storyboard (zero `LOG CINTILACAO`/`LOG ATRAVESSA_OBJETO` relevantes; peça decorativa nunca no mesmo plano de
+   outra — afastar ≥ 0,02 ou mudar a altura/profundidade); e o `qa()` de todo quadro inclui `flickerCheck` (cintilação que a câmera
+   vê) e `cameraInsideCheck` (câmera encostando em objeto). Props dinâmicos marcados com `userData.dyn = true`.
+3. **ANIMAÇÃO SOLTA E FÍSICA:** cada verbo vira ação de corpo inteiro (correr de frente com braços em arco e joelho alto e a câmera
+   recuando junto; voar girando; cair de joelhos; ser empurrado; dançar; afundar; quicar; tremer). Gestos grandes, segurados, com
+   overshoot. Nenhum plano só com "personagem parado falando".
+4. **MAIS CENAS:** frase nova = lugar/ângulo novo; listas = rajada de 0,8 s por item; "chuva de coisas" e multidões com instâncias
+   (centenas); transformação do cenário inteiro quando a história pede; cada parte nova abre com plano de situação do lugar.
+5. **EXPRESSÕES NA PALAVRA, EM DEGRAUS:** usar o vocabulário novo (`shock` O.O, `squeeze`+`blush` >.<, choro `wail`+`cry`/`drops`,
+   deboche `smug`+`tongue`, `mega` com `grin` 0→1 crescendo, raiva com `browW`, `zip`, `sweat`). A expressão troca exatamente na
+   sílaba da palavra e pode escalar em 2–4 degraus dentro do plano; reação do outro personagem no plano seguinte. Close de rosto
+   com push-in nas emoções fortes. Conferir com `node roblox_base/facesheet.mjs` quando criar rosto novo.
+6. **CÂMERA EXPRESSIVA:** variar ângulo SEMPRE (baixo em gigante/vilão/herói, alto em multidão, close extremo de objeto na mão,
+   POV, por cima do ombro); seguir a ação (tilt em quem cai/afunda, travelling com quem corre, grua quando sobe/empurra); push-in
+   rápido (≥ +40%/s em 3–4 quadros) nas revelações. Nunca 3 planos seguidos com o mesmo ângulo e tamanho.
+7. **PRINCIPAL CENTRALIZADO E GRANDE** (~90% dos planos): rosto acima da legenda, corpo ocupando ≥ 50–60% da altura em plano médio;
+   nada de personagem pequeno no fundo de cômodo vazio, nem cortado na borda, nem de costas sem motivo.
+8. **TRANSIÇÕES:** corte seco 1 quadro antes da palavra com a câmera JÁ em movimento e o ponto de interesse no centro nos dois
+   planos (88% das refs). Efeito de transição só quando a história pede: onda de choque + flash (poder/pausa), brilho dourado com
+   anel (magia), flash branco de 1 quadro (susto), mergulho no preto 0,2 s (acordar/desmaiar), flicker (TV/luz quebrando).
+9. **SEM CENA TOSCA:** nenhum chão vazio (tapete, móveis, objetos, gente), inserts de objeto bem modelados, objeto mágico da
+   história visível em todo momento-chave, final com callback visual. Cidades/monumentos com textura e detalhe (sobrados pastel
+   com sacada e persiana, calçada de pedra, torre do relógio, fonte, castelos com cones e bandeiras, prédios com centenas de janelas
+   acesas, estádio lotado) e luz bonita (sol quente + céu com nuvens; noite com lua, postes e janelas), contexto claro no 1º plano.
+10. **Sincronia:** continua a regra medida — corte ~1 quadro antes da palavra (mediana −0,04 s), plano mediano 1,4 s, conferir com áudio.

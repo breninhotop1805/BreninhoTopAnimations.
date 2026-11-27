@@ -34,6 +34,9 @@ export function drawFace(g, f, S = 512) { g.clearRect(0, 0, S, S); const cx = S 
     else if (type === 'squeeze') { g.lineWidth = S * 0.022; g.beginPath(); g.moveTo(x - s * S * 0.045, y - S * 0.035); g.lineTo(x + s * S * 0.03, y); g.lineTo(x - s * S * 0.045, y + S * 0.035); g.stroke(); }
     else if (type === 'tired') { const rx = S * 0.034, ry = S * 0.05; g.beginPath(); g.ellipse(x, y + ry * 0.35, rx, ry * 0.6, 0, 0, Math.PI); g.fill(); g.lineWidth = S * 0.018; g.beginPath(); g.moveTo(x - rx * 1.4, y + ry * 0.3); g.lineTo(x + rx * 1.4, y + ry * 0.3); g.stroke(); }
     else if (type === 'happy') { g.lineWidth = S * 0.024; g.beginPath(); g.arc(x, y + S * 0.025, S * 0.045, 1.15 * Math.PI, 1.85 * Math.PI); g.stroke(); }
+    else if (type === 'shock') { const rx = S * 0.08, ry = S * 0.115; g.fillStyle = '#fff'; g.beginPath(); g.ellipse(x, y - S * 0.01, rx, ry, 0, 0, 7); g.fill(); g.lineWidth = S * 0.014; g.stroke(); g.fillStyle = k; g.beginPath(); g.arc(x + lx * 0.4, y + ly * 0.4, S * 0.02, 0, 7); g.fill(); }
+    else if (type === 'smug') { const rx = S * 0.036, ry = S * 0.05, a = s * 0.2; g.save(); g.translate(x, y); g.rotate(a); g.beginPath(); g.rect(-rx * 2, -ry * 0.05, rx * 4, ry * 2); g.clip(); g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, 7); g.fill(); g.restore();
+      g.save(); g.translate(x, y); g.rotate(a); g.lineWidth = S * 0.02; g.beginPath(); g.moveTo(-rx * 1.6, -ry * 0.05); g.lineTo(rx * 1.6, -ry * 0.05); g.stroke(); g.restore(); }
     else if (f.anime && type !== 'dot') { // anime eyes (refs: girls): white sclera, big coloured iris with gradient, pupil, 2 highlights, thick upper lash
       const big = type === 'wide' ? 1.15 : 1; const rx = S * 0.066 * big, ry = S * 0.088 * big * (1 - bl * 0.85); const ic = f.eyeColor || '#3aa0e8';
       g.fillStyle = '#fff'; g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, 7); g.fill();
@@ -42,19 +45,22 @@ export function drawFace(g, f, S = 512) { g.clearRect(0, 0, S, S); const cx = S 
       g.fillStyle = '#fff'; g.beginPath(); g.ellipse(x - rx * 0.28, y - ry * 0.3, rx * 0.26, ry * 0.2, 0, 0, 7); g.fill(); g.beginPath(); g.ellipse(x + rx * 0.3, y + ry * 0.35, rx * 0.12, ry * 0.09, 0, 0, 7); g.fill();
       g.strokeStyle = k; g.lineWidth = S * 0.022; g.beginPath(); g.ellipse(x, y, rx * 1.02, ry * 1.02, 0, 1.08 * Math.PI, 1.92 * Math.PI); g.stroke();
       g.beginPath(); g.moveTo(x + s * rx * 0.95, y - ry * 0.45); g.lineTo(x + s * rx * 1.35, y - ry * 0.75); g.stroke();
-      if (type === 'angry' || type === 'sad') { g.fillStyle = '#f4f4f4'; g.save(); g.translate(x, y); g.rotate(s * (type === 'angry' ? -0.4 : 0.4)); g.fillRect(-rx * 1.5, -ry * 1.7, rx * 3, ry * 0.85); g.restore(); } }
+      if (type === 'angry' || type === 'sad') { g.save(); g.globalCompositeOperation = 'destination-out'; g.translate(x, y); g.rotate(s * (type === 'angry' ? -0.4 : 0.4)); g.fillRect(-rx * 1.5, -ry * 1.7, rx * 3, ry * 0.85); g.restore(); } }
     else { const big = type === 'wide' ? 1.45 : type === 'dot' ? 0.7 : 1; const rx = S * 0.032 * big, ry = S * 0.055 * big * (1 - bl * 0.8);
       g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, 7); g.fill();
       if (type === 'wide') { g.fillStyle = '#fff'; g.beginPath(); g.ellipse(x - rx * 0.3, y - ry * 0.35, rx * 0.3, ry * 0.22, 0, 0, 7); g.fill(); }
       else { g.fillStyle = 'rgba(255,255,255,0.85)'; g.beginPath(); g.ellipse(x - rx * 0.25, y - ry * 0.45, rx * 0.28, ry * 0.18, 0, 0, 7); g.fill(); }
-      if (type === 'angry' || type === 'sad') { g.fillStyle = '#f4f4f4'; g.save(); g.translate(x, y); g.rotate(s * (type === 'angry' ? -0.45 : 0.45)); g.fillRect(-rx * 1.6, -ry * 1.9, rx * 3.2, ry * 1.1); g.restore(); } } }
+      if (type === 'angry' || type === 'sad') { g.save(); g.globalCompositeOperation = 'destination-out'; g.translate(x, y); g.rotate(s * (type === 'angry' ? -0.45 : 0.45)); g.fillRect(-rx * 1.6, -ry * 1.9, rx * 3.2, ry * 1.1); g.restore(); } } }
   // eyebrows
-  if (f.brow != null) { g.strokeStyle = k; g.lineWidth = S * 0.018; for (const s of [-1, 1]) { const a = f.brow * 0.45 * s; const x = cx + s * ex + lx, y = ey - S * (f.eyes === 'circle' ? 0.13 : 0.11) + ly - (f.browUp || 0) * S * 0.03; const dx = Math.cos(a) * S * 0.05, dy = Math.sin(a) * S * 0.05;
+  if (f.brow != null) { g.strokeStyle = k; g.lineWidth = S * 0.018 * (f.browW || 1); for (const s of [-1, 1]) { const a = f.brow * 0.45 * s; const x = cx + s * ex + lx, y = ey - S * (f.eyes === 'circle' ? 0.13 : 0.11) + ly - (f.browUp || 0) * S * 0.03; const dx = Math.cos(a) * S * 0.05, dy = Math.sin(a) * S * 0.05;
     g.beginPath(); g.moveTo(x - dx, y + dy); g.lineTo(x + dx, y - dy); g.stroke(); } }
   // crying streams (refs: blue rivers down the cheeks) and a sweat drop at the temple
   if (f.cry) { g.fillStyle = `rgba(90,170,255,${0.9 * Math.min(1, f.cry)})`; for (const s of [-1, 1]) { const x0 = cx + s * ex, y0 = ey + S * 0.035; g.beginPath(); g.moveTo(x0 - S * 0.022, y0);
       for (let i = 0; i <= 8; i++) g.lineTo(x0 - S * 0.022 + Math.sin(i * 1.3 + s) * S * 0.006, y0 + i / 8 * S * 0.3 * Math.min(1, f.cry)); for (let i = 8; i >= 0; i--) g.lineTo(x0 + S * 0.022 + Math.sin(i * 1.3 + s + 1) * S * 0.006, y0 + i / 8 * S * 0.3 * Math.min(1, f.cry)); g.closePath(); g.fill(); } }
   if (f.sweat) { g.fillStyle = `rgba(120,190,255,${0.9 * f.sweat})`; const x0 = cx + S * 0.27, y0 = ey - S * 0.12; g.beginPath(); g.moveTo(x0, y0 - S * 0.05); g.quadraticCurveTo(x0 + S * 0.035, y0 + S * 0.01, x0, y0 + S * 0.025); g.quadraticCurveTo(x0 - S * 0.035, y0 + S * 0.01, x0, y0 - S * 0.05); g.fill(); }
+  if (f.drops != null) { for (const s of [-1, 1]) for (let i = 0; i < 3; i++) { const ph = ((f.drops * 1.6 + i / 3 + (s > 0 ? 0.17 : 0)) % 1); const x0 = cx + s * (ex + S * 0.035 + ph * S * 0.06), y0 = ey + S * 0.07 + ph * S * 0.32; const r = S * 0.032;
+      g.fillStyle = `rgba(40,140,255,${0.98 * (1 - ph * 0.5)})`; g.beginPath(); g.moveTo(x0, y0 - r * 2.2); g.quadraticCurveTo(x0 + r * 1.3, y0 - r * 0.2, x0, y0 + r); g.quadraticCurveTo(x0 - r * 1.3, y0 - r * 0.2, x0, y0 - r * 2.2); g.fill();
+      g.fillStyle = 'rgba(255,255,255,0.7)'; g.beginPath(); g.arc(x0 - r * 0.35, y0 - r * 0.2, r * 0.28, 0, 7); g.fill(); } }
   // tears
   if (f.tears) { g.fillStyle = `rgba(80,160,255,${0.9 * f.tears})`; for (const s of [-1, 1]) { g.beginPath(); g.ellipse(cx + s * ex + s * S * 0.01, ey + S * 0.1, S * 0.018, S * 0.04 * f.tears, 0, 0, 7); g.fill(); } }
   // mouth
@@ -73,6 +79,18 @@ export function drawFace(g, f, S = 512) { g.clearRect(0, 0, S, S); const cx = S 
   else if (m === 'laugh') { g.moveTo(cx - S * 0.11, my - S * 0.035); g.quadraticCurveTo(cx, my + S * 0.17, cx + S * 0.11, my - S * 0.035); g.closePath(); g.fill(); g.fillStyle = '#e06a7a'; g.beginPath(); g.ellipse(cx, my + S * 0.06, S * 0.05, S * 0.03, 0, 0, 7); g.fill(); }
   else if (m === 'smallo') { g.ellipse(cx, my, S * 0.025, S * 0.032, 0, 0, 7); g.fill(); }
   else if (m === 'open') { g.ellipse(cx, my, S * 0.09, S * 0.07, 0, 0, 7); g.fill(); g.fillStyle = '#c0394a'; g.beginPath(); g.ellipse(cx, my + S * 0.035, S * 0.05, S * 0.025, 0, 0, 7); g.fill(); }
+  else if (m === 'tongue') { g.moveTo(cx - S * 0.09, my - S * 0.005); g.quadraticCurveTo(cx + S * 0.01, my + S * 0.05, cx + S * 0.1, my - S * 0.035); g.stroke();
+    g.fillStyle = '#e8607a'; g.beginPath(); g.ellipse(cx + S * 0.055, my + S * 0.04, S * 0.045, S * 0.04, -0.35, 0, Math.PI * 1.05); g.fill(); g.lineWidth = S * 0.012; g.stroke(); g.beginPath(); g.moveTo(cx + S * 0.055, my + S * 0.025); g.lineTo(cx + S * 0.06, my + S * 0.05); g.stroke(); }
+  else if (m === 'mega') { const gr = Math.max(0.2, Math.min(1, f.grin ?? 1)); const hw = S * (0.11 + 0.21 * gr), up = S * (0.02 + 0.07 * gr), dn = S * (0.07 + 0.1 * gr), y0 = my - S * 0.02;  // grin that GROWS up to the ears (f.grin 0..1)
+    g.moveTo(cx - hw, y0 - up); g.quadraticCurveTo(cx, y0 + S * 0.035, cx + hw, y0 - up); g.quadraticCurveTo(cx + hw * 0.55, y0 + dn * 1.25, cx, y0 + dn); g.quadraticCurveTo(cx - hw * 0.55, y0 + dn * 1.25, cx - hw, y0 - up); g.closePath(); g.fill();
+    g.save(); g.clip(); g.fillStyle = '#fff'; g.beginPath(); g.moveTo(cx - hw, y0 - up - S * 0.01); g.quadraticCurveTo(cx, y0 + S * 0.035, cx + hw, y0 - up - S * 0.01); g.lineTo(cx + hw, y0 - up + S * 0.04); g.quadraticCurveTo(cx, y0 + S * 0.085, cx - hw, y0 - up + S * 0.04); g.closePath(); g.fill();
+    g.beginPath(); g.moveTo(cx - hw * 0.7, y0 + dn * 1.1); g.quadraticCurveTo(cx, y0 + dn * 0.72, cx + hw * 0.7, y0 + dn * 1.1); g.lineTo(cx + hw, y0 + dn * 1.4); g.lineTo(cx - hw, y0 + dn * 1.4); g.closePath(); g.fill();
+    g.strokeStyle = k; g.lineWidth = S * 0.008; for (let i = -6; i <= 6; i++) { const tx = cx + i * hw / 6.5; g.beginPath(); g.moveTo(tx, y0 - up); g.lineTo(tx, y0 + dn * 1.3); g.stroke(); } g.restore();
+    g.lineWidth = S * 0.02; g.beginPath(); g.moveTo(cx - hw, y0 - up); g.quadraticCurveTo(cx, y0 + S * 0.035, cx + hw, y0 - up); g.quadraticCurveTo(cx + hw * 0.55, y0 + dn * 1.25, cx, y0 + dn); g.quadraticCurveTo(cx - hw * 0.55, y0 + dn * 1.25, cx - hw, y0 - up); g.closePath(); g.stroke(); }
+  else if (m === 'wail') { g.moveTo(cx - S * 0.1, my + S * 0.035); g.quadraticCurveTo(cx, my - S * 0.085, cx + S * 0.1, my + S * 0.035); g.quadraticCurveTo(cx + S * 0.07, my + S * 0.11, cx, my + S * 0.11); g.quadraticCurveTo(cx - S * 0.07, my + S * 0.11, cx - S * 0.1, my + S * 0.035); g.fill();
+    g.fillStyle = '#e8607a'; g.beginPath(); g.ellipse(cx, my + S * 0.08, S * 0.05, S * 0.026, 0, 0, 7); g.fill(); }
+  else if (m === 'zip') { g.lineWidth = S * 0.014; g.beginPath(); g.moveTo(cx - S * 0.12, my); g.lineTo(cx + S * 0.12, my); g.stroke(); g.lineWidth = S * 0.01; for (let i = -5; i <= 5; i++) { g.beginPath(); g.moveTo(cx + i * S * 0.022, my - S * 0.018); g.lineTo(cx + i * S * 0.022, my + S * 0.018); g.stroke(); }
+    g.fillStyle = '#b8bcc4'; g.beginPath(); g.roundRect(cx + S * 0.125, my - S * 0.012, S * 0.03, S * 0.06, S * 0.008); g.fill(); g.lineWidth = S * 0.008; g.stroke(); }
   else if (m === 'grin' || m === 'teeth') { g.moveTo(cx - S * 0.13, my - S * 0.03); g.quadraticCurveTo(cx, my + S * 0.16, cx + S * 0.13, my - S * 0.03); g.closePath(); g.fill();
     g.fillStyle = '#fff'; g.beginPath(); g.moveTo(cx - S * 0.11, my - S * 0.02); g.lineTo(cx + S * 0.11, my - S * 0.02); g.lineTo(cx + S * 0.09, my + S * 0.025); g.lineTo(cx - S * 0.09, my + S * 0.025); g.closePath(); g.fill();
     if (m === 'grin') { g.fillStyle = '#c0394a'; g.beginPath(); g.ellipse(cx, my + S * 0.07, S * 0.05, S * 0.022, 0, 0, 7); g.fill(); } }
