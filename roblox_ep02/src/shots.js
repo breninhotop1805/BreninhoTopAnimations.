@@ -76,7 +76,7 @@ export function makeShots(ctx) { const { C, S, P, FX, camera, grade, bloom } = c
   // 8 "Aqui, todo mundo tem um" — street wide: everybody walks with a little friend
   at(9.54, 'todo_mundo', x => { const s = S.street; const pp = [[C.adults[0], -5.0, 11.2, 1.3, 0], [C.kids[2], -1.5, 18.0, -1.4, 1], [C.adults[1], 2.5, 11.4, 1.4, 2], [C.kids[1], 5.5, 18.6, -1.3, 3]];
     pp.forEach(([c, px, pz, ry, i]) => { pz += 0;  const dir = Math.sign(Math.sin(ry)); const p0 = [px - dir * 1.5, pz], p1 = [px + dir * 1.5, pz]; put(x, s, c, px, pz, ry, RY); c.noFrame = true; walkPath(c, x.L, -0.2, 1.8, p0, p1, { stride: 2.3 }); c.setFace({ eyes: 'happy', mouth: 'smile' });
-      const m = P.minis[i]; const fx = c.root.position.x - dir * 0.3, fz = pz + 3.0; putB(x, s, m, fx, fz, ry, RY, { noFrame: true }); m.alive(x.t + i); m.hop(x.t * 7 + i, 0.6); });
+      const m = P.minis[i]; const fx = c.root.position.x - dir * 0.3, fz = pz + 3.4; putB(x, s, m, fx, fz, ry, RY, { noFrame: true }); m.alive(x.t + i); m.hop(x.t * 7 + i, 0.6); });
     shot(x, V(0.2, 3.0, 15.0), V(0.1, 0.5, 1), 17.0, 44, { push: -0.045 }); return s; });
   // 9 "O fisiculturista mais forte da cidade" — low angle, flexing (punch on "forte")
   at(11.05, 'maromba', x => { const s = S.street; const m = put(x, s, C.maromba, 8, 14.5, 0.15, RY); alive(m, x.t, 1, 5); flex(m, gestW(x.L, 0.08, 99)); m.setFace({ eyes: 'angry', mouth: 'grin', brow: 1 }); m.hip.position.y += 0.04 * Math.abs(Math.sin(x.t * 6));
@@ -110,14 +110,14 @@ export function makeShots(ctx) { const { C, S, P, FX, camera, grade, bloom } = c
     bubble(x, s, FX.q, tg.clone().add(V(0.45, 0.6, 0.1)), 0.55, 0.7); return s; });
   // 19 "O meu se chama Bolota" — hero presents him; Bolota grins and waves (punch on "Bolota")
   at(25.72, 'bolota', x => { const s = S.plaza; const h = put(x, s, C.hero, 3.0, 7.2, -0.35, 0); alive(h, x.t, 1, 1); pose15(h, 'present', gestW(x.L, 0.05, 99), x.t, { mirror: true }); const b = putB(x, s, P.bol, -2.8, 5.4, 0.25, 0); b.alive(x.t); bWave(b, x.L, 0.95, x.t); b.set({ face: x.L > 1.0 ? 'grin' : 'smile' });
-    shot(x, V(0.5, 4.1, 6.2), V(0, 0.05, 1), 17.5, 42, { push: 0.05, punch: 1.1 }); return s; });
+    shot(x, V(0.3, 4.1, 6.2), V(0, 0.05, 1), 19.5, 42, { push: 0.05, punch: 1.1, pk: 0.06 }); return s; });
   // 20 "redondo" — Bolota bounces (squash & stretch), camera orbits
   at(27.63, 'redondo', x => { const s = S.plaza; const b = putB(x, s, P.bol, 0, 5.5, 0, 0); b.alive(x.t); const u = seg(x.L, 0.05, 0.7); const hgt = Math.sin(u * Math.PI); b.position.y = 1.4 * hgt; const sq = u <= 0 || u >= 1 ? 1 - 0.12 * Math.exp(-(x.L - 0.7) * 6) * (x.L > 0.7 ? 1 : 0) : 1 + 0.08 * hgt;
     b.parts.body.scale.set(1 / Math.sqrt(sq), 0.98 * sq, 0.92 / Math.sqrt(sq)); b.parts.face.scale.copy(b.parts.body.scale); b.set({ face: 'grin' }); const a = mix(-0.5, 0.35, eio(x.u)); shot(x, V(0, 3.6, 5.5), V(Math.sin(a), 0.1, Math.cos(a)), 13.5, 40, { push: 0.0 }); return s; });
   // 21 "azul" — close on the blue face, soft blue glow
   at(28.40, 'azul', x => { const s = S.plaza; const b = putB(x, s, P.bol, 0, 5.5, 0, 0); b.alive(x.t); b.set({ face: 'smile', look: [0, 0.2] }); bloom.strength = 0.35; shot(x, bface(b).add(V(0, 0.1, 0)), V(0.1, 0.02, 1), 7.5, 40, { push: 0.08 }); return s; });
   // 22 "do tamanho de uma geladeira" — kitchen: Bolota next to the fridge — same height (pan fridge → Bolota)
-  at(29.05, 'geladeira', x => { const s = S.kitchen; const b = putB(x, s, P.bol, 1.8, -6.2, -0.15, 0); b.alive(x.t, 0.4); b.set({ face: 'grin', look: [-0.6, 0] }); bArm(b, 'R', 0.6 + 0.4 * sm(seg(x.L, 0.5, 0.9)));
+  at(29.05, 'geladeira', x => { const s = S.kitchen; const b = putB(x, s, P.bol, 1.8, -6.2, -0.15, 0, { noFrame: x.L < 0.7 }); b.alive(x.t, 0.4); b.set({ face: 'grin', look: [-0.6, 0] }); bArm(b, 'R', 0.6 + 0.4 * sm(seg(x.L, 0.5, 0.9)));
     const k = eio(x.u); camera.position.set(mix(-4.5, -0.2, k), 3.6, 11.5); camera.lookAt(mix(-2.8, -0.4, k), 3.4, -7.0); camera.fov = 42; x.focus = 17; return s; });
   // 23 "e ele me acompanha desde que eu me entendo por gente" — sepia flashback: little hero holding Bolota's hand
   at(30.42, 'flash_peq', x => { const s = S.plaza; sepia(x); const h = put(x, s, C.heroP, 0, 7.5, Math.PI / 2, 0); walkPath(h, x.L, -0.4, 1.9, [-7, 7.5], [-1.5, 7.5], { stride: 1.8 }); h.setFace({ eyes: 'happy', mouth: 'grin' });
@@ -126,14 +126,14 @@ export function makeShots(ctx) { const { C, S, P, FX, camera, grade, bloom } = c
     shot(x, V(h.root.position.x + 0.3, 3.0, 4.0), V(0.25, 0.08, 1), 17.5, 42, { push: 0.04 }); return s; });
   // 24 "Quando eu mudei de escola" — new school: hero walks up to the door, Bolota beside
   at(33.22, 'escola_nova', x => { const s = S.school; const h = put(x, s, C.hero, 0, 0, 0, 0); walkPath(h, x.L, -0.6, 1.1, [-1.8, 13], [-1.4, 7.0], { stride: 2.4 }); h.setFace({ eyes: 'normal', mouth: 'flat', brow: -0.3, look: [0, -0.4] });
-    const b = putB(x, s, P.bol, 0, 0, 0, 0); bWalk(b, x.L, x.t, -0.6, 1.1, [3.4, 14.5], [3.4, 9.0]); b.set({ face: 'smile' }); shot(x, V(1.2, 6.5, 2), V(0.05, 0.12, 1), 24.0, 42, { push: 0.06 }); return s; });
+    const b = putB(x, s, P.bol, 0, 0, 0, 0); bWalk(b, x.L, x.t, -0.6, 1.1, [3.4, 14.5], [3.4, 9.0]); b.set({ face: 'smile' }); shot(x, V(0.8, 6.5, 2), V(0.05, 0.12, 1), 25.0, 42, { push: 0.06 }); return s; });
   // 25 "e ninguém sentava comigo" — cafeteria: alone at the table, the others at another table
   const cafeKids = (x, s, laugh = false) => { const K = C.kids; [[K[0], -10, -9.0, 0], [K[1], -6, -9.0, 0], [K[4], -2, -9.0, 0], [K[3], -8, -4.0, Math.PI], [K[5], -3.5, -4.0, Math.PI]].forEach(([c, px, pz, ry], i) => { put(x, s, c, px, pz, ry, 0); c.noFrame = true; sit15(c, SC.seat); alive(c, x.t, 1, i); c.root.position.z = pz + (ry ? 0.3 : -0.3); talk(c, x.t + i, laugh ? 0 : (i % 2) * 0.8); if (laugh) pose15(c, 'laugh', 0.8, x.t); c.allowObst = new Set(['mesa']); }); };
   at(34.20, 'sozinho_cantina', x => { const s = S.cafe; cafeKids(x, s); const h = put(x, s, C.hero, -1.0, -0.75, 0, 0); sit15(h, SC.seat); h.root.position.z = -0.8; h.allowObst = new Set(['mesa']); alive(h, x.t, 0.6, 1); pose15(h, 'sad', gestW(x.L, 0.1, 99), x.t);
     shot(x, headP(h, -0.6), V(0.25, 0.12, 1), 12.5, 42, { push: 0.05 }); return s; });
   // 26 "o Bolota sentava" — Bolota plops down beside him (lands on "sentava"); hero smiles
   at(35.80, 'bolota_senta', x => { const s = S.cafe; cafeKids(x, s); const h = put(x, s, C.hero, -1.0, -0.8, 0, 0); sit15(h, SC.seat); h.root.position.z = -0.8; h.allowObst = new Set(['mesa']); alive(h, x.t, 0.6, 1); h.head.rotation.y += -0.5 * sm(seg(x.L, 0.5, 0.9)); h.setFace(x.L > 0.62 ? { eyes: 'happy', mouth: 'grin' } : { eyes: 'sad', mouth: 'frown' });
-    const b = putB(x, s, P.bol, 4.6, -1.3, -0.2, 0, { allowObst: new Set(['mesa']) }); const u = seg(x.L, 0.05, 0.58); b.alive(x.t); const land = SC.seat - 0.35 + 0.0; b.position.y = land + 2.2 * Math.sin(u * Math.PI) * (1 - u * 0.4) + (1 - u) * 0.0; b.position.x = mix(7.0, 4.6, sm(u));
+    const b = putB(x, s, P.bol, 4.6, -1.3, -0.2, 0, { allowObst: new Set(['mesa']), noFrame: x.L < 0.4 }); const u = seg(x.L, 0.05, 0.58); b.alive(x.t); const land = SC.seat - 0.35 + 0.0; b.position.y = land + 2.2 * Math.sin(u * Math.PI) * (1 - u * 0.4) + (1 - u) * 0.0; b.position.x = mix(7.0, 4.6, sm(u));
     if (x.L > 0.58) { const sq = 1 - 0.12 * Math.exp(-(x.L - 0.58) * 7) * Math.cos((x.L - 0.58) * 18); b.parts.body.scale.set(1 / Math.sqrt(sq), 0.98 * sq, 0.92); b.parts.face.scale.copy(b.parts.body.scale); } b.set({ face: 'grin' });
     shot(x, V(1.9, 3.8, -1.0), V(0.1, 0.1, 1), 17.5, 42, { push: 0.05 }); return s; });
   // 27 "Quando eu chorava de noite" — night, moonlight: crying in bed
@@ -152,13 +152,13 @@ export function makeShots(ctx) { const { C, S, P, FX, camera, grade, bloom } = c
   // 31 "o braço dele ficou transparente" — Bolota looks at his raised arm as it fades (on "transparente")
   at(41.62, 'braco', x => { const s = S.bed; const b = putB(x, s, P.bol, -2.5, -5.4, 0.25, 0); b.alive(x.t, 0.6); const k = sm(seg(x.L, 0.85, 1.3)); bArm(b, 'R', mix(0.35, 1.5, sm(seg(x.L, 0.0, 0.5)))); b.set({ armR: 1 - 0.8 * k, face: k > 0.3 ? 'worried' : 'smile', look: [-0.9, 0.1] });
     const h = put(x, s, C.hero, 2.6, -2.0, -0.8, 0); alive(h, x.t, 1, 2); if (k > 0.2) { pose15(h, 'scared', gestW(x.L, 1.0, 99), x.t); }
-    shot(x, V(0.6, 4.0, -4.0), V(0.3, 0.05, 1), 16.5, 42, { push: 0.05, punch: 0.95 }); return s; });
+    shot(x, V(0.0, 4.0, -4.0), V(0.3, 0.05, 1), 17.0, 42, { push: 0.05, punch: 0.95, pk: 0.08 }); return s; });
   // 32 "Na quarta"
   at(43.61, 'quarta', x => cal(x, 'SEGUNDA', 8, 'QUARTA', 10, 0.05));
   // 33 "eu enxergava a parede através da barriga dele" — belly see-through: the picture shows through; hero hands on head
   at(44.30, 'barriga', x => { const s = S.bed; const b = putB(x, s, P.bol, -2.5, -6.0, 0.1, 0); b.alive(x.t, 0.5); b.set({ armR: 0.25, body: 0.3, belly: 0.15, face: 'worried', look: [0, -0.8] });
     const h = put(x, s, C.hero, 2.6, -2.0, -0.75, 0); alive(h, x.t, 1, 2); pose15(h, 'handsHead', gestW(x.L, 0.35, 99), x.t);
-    shot(x, V(0.0, 3.7, -4.5), V(0.3, 0.04, 1), 16.0, 42, { push: 0.04, punch: 1.72 }); return s; });
+    shot(x, V(-0.4, 3.7, -4.5), V(0.3, 0.04, 1), 16.5, 42, { push: 0.04, punch: 1.72, pk: 0.08 }); return s; });
   // 34 "Na sexta"
   at(46.92, 'sexta', x => cal(x, 'QUARTA', 10, 'SEXTA', 12, 0.05));
   // 35 "só dava pra ver o sorriso" — only the smile floats in the air
@@ -168,10 +168,10 @@ export function makeShots(ctx) { const { C, S, P, FX, camera, grade, bloom } = c
   // 36 "Eu tentei de tudo" — determination: fist up
   at(49.33, 'tentei', x => { const s = S.bed; const h = put(x, s, C.hero, 2.0, -1.0, 0.2, 0); alive(h, x.t, 1, 3); h.setFace({ eyes: 'angry', mouth: 'grin', brow: 1 }); reach(h, h.armR, h.torso.localToWorld(V(-1.5, 3.0, 0.7)), gestW(x.L, 0.25, 99)); h.head.rotation.x += -0.1; h.setFace({ eyes: 'angry', mouth: 'open', brow: 1 }); shot(x, headP(h, -0.2).add(V(-0.4, 0, 0)), V(0.15, -0.1, 1), 10.5, 40, { push: 0.07, punch: 0.55 }); return s; });
   // 37 "Brinquei com ele o dia inteiro" — plaza: playing tag around Bolota, the day passes (time-lapse sky)
-  at(50.56, 'brinca', x => { const s = S.plaza; s.userData.setTime(sm(x.u) * 0.85); const a = x.t * 2.4; const h = put(x, s, C.hero, 0, 0, 0, 0); h.root.position.set(Math.sin(a) * 5.6, 0, 10 + Math.cos(a) * 4.8); h.root.rotation.y = a + Math.PI / 2;
+  at(50.56, 'brinca', x => { const s = S.plaza; s.userData.setTime(sm(x.u) * 0.85); const a = x.t * 2.4; const h = put(x, s, C.hero, 0, 0, 0, 0); h.root.position.set(Math.sin(a) * 5.0, 0, 10 + Math.cos(a) * 5.4); h.root.rotation.y = a + Math.PI / 2;
     { const p = x.t * 7.5; h.legR.piv.rotation.x = 0.8 * Math.sin(p); h.legL.piv.rotation.x = -0.8 * Math.sin(p); h.armR.piv.rotation.x = -0.7 * Math.sin(p); h.armL.piv.rotation.x = 0.7 * Math.sin(p); h.root.position.y = 0.15 * Math.abs(Math.cos(p)); }
     h.setFace({ eyes: 'happy', mouth: 'laugh' }); const b = putB(x, s, P.bol, 0, 10, 0, 0); b.alive(x.t); b.hop(x.t * 8, 1); b.rotation.y = Math.atan2(h.root.position.x, h.root.position.z - 10); b.set({ face: 'grin' });
-    shot(x, V(0, 2.5, 10), V(0.15, 0.75, 1), 24, 42, { push: 0.03 }); return s; });
+    shot(x, V(-0.4, 2.5, 10), V(0.15, 0.75, 1), 30, 42, { push: 0.03 }); return s; });
   // 38 "Desenhei ele no caderno" — top close: the pencil draws Bolota on the notebook
   at(52.02, 'caderno', x => { const s = S.bed; const nb = s.userData.nb; const k = seg(x.L, 0.0, 1.5); nb.draw(k); const book = s.userData.book; const bp = book.getWorldPosition(V(0, 0, 0));
     const h = put(x, s, C.hero, -8.0, -1.6, -Math.PI / 2, 0); sit15(h, SC.seat); h.root.position.x = -8.3; h.allowObst = new Set(['carteira', 'cadeira']); h.head.rotation.x += 0.45; h.setFace({ eyes: 'normal', mouth: 'flat', brow: 0.6, look: [0, -1] });
@@ -193,14 +193,14 @@ export function makeShots(ctx) { const { C, S, P, FX, camera, grade, bloom } = c
     shot(x, headP(h, -0.4), V(0.75, -0.18, 1), 8.0, 42, { push: 0.04, punch: 0.05, pk: 0.15 }); return s; });
   // 42 "e a escola inteira riu de mim" — kids all around laughing and pointing at him
   at(57.59, 'riem', x => { const s = S.school; const h = put(x, s, C.hero, 0, 18, 0.0, 0); alive(h, x.t, 0.6, 1); pose15(h, 'sad', gestW(x.L, 0.3, 99), x.t); h.setFace({ eyes: 'sad', mouth: 'frown', brow: -1, sweat: 1 });
-    const K = C.kids; [[K[0], -5.2, 13.6], [K[1], -2.3, 11.6], [K[2], 2.3, 11.8], [K[3], 5.6, 13.8], [K[4], -6.2, 9.4], [K[6], -2.4, 8.0], [K[7], 2.6, 8.2], [K[5], 6.0, 9.6]].forEach(([c, px, pz], i) => { put(x, s, c, px, pz, Math.atan2(-px, 18 - pz), 0); c.noFrame = true; alive(c, x.t, 1, i);
+    const K = C.kids; [[K[0], -6.2, 14.4], [K[1], -2.3, 11.6], [K[2], 2.3, 11.8], [K[3], 5.6, 13.8], [K[4], -6.2, 9.4], [K[6], -2.4, 8.0], [K[7], 2.6, 8.2], [K[5], 6.8, 10.6]].forEach(([c, px, pz], i) => { put(x, s, c, px, pz, Math.atan2(-px, 18 - pz), 0); c.noFrame = true; alive(c, x.t, 1, i);
       if (i % 2) pose15(c, 'laugh', gestW(x.L, 0.05 + i * 0.05, 99), x.t + i); else { gesture(c, 'point', x.L, 0.05 + i * 0.05, 99, 1); c.setFace({ eyes: 'happy', mouth: 'laugh' }); c.hip.position.y += 0.03 * Math.abs(Math.sin(x.t * 12 + i)); } });
     shot(x, V(0, 3.2, 13.5), V(0.0, 0.32, 1), 22.0, 44, { push: 0.05 }); return s; });
   // 43 "Nada funcionou" — sitting alone on the low wall, faded Bolota at his side
   at(59.86, 'nada', x => { const s = S.school; const h = put(x, s, C.hero, 10.0, 4.3, 0.1, 0); sit15(h, SC.seat); h.root.position.z = 3.6; h.allowObst = new Set(['muretinha']); alive(h, x.t, 0.5, 1); pose15(h, 'sad', gestW(x.L, 0.0, 99), x.t);
     const b = putB(x, s, P.bol, 15.4, 7.6, -0.5, 0); b.alive(x.t, 0.5); b.set({ body: 0.25, belly: 0.2, armR: 0.2, armL: 0.2, face: 'worried', eyes: 0.6, mouth: 0.6, look: [-0.8, -0.3] }); shot(x, V(12.6, 3.4, 5.0), V(0.1, 0.1, 1), 16.5, 42, { push: 0.05 }); return s; });
   // 44 "E todo dia, depois da aula" — the school door opens, he walks out
-  at(60.95, 'saida', x => { const s = S.school; const d = s.userData.school.door; d.set(sm(seg(x.L, -0.2, 0.5))); const h = put(x, s, C.hero, 0, -3, 0, 0); walkPath(h, x.L, 0.25, 1.85, [0, -6.0], [0, 3.6], { stride: 2.4 }); h.setFace({ eyes: 'normal', mouth: 'flat' }); shot(x, V(0, 4.4, 1.0), V(0.3, 0.06, 1), 15.0, 42, { push: 0.06 }); return s; });
+  at(60.95, 'saida', x => { const s = S.school; const d = s.userData.school.door; d.set(sm(seg(x.L, -0.45, 0.3))); const h = put(x, s, C.hero, 0, -3, 0, 0); walkPath(h, x.L, 0.25, 1.85, [0, -6.0], [0, 3.6], { stride: 2.4 }); h.setFace({ eyes: 'normal', mouth: 'flat' }); shot(x, V(0, 4.4, 1.0), V(0.3, 0.06, 1), 15.0, 42, { push: 0.06 }); return s; });
   // 45 "ele fazia a mesma coisa" — faded Bolota takes his hand and pulls him along
   at(62.76, 'leva', x => { const s = S.school; const h = put(x, s, C.hero, 0, 6, 0, 0); const b = putB(x, s, P.bol, 4.8, 6, Math.PI / 2, 0, { allow: new Set(['heroi']) }); b.set({ body: 0.45, belly: 0.4, face: 'smile' });
     bWalk(b, x.L, x.t, 0.25, x.d + 0.5, [4.8, 6.2], [10.5, 6.2]); walkPath(h, x.L, 0.35, x.d + 0.6, [0.2, 6.6], [5.7, 6.6], { stride: 2.4 }); if (x.L < 0.35) h.root.rotation.y = mix(0, Math.PI / 2, sm(seg(x.L, 0, 0.35)));
@@ -234,7 +234,7 @@ export function makeShots(ctx) { const { C, S, P, FX, camera, grade, bloom } = c
   at(74.86, 'conversa', x => { const s = S.plaza; const { h, n } = pair(x, s); h.root.rotation.y = 0.25; n.root.rotation.y = -0.25; talk(h, x.t, x.L < 0.8 ? 1 : 0); talk(n, x.t + 1, x.L > 0.7 ? 1 : 0); h.setFace({ eyes: 'normal', mouth: 'smile' }); n.setFace({ eyes: 'normal', mouth: 'smallo' }); pose15(h, 'chest', gestW(x.L, 0.2, 1.1) * 0.8, x.t, { face: false });
     shot(x, V(0, 3.5, -0.25), V(0.6, 0.08, 1), 12.5, 40, { push: 0.06 }); return s; });
   // 54 "depois a rir" — both laughing
-  at(76.55, 'rindo', x => { const s = S.plaza; const { h, n } = pair(x, s); h.root.rotation.y = 0.25; n.root.rotation.y = -0.25; pose15(h, 'laugh', gestW(x.L, 0.05, 99), x.t); pose15(n, 'laugh', gestW(x.L, 0.12, 99), x.t + 0.5); shot(x, V(0, 3.6, -0.25), V(-0.6, 0.06, 1), 12.0, 40, { push: 0.07, punch: 0.5, pk: 0.08 }); return s; });
+  at(76.55, 'rindo', x => { const s = S.plaza; const { h, n } = pair(x, s); h.root.rotation.y = 0.25; n.root.rotation.y = -0.25; pose15(h, 'laugh', gestW(x.L, 0.05, 99), x.t); pose15(n, 'laugh', gestW(x.L, 0.12, 99), x.t + 0.5); shot(x, V(-0.4, 3.6, -0.25), V(-0.6, 0.06, 1), 12.5, 40, { push: 0.07, punch: 0.5, pk: 0.06 }); return s; });
   // 55 "Depois, a gente nem viu a hora passar" — wide time-lapse: sky to sunset, plaza clock spinning
   at(77.44, 'hora_passa', x => { const s = S.plaza; s.userData.setTime(sm(x.u)); const hh = 3 + 3 * x.u; for (const ck of [s.userData.pclock, s.userData.pclock2]) ck.set(hh, (hh % 1) * 60 + x.u * 160);
     const { h, n } = pair(x, s); h.root.rotation.y = 0.25; n.root.rotation.y = -0.25; talk(h, x.t, Math.sin(x.t * 2) > 0 ? 1 : 0); talk(n, x.t + 1, Math.sin(x.t * 2) <= 0 ? 1 : 0); n.head.rotation.z += 0.15 * Math.sin(x.t * 3); h.setFace({ eyes: 'happy', mouth: 'smile' }); n.setFace({ eyes: 'happy', mouth: 'smile' });
@@ -256,7 +256,7 @@ export function makeShots(ctx) { const { C, S, P, FX, camera, grade, bloom } = c
   at(85.25, 'acreditar', x => { const s = S.plaza; s.userData.setTime(1); const { h, n } = pair(x, s); n.noFrame = true; h.head.rotation.y += -0.6 + 0.4 * sm(seg(x.L, 0.8, 1.5)); h.setFace({ eyes: 'sad', mouth: 'flat', brow: -0.6, tears: x.L > 1.0 ? 1 : 0 }); shot(x, headP(h, -0.3), V(-0.3, 0.03, 1), 6.0, 40, { push: 0.05 }); return s; });
   // 61 "Ele sumiu porque, pela primeira vez" — wide: the two boys on the bench, faint Bolota behind them
   at(87.47, 'primeira_vez', x => { const s = S.plaza; s.userData.setTime(1); const { h, n } = pair(x, s); h.root.rotation.y = 0.3; n.root.rotation.y = -0.3; talk(n, x.t, 0.8); h.setFace({ eyes: 'happy', mouth: 'smile' }); n.setFace({ eyes: 'happy', mouth: 'grin' }); pose15(n, 'chest', gestW(x.L, 0.6, 99), x.t, { face: false, mirror: true });
-    const b = putB(x, s, P.bol, -8.5, -3.6, 0.5, 0); b.alive(x.t, 0.6); b.set({ body: 0.14, belly: 0.1, armR: 0.14, armL: 0.14, eyes: 0.6, mouth: 0.7, face: 'smile' }); shot(x, V(-2.4, 4.4, -0.8), V(0.45, 0.1, 1), 23.0, 42, { push: 0.05 }); return s; });
+    const b = putB(x, s, P.bol, -8.5, -3.6, 0.5, 0); b.alive(x.t, 0.6); b.set({ body: 0.14, belly: 0.1, armR: 0.14, armL: 0.14, eyes: 0.6, mouth: 0.7, face: 'smile' }); shot(x, V(-2.0, 4.4, -0.8), V(0.45, 0.1, 1), 23.5, 42, { push: 0.05 }); return s; });
   // 62 "eu não estava mais sozinho" — the two laughing together, close two-shot
   at(89.99, 'nao_sozinho', x => { const s = S.plaza; s.userData.setTime(1); const { h, n } = pair(x, s); h.root.rotation.y = 0.25; n.root.rotation.y = -0.25; pose15(h, 'laugh', gestW(x.L, 0.1, 99), x.t); pose15(n, 'laugh', gestW(x.L, 0.2, 99), x.t + 0.5); shot(x, V(0.4, 3.7, -0.25), V(0.5, 0.05, 1), 13.0, 40, { push: 0.07 }); return s; });
   // 63 "Ele passou meses me levando até aquele banco" — sepia montage: leaves falling, they walk to the bench again and again
@@ -299,7 +299,7 @@ export function makeShots(ctx) { const { C, S, P, FX, camera, grade, bloom } = c
   at(108.60, 'mandou_sentar', x => { const s = S.plaza; s.userData.setTime(1); const { h, n } = pair(x, s); h.root.rotation.y = 0.45; n.root.rotation.y = -0.3; pose15(n, 'pointAt', gestW(x.L, 1.5, 99), x.t, { mirror: true }); talk(n, x.t, 1); n.setFace({ eyes: 'normal', mouth: 'smile' });
     startle(h, x.L, 0.35, 0.6); h.hip.position.y = Math.max(h.hip.position.y, SC.seat + 0.05); shot(x, V(-0.1, 3.6, -0.25), V(-0.5, 0.05, 1), 13.0, 40, { push: 0.06, punch: 0.4, pk: 0.08 }); return s; });
   // 75 final: crane up — the two friends on THE bench, and Bolota's smile fading in the sunset sky
-  at(110.30, 'final', x => { const s = S.plaza; s.userData.setTime(1); const { h, n } = pair(x, s); h.root.rotation.y = 0.3; n.root.rotation.y = -0.3; h.head.rotation.x += -0.5 * sm(seg(x.L, 0.2, 0.8)); n.head.rotation.x += -0.5 * sm(seg(x.L, 0.3, 0.9)); h.setFace({ eyes: 'happy', mouth: 'smile' }); n.setFace({ eyes: 'happy', mouth: 'smile' });
+  at(110.30, 'final', x => { const s = S.plaza; s.userData.setTime(1); const { h, n } = pair(x, s); h.noFrame = n.noFrame = x.L > 1.0; h.root.rotation.y = 0.3; n.root.rotation.y = -0.3; h.head.rotation.x += -0.5 * sm(seg(x.L, 0.2, 0.8)); n.head.rotation.x += -0.5 * sm(seg(x.L, 0.3, 0.9)); h.setFace({ eyes: 'happy', mouth: 'smile' }); n.setFace({ eyes: 'happy', mouth: 'smile' });
     const b = putB(x, s, P.bol, 0, -14, 0, 14, { noFrame: true, allowObst: new Set(['árvore']) }); b.scale.setScalar(2.2); b.set({ body: 0.0, belly: 0, armR: 0, armL: 0, eyes: 0, mouth: 0.6 * sm(seg(x.L, 0.3, 1.0)) * (1 - sm(seg(x.L, 1.5, 2.1))), face: 'smile' }); for (const f of b.parts.feet) f.visible = false;
     const k = eio(x.u); camera.position.set(0, mix(4.5, 8, k), mix(14, 22, k)); camera.lookAt(0, mix(3.5, 14, k), -4); camera.fov = 44; x.focus = 18; grade.fade.value = sm(seg(x.L, 1.6, 2.1)); return s; });
   return { SHOTS: SH, DUR: 112.4 }; }
