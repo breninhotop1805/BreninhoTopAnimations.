@@ -4,6 +4,7 @@ import { walkPath, alive, gestW, eio, eo, sm, seg, mix, cl, startle, talk, sit15
 import { pose15, POSE15 } from './poses15.js';
 import { SC } from './kit.js';
 import { doodle } from './sets.js';
+import { DecalGeometry } from 'three/addons/geometries/DecalGeometry.js';
 const HD = () => doodle({ ink: '#1a3a8a', size: 256 });
 export const RED_WORDS = new Set([3, 6, 9, 26, 36, 48, 54, 60, 74, 83, 88, 89, 90, 95, 117, 118, 121, 127, 130, 139, 145, 148, 157, 161, 171, 173, 177, 190, 193, 211, 216, 231, 234, 237, 264, 267, 273, 281, 292, 300, 310, 312, 316, 320, 331, 337, 340, 341, 346, 357]);
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -186,7 +187,11 @@ export function makeShots(ctx) { const { C, S, P, FX, camera, grade, bloom } = c
     const h = put(x, s, C.hero, -8.3, -1.6, -Math.PI / 2, 0); sit15(h, SC.seat); h.allowObst = new Set(['carteira', 'cadeira']); h.head.rotation.x += 0.5; h.head.rotation.y += -0.2; h.setFace({ eyes: 'normal', mouth: 'grin', brow: 0.4, look: [0.4, -1] });
     reach(h, h.armL, V(-10.0, SC.table + 0.32, -0.15), 1); h.root.updateMatrixWorld(true); const hb = new THREE.Box3().setFromObject(h.armL.handMesh); const hp = hb.getCenter(V(0, 0, 0));
     const k = seg(x.L, 0.0, 0.9); const ang = Math.PI * 2 * Math.min(1, k / 0.45); reach(h, h.armR, hp.clone().add(V(-0.05 + Math.sin(ang) * 0.1, 0.55, -0.55 + Math.cos(ang) * 0.1)), 1);
-    const dd = s.userData.hd ||= (() => { const d = HD(); const m = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.4), new THREE.MeshBasicMaterial({ map: d.tex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4 })); m.rotation.x = -Math.PI / 2; m.rotation.z = Math.PI / 4; m.scale.setScalar(0.8); m.renderOrder = 4; d.m = m; return d; })(); dd.draw(k); s.add(dd.m); { const top = hp.clone().add(V(1, 0, 0).applyQuaternion(camera.quaternion).setY(0).normalize().multiplyScalar(-0.1)).add(V(0, 0, 0)); top.y = hb.min.y + (hb.max.y - hb.min.y) * 0.72; const ry = new THREE.Raycaster(top.clone().add(V(0, 2, 0)), V(0, -1, 0)); const hit = ry.intersectObject(h.armL.handMesh, false)[0]; dd.m.position.copy(hit ? hit.point.add(V(0, 0.012, 0)) : top); }
+    // the drawing is a DECAL projected onto the hand's own surface (follows its shape — never a flat picture floating above it)
+    const dd = s.userData.hd ||= (() => { const d = HD(); d.mat = new THREE.MeshStandardMaterial({ map: d.tex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4, roughness: 0.7 }); d.m = new THREE.Mesh(new THREE.BufferGeometry(), d.mat); d.m.renderOrder = 4; return d; })(); dd.draw(k);
+    { h.armL.handMesh.updateMatrixWorld(true); const top = hp.clone().add(V(1, 0, 0).applyQuaternion(camera.quaternion).setY(0).normalize().multiplyScalar(-0.1)); const ry = new THREE.Raycaster(top.clone().add(V(0, 2, 0)), V(0, -1, 0)); const hit = ry.intersectObject(h.armL.handMesh, false)[0];
+      if (hit) { const n = hit.face.normal.clone().transformDirection(h.armL.handMesh.matrixWorld); const o = new THREE.Object3D(); o.position.copy(hit.point); o.up.copy(V(0, 1, 0).applyQuaternion(camera.quaternion)); o.lookAt(hit.point.clone().sub(n)); o.updateMatrixWorld(true);
+        dd.m.geometry.dispose(); dd.m.geometry = new DecalGeometry(h.armL.handMesh, hit.point, o.rotation, V(0.3, 0.3, 0.6)); s.add(dd.m); } }
     camera.position.copy(hp.clone().add(V(1.1, 2.3, 0.9))); camera.lookAt(hp.clone().add(V(0, 0, -0.05))); camera.fov = 40; x.focus = 2.7; return s; }, { noQA: true });
   // 41 "Gritei o nome dele no meio do pátio" — schoolyard: hands around the mouth, shouting (punch)
   at(55.66, 'grita', x => { const s = S.school; const h = put(x, s, C.hero, 0, 18, 0.1, 0); alive(h, x.t, 0.6, 1); pose15(h, 'shout', gestW(x.L, 0.05, 99), x.t); h.hip.position.y += 0.03 * Math.sin(x.t * 30) * (x.L > 0.1 ? 1 : 0);
