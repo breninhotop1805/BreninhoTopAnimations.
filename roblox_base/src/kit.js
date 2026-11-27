@@ -98,12 +98,12 @@ export const FURN = {
 };
 // ---------------- interior room (back + side walls, floor, ceiling, lamp) ----------------
 // o = { w, d, h, wall, wallTex, floor, doors:[{wall:'back'|'left'|'right', x, ...doorOpts}], windows:[{wall, x, y, ...}], night }
-export function room(s, o = {}) { const g = new THREE.Group(); s.add(g); const W = o.w || 24, D = o.d || 20, H = o.h || SC.ceil, T = SC.wallT;
+export function room(s, o = {}) { const g = new THREE.Group(); s.add(g); const W = o.w || 24, D = o.d || 20, H = o.h || SC.ceil, T = SC.wallT; const CZ = o.cz || 0; /* room centre z (deeper rooms without moving the furniture) */
   const wm = new THREE.MeshStandardMaterial({ color: '#ffffff', map: o.wallTex || TEX.plaster(o.wall || '#cfe0f0', [2, 2]), roughness: 0.85 });
-  const fl = new THREE.Mesh(new THREE.BoxGeometry(W, 0.3, D), new THREE.MeshStandardMaterial({ map: o.floorTex || TEX.planks(o.floor || '#c08a5a', [W / 8, D / 8]), roughness: 0.7 })); fl.position.set(0, -0.15, 0); fl.receiveShadow = true; g.add(fl);
+  const fl = new THREE.Mesh(new THREE.BoxGeometry(W, 0.3, D), new THREE.MeshStandardMaterial({ map: o.floorTex || TEX.planks(o.floor || '#c08a5a', [W / 8, D / 8]), roughness: 0.7 })); fl.position.set(0, -0.15, CZ); fl.receiveShadow = true; g.add(fl);
   const doorsOn = w => (o.doors || []).filter(d => d.wall === w), winOn = w => (o.windows || []).filter(d => d.wall === w);
-  const holes = w => [...doorsOn(w).map(d => ({ x0: d.x - (d.w || SC.doorW) / 2 - 0.35, x1: d.x + (d.w || SC.doorW) / 2 + 0.35, y0: 0, y1: (d.h || SC.doorH) + 0.35 })), ...winOn(w).map(d => ({ x0: d.x - (d.w || 3.4) / 2 - 0.25, x1: d.x + (d.w || 3.4) / 2 + 0.25, y0: (d.y ?? SC.sill) - 0.25, y1: (d.y ?? SC.sill) + (d.h || 4) + 0.25 }))];
-  const walls = { back: { len: W, pos: [-W / 2, H / 2 * 0, -D / 2], ry: 0, off: W / 2 }, left: { len: D, pos: [-W / 2, 0, D / 2], ry: Math.PI / 2, off: D / 2 }, right: { len: D, pos: [W / 2, 0, -D / 2], ry: -Math.PI / 2, off: D / 2 } };
+  const holes = w => [...doorsOn(w).map(d => ({ x0: d.x - (d.w || SC.doorW) / 2 - 0.35, x1: d.x + (d.w || SC.doorW) / 2 + 0.35, y0: 0, y1: (d.h || SC.doorH) + 0.35 })), ...winOn(w).map(d => ({ x0: d.x - (d.w || 3.4) / 2 - 0.25, x1: d.x + (d.w || 3.4) / 2 + 0.25, y0: (d.y ?? SC.sill) - 0.25, y1: (d.y ?? SC.sill) + (d.h || 4) + 0.25 })), ...(o.holes || []).filter(h => h.wall === w).map(h => ({ x0: h.x - h.w / 2, x1: h.x + h.w / 2, y0: h.y, y1: h.y + h.h }))];
+  const walls = { back: { len: W, pos: [-W / 2, H / 2 * 0, -D / 2 + CZ], ry: 0, off: W / 2 }, left: { len: D, pos: [-W / 2, 0, D / 2 + CZ], ry: Math.PI / 2, off: D / 2 }, right: { len: D, pos: [W / 2, 0, -D / 2 + CZ], ry: -Math.PI / 2, off: D / 2 } , ...(o.front ? { front: { len: W, pos: [W / 2, 0, D / 2 + CZ], ry: Math.PI, off: -W / 2 } } : {}) };
   const D_ = {}; for (const [k, wd] of Object.entries(walls)) { if (o.open?.includes(k)) continue; const hs = holes(k).map(h => ({ ...h, x0: h.x0 + wd.off, x1: h.x1 + wd.off }));
     const wg = wall(g, s, wd.len, H, T, wm, hs, { pos: [wd.pos[0], 0, wd.pos[2]], ry: wd.ry, name: 'parede' });
     bx(wg, wd.len, 0.5, 0.25, o.trim || '#ffffff', wd.len / 2, 0.25, T / 2 + 0.12, { r: 0 }); bx(wg, wd.len, 0.35, 0.3, o.trim || '#ffffff', wd.len / 2, H - 0.18, T / 2 + 0.12, { r: 0 });
@@ -111,9 +111,9 @@ export function room(s, o = {}) { const g = new THREE.Group(); s.add(g); const W
       const hx = d.x + wd.off, hw = (d.w || SC.doorW) + 3; const hm = mat(o.hall || '#e8dcc8'); bx(wg, hw, 0.2, 7, mat('#a07850'), hx, -0.1, -3.8, { r: 0 }); for (const sx of [-1, 1]) bx(wg, 0.3, H, 7, hm, hx + sx * hw / 2, H / 2, -3.8, { r: 0 }); bx(wg, hw, H, 0.3, hm, hx, H / 2, -7.2, { r: 0 }); bx(wg, hw, 0.3, 7, hm, hx, H, -3.8, { r: 0 });
       const hl = new THREE.PointLight('#ffe8c8', 30, 14, 1.5); hl.position.set(hx, H - 2, -4); wg.add(hl); }
     for (const w_ of winOn(k)) win(wg, { ...w_, x: w_.x + wd.off, z: 0.05, night: o.night }); }
-  if (o.ceiling !== false) { const c = new THREE.Mesh(new THREE.BoxGeometry(W, 0.3, D), mat(o.ceil || '#f4f2ee')); c.position.set(0, H + 0.15, 0); g.add(c);
+  if (o.ceiling !== false) { const c = new THREE.Mesh(new THREE.BoxGeometry(W, 0.3, D), mat(o.ceil || '#f4f2ee')); c.position.set(0, H + 0.15, CZ); g.add(c);
     const lamp = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 0.2, 24), mat('#fffbe8', { em: '#fff4d0', ei: 1.0 })); lamp.position.set(o.lampX || 0, H - 0.1, o.lampZ || 0); g.add(lamp); }
-  return { group: g, doors: D_, W, D, H }; }
+  return { group: g, doors: D_, W, D, H, CZ }; }
 // ---------------- Mediterranean row house (2 storeys, door module, shutters, balcony, roof) ----------------
 export function house(p, s, o = {}) { const g = new THREE.Group(); p.add(g); g.position.set(o.x || 0, 0, o.z || 0); const W = o.w || 14, H = o.storeys === 1 ? 13 : 25.5, Dp = 10; const col = o.color || '#f2a4c8', trim = o.trim || '#ffffff';
   const wm = new THREE.MeshStandardMaterial({ color: '#ffffff', map: TEX.plaster(col, [W / 8, H / 8]), roughness: 0.9 }); const dx = o.doorX ?? 0;
@@ -169,6 +169,7 @@ const _p = new THREE.Box3(), _q = new THREE.Box3();
 export function charCheck(t, live, log = console.log) { let n = 0; const parts = c => [c.torsoMesh, c.lowerTorso, c.headMesh, c.armR.mesh, c.armL.mesh, c.armR.lower, c.armL.lower, c.armR.handMesh, c.armL.handMesh, c.legR.mesh, c.legL.mesh, c.legR.lower, c.legL.lower, c.legR.foot, c.legL.foot].filter(Boolean);
   for (const c of live) c.root.updateMatrixWorld(true);
   for (let i = 0; i < live.length; i++) for (let j = i + 1; j < live.length; j++) { const A = live[i], B = live[j]; if (!A.root.visible || !B.root.visible || A.noCollide?.has(B.name) || B.noCollide?.has(A.name)) continue;
-    for (const pa of parts(A)) { _p.setFromObject(pa).expandByScalar(-0.05); for (const pb of parts(B)) { _q.setFromObject(pb).expandByScalar(-0.05); if (_p.intersectsBox(_q)) { n++; if (n < 4) log(`LOG ATRAVESSA t=${t.toFixed(2)} ${A.name} x ${B.name}`); break; } } } } return n; }
+    const PA = parts(A), PB = parts(B); for (let ia = 0; ia < PA.length; ia++) { _p.setFromObject(PA[ia]).expandByScalar(-0.05); for (let ib = 0; ib < PB.length; ib++) { _q.setFromObject(PB[ib]).expandByScalar(-0.05); if (_p.intersectsBox(_q)) { n++; if (n < 4) log(`LOG ATRAVESSA t=${t.toFixed(2)} ${A.name} x ${B.name} [peça ${PN[ia]} x ${PN[ib]}]`); break; } } } } return n; }
+const PN = ['tronco', 'quadril', 'cabeça', 'braçoD', 'braçoE', 'antebraçoD', 'antebraçoE', 'mãoD', 'mãoE', 'coxaD', 'coxaE', 'canelaD', 'canelaE', 'péD', 'péE'];
 // one call per frame before rendering: people x people, people x walls/doors/furniture, camera occlusion/framing
 export function qa(t, s, cam, live, log = console.log) { return charCheck(t, live, log) + obstacleCheck(t, s, live, log) + cameraCheck(t, s, cam, live, log); }
