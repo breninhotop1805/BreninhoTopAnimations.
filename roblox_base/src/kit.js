@@ -106,7 +106,7 @@ export function room(s, o = {}) { const g = new THREE.Group(); s.add(g); const W
   const walls = { back: { len: W, pos: [-W / 2, H / 2 * 0, -D / 2 + CZ], ry: 0, off: W / 2 }, left: { len: D, pos: [-W / 2, 0, D / 2 + CZ], ry: Math.PI / 2, off: D / 2 }, right: { len: D, pos: [W / 2, 0, -D / 2 + CZ], ry: -Math.PI / 2, off: D / 2 } , ...(o.front ? { front: { len: W, pos: [W / 2, 0, D / 2 + CZ], ry: Math.PI, off: -W / 2 } } : {}) };
   const D_ = {}; for (const [k, wd] of Object.entries(walls)) { if (o.open?.includes(k)) continue; const hs = holes(k).map(h => ({ ...h, x0: h.x0 + wd.off, x1: h.x1 + wd.off }));
     const wg = wall(g, s, wd.len, H, T, wm, hs, { pos: [wd.pos[0], 0, wd.pos[2]], ry: wd.ry, name: 'parede' });
-    bx(wg, wd.len, 0.5, 0.25, o.trim || '#ffffff', wd.len / 2, 0.25, T / 2 + 0.12, { r: 0 }); bx(wg, wd.len, 0.35, 0.3, o.trim || '#ffffff', wd.len / 2, H - 0.18, T / 2 + 0.12, { r: 0 });
+    bx(wg, wd.len, 0.5, 0.25, o.trim || '#ffffff', wd.len / 2, 0.25, T / 2 + 0.12, { r: 0 }); bx(wg, wd.len, 0.35, 0.3, o.trim || '#ffffff', wd.len / 2, H - 0.21, T / 2 + 0.12, { r: 0 });
     for (const d of doorsOn(k)) { const dd = door(wg, s, { ...d, x: d.x + wd.off, z: 0 }); D_[d.name || k] = dd;
       const hx = d.x + wd.off, hw = (d.w || SC.doorW) + 3; const hm = mat(o.hall || '#e8dcc8'); bx(wg, hw, 0.2, 7, mat('#a07850'), hx, -0.1, -3.8, { r: 0 }); for (const sx of [-1, 1]) bx(wg, 0.3, H, 7, hm, hx + sx * hw / 2, H / 2, -3.8, { r: 0 }); bx(wg, hw, H, 0.3, hm, hx, H / 2, -7.2, { r: 0 }); bx(wg, hw, 0.3, 7, hm, hx, H, -3.8, { r: 0 });
       const hl = new THREE.PointLight('#ffe8c8', 30, 14, 1.5); hl.position.set(hx, H - 2, -4); wg.add(hl); }
@@ -159,11 +159,11 @@ export function obstacleCheck(t, s, live, log = console.log) { const O = s.userD
 const _ray = new THREE.Raycaster();
 export function cameraCheck(t, s, cam, live, log = console.log) { let n = 0; s.updateMatrixWorld(true); cam.updateMatrixWorld(true); cam.updateProjectionMatrix();
   const charMeshes = new Set(); for (const c of live) c.root.traverse(o => charMeshes.add(o));
-  const targets = []; s.traverse(o => { if (o.isMesh && !charMeshes.has(o) && !(o.material && o.material.transparent)) targets.push(o); });
+  const targets = []; s.traverse(o => { if (o.isMesh && !charMeshes.has(o) && !o.userData.noOcc && !(o.material && o.material.transparent)) targets.push(o); });
   for (const c of live) { if (!c.root.visible) continue; const hp = c.head.localToWorld(new THREE.Vector3(0, 0.66, 0.4)); const ndc = hp.clone().project(cam);
     if (ndc.z > 1 || Math.abs(ndc.x) > 0.92 || ndc.y > 0.95 || ndc.y < -0.9) { n++; log(`LOG FORA_DO_QUADRO t=${t.toFixed(2)} ${c.name} ndc=${ndc.x.toFixed(2)},${ndc.y.toFixed(2)}`); continue; }
     const dir = hp.clone().sub(cam.position); const dist = dir.length(); _ray.set(cam.position, dir.normalize()); _ray.far = dist - 0.6; const hit = _ray.intersectObjects(targets, false)[0];
-    if (hit) { n++; log(`LOG OCLUSAO t=${t.toFixed(2)} ${c.name} tapado por ${hit.object.name || hit.object.parent?.name || 'objeto'} a ${hit.distance.toFixed(1)}`); } } return n; }
+    if (hit) { n++; log(`LOG OCLUSAO t=${t.toFixed(2)} ${c.name} tapado por ${meshLabel(hit.object)} a ${hit.distance.toFixed(1)} @${hit.point.x.toFixed(1)},${hit.point.y.toFixed(1)},${hit.point.z.toFixed(1)}`); } } return n; }
 // ---------------- character x character check (all R15 parts: torso, head, upper/lower arms, hands, legs, feet) ----------------
 const _p = new THREE.Box3(), _q = new THREE.Box3();
 export function charCheck(t, live, log = console.log) { let n = 0; const parts = c => [c.torsoMesh, c.lowerTorso, c.headMesh, c.armR.mesh, c.armL.mesh, c.armR.lower, c.armL.lower, c.armR.handMesh, c.armL.handMesh, c.legR.mesh, c.legL.mesh, c.legR.lower, c.legL.lower, c.legR.foot, c.legL.foot].filter(Boolean);

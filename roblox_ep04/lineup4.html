@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000;overflow:hidden}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body><script type="module">
+import * as THREE from 'three';
+import { loadBodies } from '/src/realbody.js';
+import { loadFonts } from '/src/kit.js';
+import { buildCast } from '/src/cast.js';
+const W = 360, H = 480; const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); r.setSize(W, H); r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; document.body.appendChild(r.domElement);
+await loadFonts(); await loadBodies(); const C = buildCast(); const s = new THREE.Scene(); s.background = new THREE.Color('#9ad0f4');
+s.add(new THREE.HemisphereLight('#ffffff', '#8a7a6a', 1.5)); const key = new THREE.DirectionalLight('#fff1dc', 2.4); key.position.set(3, 5, 6); s.add(key);
+const cam = new THREE.PerspectiveCamera(30, W / H, 0.1, 100);
+window.SHOW = (name, o) => { for (const c of C.all) c.root.removeFromParent(); const c = C[name] || C.kids.find(k => k.name === name); c.reset(); s.add(c.root); c.root.rotation.y = o.ry || 0; if (o.wear) c.wear(o.wear); if (o.hair) c.hfx.set(o.hair); if (o.hat != null) c.hatGreen(o.hat, 1); if (o.face) { c.setFace(o.face); } c.applyFace(); c.root.updateMatrixWorld(true);
+  const hp = c.headMesh.getWorldPosition(new THREE.Vector3()); const d = o.full ? 16 : 6.2; cam.position.set(hp.x + (o.full ? 0 : 0.4), hp.y + (o.full ? -1.8 : 0.3), hp.z + d); cam.lookAt(hp.x, hp.y - (o.full ? 2.3 : 0.25), hp.z); r.render(s, cam); };
+window.READY = 1;
+</script></body></html>

@@ -46,8 +46,10 @@ export function drawFace(g, f, S = 512) { g.clearRect(0, 0, S, S); const cx = S 
       g.strokeStyle = k; g.lineWidth = S * 0.022; g.beginPath(); g.ellipse(x, y, rx * 1.02, ry * 1.02, 0, 1.08 * Math.PI, 1.92 * Math.PI); g.stroke();
       g.beginPath(); g.moveTo(x + s * rx * 0.95, y - ry * 0.45); g.lineTo(x + s * rx * 1.35, y - ry * 0.75); g.stroke();
       if (type === 'angry' || type === 'sad') { g.save(); g.globalCompositeOperation = 'destination-out'; g.translate(x, y); g.rotate(s * (type === 'angry' ? -0.4 : 0.4)); g.fillRect(-rx * 1.5, -ry * 1.7, rx * 3, ry * 0.85); g.restore(); } }
-    else { const big = type === 'wide' ? 1.45 : type === 'dot' ? 0.7 : 1; const rx = S * 0.032 * big, ry = S * 0.055 * big * (1 - bl * 0.8);
+    else { const big = (type === 'wide' ? 1.45 : type === 'dot' ? 0.7 : 1) * (f.iris ? 1.18 : 1); const rx = S * 0.032 * big, ry = S * 0.055 * big * (1 - bl * 0.8);
       g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, 7); g.fill();
+      if (f.iris && ry > S * 0.02) { const ic = Array.isArray(f.iris) ? f.iris[s < 0 ? 0 : 1] : f.iris; g.fillStyle = ic; g.beginPath(); g.ellipse(x, y + ry * 0.1, rx * 0.74, ry * 0.76, 0, 0, 7); g.fill();  // coloured iris (eye colour visible)
+        g.fillStyle = k; g.beginPath(); g.ellipse(x, y + ry * 0.14, rx * 0.36, ry * 0.36, 0, 0, 7); g.fill(); g.fillStyle = k; }
       if (type === 'wide') { g.fillStyle = '#fff'; g.beginPath(); g.ellipse(x - rx * 0.3, y - ry * 0.35, rx * 0.3, ry * 0.22, 0, 0, 7); g.fill(); }
       else { g.fillStyle = 'rgba(255,255,255,0.85)'; g.beginPath(); g.ellipse(x - rx * 0.25, y - ry * 0.45, rx * 0.28, ry * 0.18, 0, 0, 7); g.fill(); }
       if (type === 'angry' || type === 'sad') { g.save(); g.globalCompositeOperation = 'destination-out'; g.translate(x, y); g.rotate(s * (type === 'angry' ? -0.45 : 0.45)); g.fillRect(-rx * 1.6, -ry * 1.9, rx * 3.2, ry * 1.1); g.restore(); } } }
