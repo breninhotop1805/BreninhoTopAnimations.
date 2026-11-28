@@ -49,8 +49,8 @@ def read_frames(src, start, dur, crop=None, size=None, fps=FPS):
     p.wait(); return out
 
 # ---------------- legenda (blocos de 2-3 palavras) ----------------
-def cap_sprite(txt, size=74):
-    f = ImageFont.truetype(KOM, size); red, blk = 9, 4; pad = 30
+def cap_sprite(txt, size=64):
+    f = ImageFont.truetype(KOM, size); red, blk = 8, 4; pad = 30
     bb = f.getbbox(txt, stroke_width=red + blk); w, h = bb[2] - bb[0] + pad*2, bb[3] - bb[1] + pad*2
     org = (pad - bb[0], pad - bb[1])
     sh = Image.new("RGBA", (w, h), (0, 0, 0, 0)); ImageDraw.Draw(sh).text((org[0] + 4, org[1] + 7), txt, font=f, fill=(0, 0, 0, 150), stroke_width=red + blk, stroke_fill=(0, 0, 0, 150))
@@ -82,6 +82,7 @@ class Video:
         self.cfg = cfg
         self.caps = group_caps([w for w in json.load(open(cfg["palavras"])) if w["s"] is not None and w["s"] < cfg["dur"]])
         self.capspr = {}
+        self.shadows = {}
         self.poses = {}
         anchors = {l.split("|")[0]: (float(l.split("|")[1]), float(l.split("|")[2])) for l in open(cfg["poses_dir"] + "/anchors.txt").read().splitlines()}
         for name in set(p[1] for p in cfg["poses"]):
@@ -104,22 +105,33 @@ class Video:
             if tk["a"] <= t < tk["b"]: return tk
         return None
 
-    def render(self, out):
-        cfg = self.cfg; dur = cfg["dur"]; n = int(round(dur*FPS))
-        bg = read_frames(cfg["parkour"], cfg["parkour_t"], dur, crop=(608, 1080, cfg.get("pk_x", 656), 0), size=(W, H))
-        # takes pre-carregados
-        for tk in cfg["takes"]:
-            x0, y0, x1, y1 = tk.get("crop", (0, 0, 1920, 1080))
-            tk["_fr"] = read_frames(tk["src"], tk["s0"], tk["b"] - tk["a"] + 0.4, crop=(x1 - x0, y1 - y0, x0, y0), size=(int(BOX[2]*1.12), int(BOX[3]*1.12)))
+    def render(self, out, t_from=0.0, t_to=None):
+        cfg = self.cfg; dur = cfg["dur"]; t_to = t_to if t_to is not None else dur
+        f0, f1 = int(round(t_from*FPS)), int(round(t_to*FPS))
         enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", f"{W}x{H}", "-r", str(FPS),
                                 "-i", "-", "-c:v", "libx264", "-preset", "slow", "-crf", "15", "-pix_fmt", "yuv420p", out], stdin=subprocess.PIPE)
-        for i in range(n):
+        seg_i, seg_fr = -1, []
+        for i in range(f0, f1):
             t = i/FPS
-            f = bg[min(i, len(bg) - 1)].astype(np.float32)/255
+            # fundo: carrega o segmento de parkour atual (so o trecho dentro desta parte)
+            si = max(k for k, sg in enumerate(cfg["parkour_segs"]) if sg[0] <= t + 1e-6)
+            if si != seg_i:
+                a_, b_, t0 = cfg["parkour_segs"][si]; lo = max(a_, t_from); hi = min(b_, t_to)
+                seg_fr = read_frames(cfg["parkour"], t0 + (lo - a_), hi - lo, crop=tuple(cfg["pk_crop"]), size=(W, H)); seg_i = si; seg_lo = lo
+            j = min(int(round((t - seg_lo)*FPS)), len(seg_fr) - 1)
+            f = seg_fr[j].astype(np.float32)/255
+            # takes: carrega sob demanda e libera os que ja passaram
+            for tk in cfg["takes"]:
+                if tk["a"] - 0.5 <= t < tk["b"] + 0.5 and "_fr" not in tk:
+                    x0, y0, x1, y1 = tk.get("crop", (0, 0, 1920, 1080))
+                    tk["_fr"] = read_frames(tk["src"], tk["s0"], tk["b"] - tk["a"] + 0.4, crop=(x1 - x0, y1 - y0, x0, y0), size=(int(BOX[2]*1.12), int(BOX[3]*1.12)))
+                elif t >= tk["b"] + 0.5 and "_fr" in tk:
+                    del tk["_fr"]
             f = self.draw_take(f, t)
             f = self.draw_foxy(f, t)
             f = self.draw_caption(f, t)
             f = self.camera(f, t)
+            f = self.screen_whip(f, t)
             f = self.flash(f, t)
             if t > dur - 0.4: f = f*max(0.0, (dur - t)/0.4)
             enc.stdin.write((np.clip(f, 0, 1)*255).astype(np.uint8).tobytes())
@@ -134,35 +146,47 @@ class Video:
         M = np.float32([[z, 0, BOX[2]/2 - z*cx], [0, z, BOX[3]/2 - z*cy]])
         return cv2.warpAffine(img, M, (BOX[2], BOX[3]), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
 
-    def draw_take(self, f, t):
-        tk = self.take_frame(t)
-        if tk is None: return f
-        blit(f, self.box_shadow, BOX[0] + BOX[2]/2, BOX[1] + BOX[3]/2 + 6)
-        img = self.take_img(tk, t); tr = tk.get("tr", "cut"); u = t - tk["a"]
-        if tr == "pop" and u < 0.30:
-            k = spring(u, 420, 20); s = mix(0.82, 1.0, k); bl = max(0, 6*(1 - u/0.12))
-            canvas = np.zeros((BOX[3], BOX[2], 3), np.float32)
-            prev = [p for p in self.cfg["takes"] if abs(p["b"] - tk["a"]) < 1e-3]
-            if prev: canvas = self.take_img(prev[0], tk["a"] - 1/FPS)
-            sm = cv2.resize(img, None, fx=s, fy=s)
-            if bl > 0.3: sm = cv2.GaussianBlur(sm, (0, 0), bl)
-            hh, ww = sm.shape[:2]; y0 = (BOX[3] - hh)//2; x0 = (BOX[2] - ww)//2
-            canvas[max(y0, 0):max(y0, 0) + min(hh, BOX[3]), max(x0, 0):max(x0, 0) + min(ww, BOX[2])] = sm[max(-y0, 0):max(-y0, 0) + min(hh, BOX[3]), max(-x0, 0):max(-x0, 0) + min(ww, BOX[2])]
-            img = canvas
-        elif tr == "slide" and u < 0.28:
-            k = e_out(u/0.28); prev = [p for p in self.cfg["takes"] if abs(p["b"] - tk["a"]) < 1e-3]
-            old = self.take_img(prev[0], tk["a"] - 1/FPS) if prev else np.zeros_like(img)
-            dx = int(BOX[2]*(1 - k)); canvas = np.zeros_like(img)
-            canvas[:, :BOX[2] - dx] = old[:, dx:] if dx < BOX[2] else canvas[:, :0]
-            canvas[:, BOX[2] - dx:] = img[:, :dx] if dx > 0 else canvas[:, BOX[2]:]
-            img = np.roll(img, -0, 1); img = canvas if dx > 0 else img
-            img = cv2.blur(img, (int(1 + 40*(1 - k)) | 1, 1))
+    def box_sprite(self, tk, t):
+        img = self.take_img(tk, t)
         if tk.get("glitch") and abs(t - tk["glitch"]) < 0.25:
             g = 1 - abs(t - tk["glitch"])/0.25; sh = int(22*g)
             img = img.copy(); img[..., 2] = np.roll(img[..., 2], sh, 1); img[..., 0] = np.roll(img[..., 0], -sh, 1)
-        x, y = BOX[0], BOX[1]; roi = f[y:y + BOX[3], x:x + BOX[2]]
-        roi[:] = roi*(1 - self.box_mask) + img*self.box_mask
-        blit(f, self.box_frame, BOX[0] + BOX[2]/2, BOX[1] + BOX[3]/2)
+        bw, bh = BOX[2] + 24, BOX[3] + 24
+        spr = np.zeros((bh, bw, 4), np.float32)
+        spr[12:12 + BOX[3], 12:12 + BOX[2], :3] = img*self.box_mask; spr[12:12 + BOX[3], 12:12 + BOX[2], 3:] = self.box_mask
+        fa = self.box_frame[..., 3:4]; spr[..., :3] = spr[..., :3]*(1 - fa) + self.box_frame[..., :3]; spr[..., 3:] = np.maximum(spr[..., 3:], fa)
+        return spr
+
+    def put_box(self, f, spr, dx=0.0, s=1.0, alpha=1.0, blur=0.0, hblur=0):
+        if hblur > 1: spr = cv2.blur(spr, (int(hblur) | 1, 1))
+        if blur > 0.3: spr = cv2.GaussianBlur(spr, (0, 0), blur)
+        cx, cy = BOX[0] + BOX[2]/2 + dx, BOX[1] + BOX[3]/2
+        blit(f, self.box_shadow, cx, cy + 6, s, s, 0, alpha)
+        blit(f, spr, cx, cy, s, s, 0, alpha)
+
+    def draw_take(self, f, t):
+        tk = self.take_frame(t)
+        if tk is None: return f
+        tr = tk.get("tr", "cut"); u = t - tk["a"]
+        prev = [p for p in self.cfg["takes"] if abs(p["b"] - tk["a"]) < 1e-3]
+        prev = prev[0] if prev else None
+        if tr == "slide" and prev is not None and u < 0.34:
+            if u < 0.14:      # quadro atual arrastado pra esquerda
+                k = (u/0.14)**2
+                self.put_box(f, self.box_sprite(prev, tk["a"] - 1/FPS), dx=-W*1.05*k, hblur=60*k)
+            else:             # o novo vem da direita, com leve curva elastica
+                k = spring(u - 0.14, 260, 21)
+                self.put_box(f, self.box_sprite(tk, t), dx=W*1.05*(1 - k), hblur=50*max(0, 1 - (u - 0.14)/0.12))
+            return f
+        if tr == "pop" and prev is not None and u < 0.40:
+            if u < 0.12:      # pop inverso: o atual encolhe e some
+                k = u/0.12
+                self.put_box(f, self.box_sprite(prev, tk["a"] - 1/FPS), s=1 - 0.35*k**2, alpha=1 - k, blur=5*k)
+            else:             # pop de entrada com curva elastica leve
+                k = spring(u - 0.12, 300, 20)
+                self.put_box(f, self.box_sprite(tk, t), s=mix(0.62, 1.0, k), alpha=clamp((u - 0.12)/0.06), blur=5*max(0, 1 - (u - 0.12)/0.10))
+            return f
+        self.put_box(f, self.box_sprite(tk, t))
         return f
 
     # ---- legenda ----
@@ -185,16 +209,20 @@ class Video:
         st = 0.10*math.exp(-u*9)*math.cos(u*24) if u < 0.6 and t0 > 0 else 0.0
         sy = 1 + st; sx = 1 - st*0.55
         # idle: pendulo + flutuacao
-        rot = 1.1*math.sin(t*2*math.pi*0.42); bob = 7*math.sin(t*2*math.pi*0.42*2 + 0.6)
+        rot = 0.45*math.sin(t*2*math.pi*0.38); bob = 3*math.sin(t*2*math.pi*0.38*2 + 0.6)
         # modo A: soco de zoom so no Foxy
         za = 1.0
         for ta in self.cfg.get("modoA", []):
-            if 0 <= t - ta < 0.5: za = 1 + 0.10*math.sin(math.pi*clamp((t - ta)/0.5))**1.2
+            if 0 <= t - ta < 0.7: za = 1 + 0.05*math.sin(math.pi*clamp((t - ta)/0.7))**1.2
         pivot_y = spr.shape[0]*0.98
         cx = W/2; cy = GLASS_Y - ay + pivot_y + bob
         img = spr
         if u < 0.07 and t0 > 0: img = cv2.blur(spr, (1, int(1 + 26*(1 - u/0.07)) | 1))   # motion blur curto
-        blit(f, img, cx - (ax - spr.shape[1]/2)*0, cy, sx*za, sy*za, rot, 1.0, pivot=(ax, pivot_y))
+        if name not in self.shadows:
+            sh = np.zeros_like(spr); sh[..., 3] = cv2.GaussianBlur(spr[..., 3], (0, 0), 14)*0.32
+            self.shadows[name] = sh
+        blit(f, self.shadows[name], cx + 12, cy + 4, sx*za, sy*za, rot, 1.0, pivot=(ax, pivot_y))
+        blit(f, img, cx, cy, sx*za, sy*za, rot, 1.0, pivot=(ax, pivot_y))
         return f
 
     # ---- camera (modo B) ----
@@ -206,6 +234,16 @@ class Video:
         M = cv2.getRotationMatrix2D((W/2, 1250), 0, z)
         return cv2.warpAffine(f, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
 
+    def screen_whip(self, f, t):
+        for T0 in self.cfg.get("whip", []):
+            if T0 - 0.16 <= t < T0 + 0.20:
+                if t < T0: k = ((t - (T0 - 0.16))/0.16)**2; dx = -W*0.55*k
+                else: k = 1 - e_out((t - T0)/0.20); dx = W*0.55*k
+                M = np.float32([[1, 0, dx], [0, 1, 0]])
+                f = cv2.warpAffine(f, M, (W, H), borderMode=cv2.BORDER_REFLECT)
+                f = cv2.blur(f, (int(1 + 120*k) | 1, 1))
+        return f
+
     def flash(self, f, t):
         T0 = self.cfg["flash"]
         if T0 - 0.05 <= t < T0 + 0.40:
@@ -214,4 +252,5 @@ class Video:
         return f
 
 if __name__ == "__main__":
-    cfg = json.load(open(sys.argv[1])); Video(cfg).render(sys.argv[2])
+    cfg = json.load(open(sys.argv[1])); a = float(sys.argv[3]) if len(sys.argv) > 3 else 0.0; b = float(sys.argv[4]) if len(sys.argv) > 4 else None
+    Video(cfg).render(sys.argv[2], a, b)

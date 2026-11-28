@@ -83,3 +83,18 @@
 
 ## Controle de trechos de parkour já usados
 - `Minecraft Parkour Gameplay No Copyright (2 Hours)`: 30:30–30:54 (teste de 20 s)
+- `Minecraft Parkour 8 Minutes ... 109` (2560x1440, recorte vertical x=875): 0:30–0:57, 2:48–3:06, 3:36–3:42, 4:24–4:28
+  (vídeo "Quantos Minecrafts cabem no GTA 6?", formato Foxy)
+
+## Ajustes aprovados/pedidos pelo dono (teste de 20 s → vídeo completo)
+- Legenda um pouco menor (64 px).
+- **Transições de take aplicam no quadro inteiro** (moldura + conteúdo): arrastar pro lado com desfoque e o próximo entra
+  logo em seguida; pop de entrada / pop inverso de saída com curva elástica leve e um pouco de desfoque.
+- Pêndulo do Foxy e soco de zoom só no Foxy (modo A) **bem mais sutis**; squash & stretch da troca de pose fica como está.
+- Zoom da tela inteira (modo B): **lento e raro**, só nos momentos mais importantes. Modo A também raro (menos que o B não).
+- **Sombra leve** atrás do Foxy.
+- Parkour: usar o de 8 minutos, escolhendo os trechos mais bonitos (céu aberto, cores vivas).
+- **Troca de música no flash precisa ser audível** (a nova entra cheia no frame do flash). Mais variedade de músicas
+  (3 faixas num vídeo de ~55 s).
+- **1 ou 2 transições de tela inteira por vídeo** (arrastar pro lado com desfoque), simples.
+- Renderizar no máximo 2–3 partes em paralelo (cada parte usa ~2 GB de RAM).
