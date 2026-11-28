@@ -4,6 +4,8 @@ from PIL import Image, ImageOps
 SRC = sys.argv[1]; OUT = sys.argv[2]; os.makedirs(OUT, exist_ok=True)
 GLASS_W = 430          # largura dos oculos na tela final (px)
 GLASS_Y = 985          # altura dos oculos na tela final (1080x1920)
+# buracos brancos fechados (entre braco e corpo) que nao tocam a borda: pontos-semente na imagem original
+HOLES = {"lv_0_20261127052636": [(975, 1147)], "IMG-20261127-WA1904~2": [(795, 425), (835, 476)]}
 
 def cut(path):
     im = np.asarray(ImageOps.exif_transpose(Image.open(path)).convert("RGB")).astype(np.float32)
@@ -13,8 +15,10 @@ def cut(path):
     n, lab, st, _ = cv2.connectedComponentsWithStats(white, 4)
     bg = np.zeros((h, w), bool)
     border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]])))
+    seeds = HOLES.get(os.path.splitext(os.path.basename(path))[0], [])
+    extra = {int(lab[y, x]) for (x, y) in seeds if lab[y, x] > 0}
     for i in range(1, n):
-        if i in border or st[i, cv2.CC_STAT_AREA] > 0.004*h*w: bg |= lab == i
+        if i in border or i in extra or st[i, cv2.CC_STAT_AREA] > 0.004*h*w: bg |= lab == i
     # alfa: fundo = 0; faixa de 3 px na borda recebe alfa pela "escuridao" (contorno preto antialiased)
     fg = (~bg).astype(np.uint8)
     dist = cv2.distanceTransform(fg, cv2.DIST_L2, 3)
