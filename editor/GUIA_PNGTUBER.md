@@ -105,5 +105,7 @@
 - **TAKE 1 chega de cima pra baixo** em ~1 s, com desfoque de movimento, em todo vídeo.
 - **Mais transições nos takes** (sem exagero): arrastar pra direita **e pra esquerda**, mais pops; cada animação com som fixo
   (arrastar = whoosh, pop = pop).
-- **Aproximação keyframe com curva RETA (linear), 2–5 s**, no Foxy ou no take, variando, **2 a 3 vezes por vídeo**:
-  aproximação visível mas sem exagero (~1,15–1,22x); no fim, **clique do Minecraft ou dano** e volta **seca** ao enquadramento.
+- **Aproximação keyframe (substitui a regra anterior):** na **tela inteira** (objeto nulo: fundo, Foxy, takes e legenda juntos),
+  **sutil** (~5–7%), **curva reta**, longa (~4–5 s), 2 a 3 vezes por vídeo. **Nunca** aproximar só o take ou só o Foxy nesse recurso.
+  No fim, **sem efeito sonoro**: volta **seca**, ou volta **afastando em ~1 s** (variar entre as duas).
+- **Tremor da abertura:** só deslocamento (sem escala), começa forte e zera em ~0,2 s com fade-out.
