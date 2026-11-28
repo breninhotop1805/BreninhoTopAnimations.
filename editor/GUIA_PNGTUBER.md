@@ -98,3 +98,12 @@
   (3 faixas num vídeo de ~55 s).
 - **1 ou 2 transições de tela inteira por vídeo** (arrastar pro lado com desfoque), simples.
 - Renderizar no máximo 2–3 partes em paralelo (cada parte usa ~2 GB de RAM).
+
+## Regras fixas adicionadas (vídeo final do Foxy)
+- **Abertura de todo vídeo:** tela branca cobrindo tudo que some em 0,3 s, com um tremor rápido, e o som
+  `editor/sfx/xp_inicio.wav` (XP do Minecraft, sem silêncio no começo) alto, começando no frame 0.
+- **TAKE 1 chega de cima pra baixo** em ~1 s, com desfoque de movimento, em todo vídeo.
+- **Mais transições nos takes** (sem exagero): arrastar pra direita **e pra esquerda**, mais pops; cada animação com som fixo
+  (arrastar = whoosh, pop = pop).
+- **Aproximação keyframe com curva RETA (linear), 2–5 s**, no Foxy ou no take, variando, **2 a 3 vezes por vídeo**:
+  aproximação visível mas sem exagero (~1,15–1,22x); no fim, **clique do Minecraft ou dano** e volta **seca** ao enquadramento.
