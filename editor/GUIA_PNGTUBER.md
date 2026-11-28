@@ -62,5 +62,24 @@
 - Texto grande ocasional no topo ("DIA 20", "FALE COMIGO", "EMPOLGADOS") e imagens de apoio no topo
   (calendário, prints do canal). No canal do dono, as imagens de apoio vão **dentro da caixa de takes 16:9**.
 
+## Poses do Foxy (recortadas em `editor/pngtuber/foxy_poses/`, alinhadas pelos óculos)
+| arquivo | pose | usar quando |
+|---|---|---|
+| lv_0_20261127052636 | mão no queixo | pergunta, dúvida, "será que..." |
+| lv_0_20261127034355~2 | dedo pra cima | "olha só", "um detalhe", número/fato |
+| IMG-20261127-WA9910 | mão levantada rindo | apresentando algo animado |
+| IMG-20261127-WA6512~2 | mão levantada explicando | explicação normal |
+| IMG-20261127-WA5558 | gancho erguido | empolgação, "absurdo!" |
+| Novo_projeto_155_[1350470] | mãos na cintura | confiante, afirmação forte |
+| IMG-20261127-WA7511~2 | braços cruzados | ceticismo, "só isso?" |
+| IMG-20261127-WA1904~2 | mão na cabeça | "bugar a mente", sem graça, confuso |
+| IMG-20261127-WA7417~2 | acenando | só oi/tchau (início ou fim) |
+| IMG-20261127-WA4974~2 | neutro | transição calma |
+
+## Motor
+- `editor/pngtuber/pngtuber.py <config.json> <saida.mp4>` (60 fps). Exemplo de config: `editor/pngtuber/teste.json`.
+- Músicas normalizadas em -15 LUFS (silêncio inicial cortado) antes da mixagem; ducking leve sob a voz; limitador final.
+- Parkour: baixar só o trecho necessário do arquivo de 2 h direto do Drive (ffmpeg via http, com range), sem baixar tudo.
+
 ## Controle de trechos de parkour já usados
-(nenhum ainda)
+- `Minecraft Parkour Gameplay No Copyright (2 Hours)`: 30:30–30:54 (teste de 20 s)
