@@ -133,9 +133,10 @@ class Video:
             f = self.camera(f, t)
             f = self.screen_whip(f, t)
             f = self.flash(f, t)
+            if t < 0.22:
+                u_ = t/0.22; sh = 26*(1 - u_)**2.5; dx = sh*math.sin(t*110); dy = sh*math.cos(t*97)
+                f = cv2.warpAffine(f, np.float32([[1, 0, dx], [0, 1, dy]]), (W, H), borderMode=cv2.BORDER_REFLECT)
             if t < 0.30:
-                sh = 18*(1 - t/0.30); dx = sh*math.sin(t*95); dy = sh*math.cos(t*83)
-                f = cv2.warpAffine(f, np.float32([[1.03, 0, dx - W*0.015], [0, 1.03, dy - H*0.015]]), (W, H), borderMode=cv2.BORDER_REFLECT)
                 a_ = 1 - t/0.30; f = f*(1 - a_) + a_
             if t > dur - 0.4: f = f*max(0.0, (dur - t)/0.4)
             enc.stdin.write((np.clip(f, 0, 1)*255).astype(np.uint8).tobytes())
@@ -162,8 +163,11 @@ class Video:
         return spr
 
     def push(self, t, alvo):
-        for (a, b, z, who) in self.cfg.get("push", []):
-            if who == alvo and a <= t < b: return 1 + (z - 1)*(t - a)/(b - a)
+        for pz in self.cfg.get("push", []):
+            a, b, z, who = pz[:4]; back = pz[4] if len(pz) > 4 else 0.0
+            if who != alvo: continue
+            if a <= t < b: return 1 + (z - 1)*(t - a)/(b - a)           # aproximacao reta
+            if back > 0 and b <= t < b + back: return 1 + (z - 1)*(1 - e_io((t - b)/back))   # volta afastando
         return 1.0
 
     def put_box(self, f, spr, dx=0.0, s=1.0, alpha=1.0, blur=0.0, hblur=0):
@@ -248,9 +252,9 @@ class Video:
 
     # ---- camera (modo B) ----
     def camera(self, f, t):
-        z = 1.0
+        z = self.push(t, "tela")
         for (a, b, z0, z1) in self.cfg.get("modoB", []):
-            if a <= t < b: z = mix(z0, z1, e_io((t - a)/(b - a)))
+            if a <= t < b: z *= mix(z0, z1, e_io((t - a)/(b - a)))
         if abs(z - 1) < 1e-3: return f
         M = cv2.getRotationMatrix2D((W/2, 1250), 0, z)
         return cv2.warpAffine(f, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
