@@ -125,3 +125,8 @@
 - O **corte seco da aproximação** acontece **sempre no começo de uma frase nova**, nunca no meio de uma legenda.
   Nesse mesmo frame trocam juntos: **pose do Foxy, take e bloco da legenda** (+ o som de clique/dano). Ex.: vídeo Foxy,
   corte em 44,25 s no "E o mais bizarro..." (antes estava errado em 43,70, no meio de "originais").
+
+## Ajustes finais (regras para os próximos vídeos)
+- **Sombra no Foxy em todas as poses**, visível mas sem exagero (sombra desfocada deslocada levemente pra direita/baixo, ~40% de opacidade).
+- **Sem desfoque de movimento na aproximação no personagem e na volta rápida dela** (câmera e take voltando ficam nítidos).
+  O desfoque continua em todo o resto: legenda, troca de pose, entrada do take 1, saída do take, transições de takes e de tela.

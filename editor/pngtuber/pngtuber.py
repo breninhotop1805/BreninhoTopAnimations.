@@ -177,7 +177,7 @@ class Video:
         for (a, b, z, mode) in self.cfg.get("fpush", []):
             if a <= t < b: return 1 + (z - 1)*(t - a)/(b - a), 0.0
             if mode == "ease" and b <= t < b + self.ZB:
-                u = (t - b)/self.ZB; return z + (1 - z)*e_out(u), 7*(1 - u)
+                u = (t - b)/self.ZB; return z + (1 - z)*e_out(u), 0.0
         return 1.0, 0.0
 
     def take_state(self, t):
@@ -188,7 +188,7 @@ class Video:
                 u = (t - a)/self.UP; k = u*u*(3 - 2*u); return (hide*k, 45*k)
             if a + self.UP <= t < b: return "hidden"
             if mode == "ease" and b <= t < b + self.BACK:
-                k = e_out((t - b)/self.BACK); return (hide*(1 - k), 55*max(0, 1 - (t - b)/self.BACK))
+                k = e_out((t - b)/self.BACK); return (hide*(1 - k), 0.0)
         return None
 
     def put_box(self, f, spr, dx=0.0, s=1.0, alpha=1.0, blur=0.0, hblur=0):
@@ -273,7 +273,7 @@ class Video:
         img = spr
         if u < 0.07 and t0 > 0: img = cv2.blur(spr, (1, int(1 + 26*(1 - u/0.07)) | 1))   # motion blur curto
         if name not in self.shadows:
-            sh = np.zeros_like(spr); sh[..., 3] = cv2.GaussianBlur(spr[..., 3], (0, 0), 14)*0.32
+            sh = np.zeros_like(spr); sh[..., 3] = cv2.GaussianBlur(spr[..., 3], (0, 0), 16)*0.42
             self.shadows[name] = sh
         blit(f, self.shadows[name], cx + 12, cy + 4, sx*za, sy*za, rot, 1.0, pivot=(ax, pivot_y))
         blit(f, img, cx, cy, sx*za, sy*za, rot, 1.0, pivot=(ax, pivot_y))
