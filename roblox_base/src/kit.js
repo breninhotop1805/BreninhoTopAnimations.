@@ -173,7 +173,7 @@ export function charCheck(t, live, log = console.log) { let n = 0; const parts =
 const PN = ['tronco', 'quadril', 'cabeça', 'braçoD', 'braçoE', 'antebraçoD', 'antebraçoE', 'mãoD', 'mãoE', 'coxaD', 'coxaE', 'canelaD', 'canelaE', 'péD', 'péE'];
 // one call per frame before rendering: people x people, people x walls/doors/furniture, camera occlusion/framing
 export function qa(t, s, cam, live, log = console.log) { if (!s.userData.zchecked) { s.userData.zchecked = true; const roots = new Set(live.map(c => c.root)); sceneCheck(s, { quiet: true, skip: m => { for (let p = m; p; p = p.parent) if (roots.has(p) || p.userData.dyn || p.userData.isChar) return true; return false; } }); }
-  return charCheck(t, live, log) + obstacleCheck(t, s, live, log) + cameraCheck(t, s, cam, live, log) + flickerCheck(t, s, cam, log) + cameraInsideCheck(t, s, cam, log); }
+  return charCheck(t, live, log) + obstacleCheck(t, s, live, log) + cameraCheck(t, s, cam, live, log) + flickerCheck(t, s, cam, log) + cameraInsideCheck(t, s, cam, log) + emptyBgCheck(t, s, cam, log, { every: 5 }); }
 // ---------------- STATIC SCENE QA (run once per set, before the storyboard): flicker + objects inside objects ----------------
 // sceneCheck(scene) -> number of problems. Logs:
 //   LOG CINTILACAO  two DIFFERENT meshes with coplanar, overlapping, same-facing faces (z-fighting = flicker), or nearly coplanar (< eps)
@@ -239,3 +239,13 @@ export function flickerCheck(t, s, cam, log = console.log, o = {}) { const S = s
     const px = z.area * (f / dist) ** 2 * Math.abs(toC.normalize().dot(z.n)); if (px < (o.minPx || 40)) continue;
     _rc.set(cp, z.p.clone().sub(cp).normalize()); _rc.camera = cam; _rc.far = dist + 0.05; _rc.layers.mask = cam.layers.mask; const hit = _rc.intersectObject(s, true).find(h => h.object.visible && !h.object.isSprite && (!h.object.material || h.object.material.opacity > 0.5));
     if (!hit || (hit.object !== z.a && hit.object !== z.b && hit.distance < dist - 0.03)) continue; n++; if (!z.lastLog || Math.abs(z.lastLog - t) > 1) { z.lastLog = t; log(`LOG CINTILACAO_VISIVEL t=${t.toFixed(2)} ${z.lab} ~${Math.round(px)}px`); } } return n; }
+// EMPTY BACKGROUND (EP04 error: the school yard had NO world behind the camera side — just bare floor + pale sky to the horizon).
+// Rays near the horizon line (elevation -6°..+14°) spread across the frame must hit a REAL object (building, tree, wall, fence,
+// hill, character) within maxD. Bare floors (userData.ground = true) and the sky don't count. > 40% empty -> LOG FUNDO_VAZIO.
+const _er = new THREE.Raycaster();
+export function emptyBgCheck(t, s, cam, log = console.log, o = {}) { if (o.every && Math.round(t * 30) % o.every) return 0; const maxD = o.maxD ?? 90; cam.updateMatrixWorld(true);
+  if (!s.userData.bgTargets) { const L = []; s.traverse(m => { if (m.isMesh && !m.isSprite && m.name !== 'ceu' && !m.userData.ground && !(m.material && m.material.transparent && m.material.opacity < 0.5)) L.push(m); }); s.userData.bgTargets = L; }
+  const T = s.userData.bgTargets.concat(o.extra || []); let tot = 0, empty = 0; const dir = new THREE.Vector3(), p = cam.getWorldPosition(new THREE.Vector3());
+  for (let i = 0; i < 9; i++) for (let j = 0; j < 14; j++) { const ndc = new THREE.Vector3(-0.9 + i * 0.225, -0.95 + j * 0.146, 0.5).unproject(cam); dir.copy(ndc).sub(p).normalize(); const el = Math.asin(dir.y) * 180 / Math.PI; if (el < -6 || el > 14) continue;
+    tot++; _er.set(p, dir); _er.far = maxD; if (!_er.intersectObjects(T, false).length) empty++; }
+  if (tot >= 8 && empty / tot > (o.thr ?? 0.4)) { log(`LOG FUNDO_VAZIO t=${t.toFixed(2)} ${Math.round(100 * empty / tot)}% do horizonte sem cenário`); return 1; } return 0; }

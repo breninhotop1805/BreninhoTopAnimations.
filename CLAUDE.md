@@ -568,3 +568,13 @@ Análise completa com números em `roblox_base/ANALISE_REFERENCIAS_v3.md` (1.035
   `props4.js` (gorro, boné, buquê, lixeira, mural de suspeitos com fotos renderizadas dos personagens, quadro de apostas, termômetro,
   placa "PROIBIDO GORRO", raia de piscina, bandeirinhas), `chk.sh` (QA do vídeo inteiro em 3 processos + resumo por cena),
   `sheet.py` (folhas de storyboard), piscina coberta com água animada e palco com holofotes (roblox_ep04/src/sets.js).
+- **ERRO DO EP04 (ele pegou): "no fundo do pátio não tem mundo, só fundo branco".** Causa: o cenário externo foi montado como
+  "palco de um lado só" (fachada da escola + chão); quando a câmera virava pro lado oposto (personagem andando em direção à câmera de
+  costas pra escola) só aparecia chão liso até o horizonte + céu clarinho (fundo do céu `#d8f0ff` ≈ branco). A auditoria achou 7 cenas
+  assim (abertura, bone, chegou, tribunal, suspeitos, educacao, chegueigorro). REGRAS:
+  (a) **Todo cenário é um mundo de 360°**: em volta de tudo (atrás da câmera também) tem cenário de verdade até o horizonte — muro/cerca
+  com casas e prédios do outro lado da rua, árvores, morros, postes; o chão termina em algo (muro, calçada, rua), nunca no vazio.
+  (b) Céu sempre azul saturado com nuvens; o "pé" do céu nunca quase branco; horizonte sempre com silhuetas (prédios/morros/árvores).
+  (c) Checagem automática `emptyBgCheck` (kit.js, já dentro do `qa()`): raios na faixa do horizonte precisam bater em objeto real
+  em até 90 un.; chão liso marcado `userData.ground = true` não conta → `LOG FUNDO_VAZIO`. Zero logs antes de renderizar.
+  (d) Na conferência visual dos stills, olhar o FUNDO de cada cena, não só os personagens.
