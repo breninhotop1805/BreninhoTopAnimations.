@@ -133,6 +133,10 @@ class Video:
             f = self.camera(f, t)
             f = self.screen_whip(f, t)
             f = self.flash(f, t)
+            if t < 0.30:
+                sh = 18*(1 - t/0.30); dx = sh*math.sin(t*95); dy = sh*math.cos(t*83)
+                f = cv2.warpAffine(f, np.float32([[1.03, 0, dx - W*0.015], [0, 1.03, dy - H*0.015]]), (W, H), borderMode=cv2.BORDER_REFLECT)
+                a_ = 1 - t/0.30; f = f*(1 - a_) + a_
             if t > dur - 0.4: f = f*max(0.0, (dur - t)/0.4)
             enc.stdin.write((np.clip(f, 0, 1)*255).astype(np.uint8).tobytes())
         enc.stdin.close(); enc.wait()
@@ -157,26 +161,42 @@ class Video:
         fa = self.box_frame[..., 3:4]; spr[..., :3] = spr[..., :3]*(1 - fa) + self.box_frame[..., :3]; spr[..., 3:] = np.maximum(spr[..., 3:], fa)
         return spr
 
+    def push(self, t, alvo):
+        for (a, b, z, who) in self.cfg.get("push", []):
+            if who == alvo and a <= t < b: return 1 + (z - 1)*(t - a)/(b - a)
+        return 1.0
+
     def put_box(self, f, spr, dx=0.0, s=1.0, alpha=1.0, blur=0.0, hblur=0):
         if hblur > 1: spr = cv2.blur(spr, (int(hblur) | 1, 1))
         if blur > 0.3: spr = cv2.GaussianBlur(spr, (0, 0), blur)
+        s *= self.push(self._t, "take")
         cx, cy = BOX[0] + BOX[2]/2 + dx, BOX[1] + BOX[3]/2
         blit(f, self.box_shadow, cx, cy + 6, s, s, 0, alpha)
         blit(f, spr, cx, cy, s, s, 0, alpha)
 
     def draw_take(self, f, t):
+        self._t = t
         tk = self.take_frame(t)
         if tk is None: return f
         tr = tk.get("tr", "cut"); u = t - tk["a"]
+        if tk is self.cfg["takes"][0] and u < 1.0:      # TAKE 1 chegando de cima pra baixo (1 s, com desfoque)
+            k = spring(u, 140, 15); vy = 1 - clamp(u/0.55)
+            dy = -(BOX[1] + BOX[3] + 40)*(1 - k)
+            spr = self.box_sprite(tk, t)
+            if vy > 0.02: spr = cv2.blur(spr, (1, int(1 + 70*vy) | 1))
+            cx, cy = BOX[0] + BOX[2]/2, BOX[1] + BOX[3]/2 + dy
+            blit(f, self.box_shadow, cx, cy + 6); blit(f, spr, cx, cy)
+            return f
+        side = -1.0 if tk.get("dir") == "left" else 1.0
         prev = [p for p in self.cfg["takes"] if abs(p["b"] - tk["a"]) < 1e-3]
         prev = prev[0] if prev else None
         if tr == "slide" and prev is not None and u < 0.34:
             if u < 0.14:      # quadro atual arrastado pra esquerda
                 k = (u/0.14)**2
-                self.put_box(f, self.box_sprite(prev, tk["a"] - 1/FPS), dx=-W*1.05*k, hblur=60*k)
+                self.put_box(f, self.box_sprite(prev, tk["a"] - 1/FPS), dx=-side*W*1.05*k, hblur=60*k)
             else:             # o novo vem da direita, com leve curva elastica
                 k = spring(u - 0.14, 260, 21)
-                self.put_box(f, self.box_sprite(tk, t), dx=W*1.05*(1 - k), hblur=50*max(0, 1 - (u - 0.14)/0.12))
+                self.put_box(f, self.box_sprite(tk, t), dx=side*W*1.05*(1 - k), hblur=50*max(0, 1 - (u - 0.14)/0.12))
             return f
         if tr == "pop" and prev is not None and u < 0.40:
             if u < 0.12:      # pop inverso: o atual encolhe e some
@@ -214,6 +234,7 @@ class Video:
         za = 1.0
         for ta in self.cfg.get("modoA", []):
             if 0 <= t - ta < 0.7: za = 1 + 0.05*math.sin(math.pi*clamp((t - ta)/0.7))**1.2
+        za *= self.push(t, "foxy")
         pivot_y = spr.shape[0]*0.98
         cx = W/2; cy = GLASS_Y - ay + pivot_y + bob
         img = spr
