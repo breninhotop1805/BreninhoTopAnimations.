@@ -112,3 +112,11 @@
   1. **Corte seco com som** (clique do Minecraft ou dano): a câmera e o take voltam secos no mesmo frame.
   2. **Volta rápida (~0,26 s)** da tela inteira afastando com leve desfoque, e o take **desce de volta** rápido (~0,26 s).
 - **Tremor da abertura:** só deslocamento (sem escala), começa forte e zera em ~0,2 s com fade-out.
+
+## Distribuição das poses (regra)
+- **Variar bastante e espalhar** as poses pelo vídeo: nenhuma pose dominando, nenhuma esquecida. Equilibrar o uso entre as 9 poses
+  de fala (todas servem pra maioria das frases — escolher a que melhor encaixa, mas priorizando variedade).
+- **Acenando (tchau/oi): só 1 ou 2 vezes por vídeo** (abertura e/ou despedida).
+- Não seguir uma ordem fixa/ciclo previsível; espalhar de forma natural, respeitando o cooldown (não repetir em sequência nem perto).
+- Antes de renderizar, conferir a contagem de cada pose (meta: diferença pequena entre a mais e a menos usada).
+- **Tamanho e proporção do Foxy** sempre iguais entre as poses (alinhadas pelos óculos, mesma altura na tela) — conferir no storyboard.
