@@ -106,8 +106,8 @@
 - **Mais transições nos takes** (sem exagero): arrastar pra direita **e pra esquerda**, mais pops; cada animação com som fixo
   (arrastar = whoosh, pop = pop).
 - **Aproximação no personagem (regra atual, substitui as anteriores):** 1 ou 2 vezes por vídeo, **2 a 4 s**, curva **reta**,
-  bem aparente (~1,36–1,38x), indo **em direção ao Foxy, mais pra baixo** (centro entre o peito e o rosto, y ≈ 1315).
-  No instante em que ela começa, o **TAKE sobe e sai pelo topo** (o inverso da entrada da intro, **lento, ~0,6 s**, com desfoque).
+  bem aparente (~1,36–1,38x), indo **em direção ao Foxy, mais pra baixo** (centro bem embaixo, no peito/barriga, y ≈ 1545).
+  No instante em que ela começa, o **TAKE sobe e sai pelo topo** (o inverso da entrada da intro, **bem lento, ~0,95 s**, acompanhando o ritmo, com desfoque).
   O retorno varia entre:
   1. **Corte seco com som** (clique do Minecraft ou dano): a câmera e o take voltam secos no mesmo frame.
   2. **Volta rápida (~0,26 s)** da tela inteira afastando com leve desfoque, e o take **desce de volta** rápido (~0,26 s).
@@ -116,7 +116,12 @@
 ## Distribuição das poses (regra)
 - **Variar bastante e espalhar** as poses pelo vídeo: nenhuma pose dominando, nenhuma esquecida. Equilibrar o uso entre as 9 poses
   de fala (todas servem pra maioria das frases — escolher a que melhor encaixa, mas priorizando variedade).
-- **Acenando (tchau/oi): só 1 ou 2 vezes por vídeo** (abertura e/ou despedida).
+- **Acenando (tchau): só 1 vez por vídeo, no FINAL** (o dono não fala "oi" no começo).
 - Não seguir uma ordem fixa/ciclo previsível; espalhar de forma natural, respeitando o cooldown (não repetir em sequência nem perto).
 - Antes de renderizar, conferir a contagem de cada pose (meta: diferença pequena entre a mais e a menos usada).
 - **Tamanho e proporção do Foxy** sempre iguais entre as poses (alinhadas pelos óculos, mesma altura na tela) — conferir no storyboard.
+
+## Sincronia do corte seco (regra)
+- O **corte seco da aproximação** acontece **sempre no começo de uma frase nova**, nunca no meio de uma legenda.
+  Nesse mesmo frame trocam juntos: **pose do Foxy, take e bloco da legenda** (+ o som de clique/dano). Ex.: vídeo Foxy,
+  corte em 44,25 s no "E o mais bizarro..." (antes estava errado em 43,70, no meio de "originais").
