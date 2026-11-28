@@ -273,9 +273,9 @@ class Video:
         img = spr
         if u < 0.07 and t0 > 0: img = cv2.blur(spr, (1, int(1 + 26*(1 - u/0.07)) | 1))   # motion blur curto
         if name not in self.shadows:
-            sh = np.zeros_like(spr); sh[..., 3] = cv2.GaussianBlur(spr[..., 3], (0, 0), 16)*0.42
+            sh = np.zeros_like(spr); sh[..., 3] = cv2.GaussianBlur(spr[..., 3], (0, 0), 18)*0.56
             self.shadows[name] = sh
-        blit(f, self.shadows[name], cx + 12, cy + 4, sx*za, sy*za, rot, 1.0, pivot=(ax, pivot_y))
+        blit(f, self.shadows[name], cx + 16, cy + 8, sx*za, sy*za, rot, 1.0, pivot=(ax, pivot_y))
         blit(f, img, cx, cy, sx*za, sy*za, rot, 1.0, pivot=(ax, pivot_y))
         return f
 

@@ -5,7 +5,8 @@ SRC = sys.argv[1]; OUT = sys.argv[2]; os.makedirs(OUT, exist_ok=True)
 GLASS_W = 430          # largura dos oculos na tela final (px)
 GLASS_Y = 985          # altura dos oculos na tela final (1080x1920)
 # buracos brancos fechados (entre braco e corpo) que nao tocam a borda: pontos-semente na imagem original
-HOLES = {"lv_0_20261127052636": [(975, 1147)], "IMG-20261127-WA1904~2": [(795, 425), (835, 476)]}
+HOLES = {"lv_0_20261127052636": [(975, 1147)], "IMG-20261127-WA1904~2": [(795, 425), (835, 476)],
+         "IMG-20261128-WA6810": [(904, 510), (312, 1293)]}
 
 def cut(path):
     im = np.asarray(ImageOps.exif_transpose(Image.open(path)).convert("RGB")).astype(np.float32)

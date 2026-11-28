@@ -75,6 +75,9 @@
 | IMG-20261127-WA1904~2 | mão na cabeça | "bugar a mente", sem graça, confuso |
 | IMG-20261127-WA7417~2 | acenando | só oi/tchau (início ou fim) |
 | IMG-20261127-WA4974~2 | neutro | transição calma |
+| IMG-20261128-WA4070 | dedo pra cima sorrindo, mão no quadril | ensinando, "presta atenção", explicando um número com calma |
+| IMG-20261128-WA4387 | gancho erguido + mão aberta | contando algo/apresentando duas coisas, "olha isso", comparação |
+| IMG-20261128-WA6810 | ajeitando os óculos | descolado/confiante, "bizarro", revelação, "sabe o mais louco?" |
 
 ## Motor
 - `editor/pngtuber/pngtuber.py <config.json> <saida.mp4>` (60 fps). Exemplo de config: `editor/pngtuber/teste.json`.
@@ -130,3 +133,13 @@
 - **Sombra no Foxy em todas as poses**, visível mas sem exagero (sombra desfocada deslocada levemente pra direita/baixo, ~40% de opacidade).
 - **Sem desfoque de movimento na aproximação no personagem e na volta rápida dela** (câmera e take voltando ficam nítidos).
   O desfoque continua em todo o resto: legenda, troca de pose, entrada do take 1, saída do take, transições de takes e de tela.
+
+## Regras de poses (atualização)
+- **Pack com 13 poses** (10 originais + 3 novas, recortadas e alinhadas pelos óculos, sobras brancas removidas).
+- **Tempo máximo de cada pose: 3 s** (antes 4 s). Faixa normal: **1,5 a 3 s**, trocando no ritmo das frases.
+- Com 13 poses: **ainda mais variado e espalhado**, contagem equilibrada, sem ordem fixa, cooldown respeitado,
+  **tchau só 1 vez no final**.
+- **Sincronismo profissional:** a troca de pose acontece **no início de frase ou de bloco de legenda** (nunca no meio de uma palavra),
+  e a pose escolhida tem que refletir **o sentido exato** daquele trecho (pergunta = pensando, número/fato = dedo, empolgação = gancho,
+  confiança = cintura/óculos, dúvida/"bugou" = mão na cabeça, ceticismo = braços cruzados...).
+- **Sombra do Foxy maior** (desfoque 18 px, opacidade ~56%, deslocada 16 px pra direita e 8 px pra baixo), em todas as poses.
