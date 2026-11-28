@@ -1,0 +1,15 @@
+import * as THREE from 'three';
+import { loadImage, imgToCanvas, Character, buildSpring, addEndo, buildWilliam, buildGlitchtrap } from './skin.js';
+import { addFace, FACES } from './face.js';
+import { POSES, holdPose, collisionCheck } from './act.js';
+const q = new URLSearchParams(location.search); const W = +q.get('w') || 1080, H = +q.get('h') || 1920;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); renderer.setSize(W, H); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#202430'); const camera = new THREE.PerspectiveCamera(30, W / H, 0.05, 100);
+scene.add(new THREE.HemisphereLight('#dde', '#332', 1.2)); const d = new THREE.DirectionalLight('#fff', 2); d.position.set(2, 5, 6); scene.add(d);
+const sk = {}; for (const n of ['springtrap', 'william', 'glitchtrap']) sk[n] = imgToCanvas(await loadImage(`/skins/${n}.png`));
+const C = [addFace(addEndo(buildSpring(sk.springtrap, 'springtrap', { bent: true, endo: true, clearJunk: true })), FACES.springtrap), addFace(buildWilliam(sk.william), FACES.william)];
+C.forEach(c => scene.add(c.root));
+const N = Object.keys(POSES);
+window.APP = { ready: true, duration: 99, renderAt: t => { const pi = Math.floor(t / 10), ci = Math.floor(t % 10) % 2, side = (t % 1) > 0.25; const name = N[pi];
+  C.forEach((c, i) => { c.reset(); c.root.visible = i === ci; c.root.rotation.y = side ? 1.1 : 0; holdPose(c, name, 0, 1); c.applyFace(); });
+  collisionCheck(t, [C[ci]]); camera.aspect = W / H; camera.fov = 30; camera.position.set(0, 1.4, 6.5); camera.lookAt(0, 1.3, 0); camera.updateProjectionMatrix(); renderer.render(scene, camera); } };

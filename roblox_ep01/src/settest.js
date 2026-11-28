@@ -1,0 +1,10 @@
+import * as THREE from 'three';
+import { buildStreet } from './sets.js';
+import { buildHome, buildBedroom, buildBakery, buildBank, buildHospital, iceCart, terminal } from './sets2.js';
+import { loadSubFont } from './subs.js';
+const q = new URLSearchParams(location.search); const W = +q.get('w') || 540, H = +q.get('h') || 960;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); renderer.setSize(W, H); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; document.body.appendChild(renderer.domElement);
+await loadSubFont(); const S = {}; buildStreet(S); buildStreet(S, { night: true, name: 'streetNight' }); buildHome(S); buildHome(S, { night: true, name: 'homeNight' }); buildBedroom(S); buildBedroom(S, { night: true, name: 'bedNight' }); buildBakery(S); buildBank(S); buildHospital(S);
+iceCart(S.street.children[0], 5.5, 1.5); terminal(S.street.children[0], -4, 0.5);
+const cam = new THREE.PerspectiveCamera(50, W / H, 0.1, 300); const list = [['street', [0, 4, 16], [0, 4, -6]], ['streetNight', [0, 4, 16], [0, 4, -6]], ['home', [0, 4, 9], [0, 2.5, -3]], ['homeNight', [0, 4, 9], [0, 2.5, -3]], ['bedroom', [0, 4, 9], [0, 2.2, -3]], ['bedNight', [0, 4, 9], [0, 2.2, -3]], ['bakery', [0, 4, 9], [0, 3, -3]], ['bank', [0, 4, 14], [0, 5, -6]], ['hospital', [0, 4, 9], [0, 2.5, -3]]];
+window.APP = { ready: true, duration: 100, renderAt(t) { const [n, p, l] = list[Math.round(t)]; cam.position.set(...p); cam.lookAt(...l); cam.aspect = W / H; cam.updateProjectionMatrix(); renderer.render(S[n], cam); } };

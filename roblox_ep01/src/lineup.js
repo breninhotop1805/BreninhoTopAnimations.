@@ -1,0 +1,10 @@
+import * as THREE from 'three';
+import { buildCast } from './cast.js';
+import { buildStreet } from './sets.js';
+import { loadSubFont } from './subs.js';
+const q = new URLSearchParams(location.search); const W = +q.get('w') || 540, H = +q.get('h') || 960;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); renderer.setSize(W, H); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; document.body.appendChild(renderer.domElement);
+await loadSubFont(); const S = {}; const scene = buildStreet(S); const cam = new THREE.PerspectiveCamera(30, W / H, 0.1, 200);
+const C = buildCast(); const list = Object.values(C); list.forEach(c => c.applyFace());
+window.APP = { ready: true, duration: 100, renderAt(t) { const i = Math.floor(t / 2), v = Math.round(t % 2); list.forEach(c => c.root.removeFromParent()); const c = list[i]; scene.add(c.root); c.root.position.set(0, 0, 0); c.root.rotation.y = v ? 0.55 : 0;
+  c.armR.piv.rotation.z = -0.06; c.armL.piv.rotation.z = 0.06; if (v) { c.armL.piv.rotation.x = -1.4; } cam.aspect = W / H; cam.position.set(0.4, 3.3, 14); cam.lookAt(0, 2.9, 0); cam.updateProjectionMatrix(); renderer.render(scene, cam); } };

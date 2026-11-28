@@ -1,0 +1,17 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000;overflow:hidden}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body><script type="module">
+// face sheet: every expression on real heads (protagonist + girl with anime eyes), warm key light + coloured background
+import * as THREE from 'three';
+import { loadBodies, heroStd, realChar } from '/src/realbody.js';
+import { HAIR4 } from '/src/hair4.js';
+const W = 360, H = 400; const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); r.setSize(W, H); r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; document.body.appendChild(r.domElement);
+await loadBodies(); const s = new THREE.Scene(); s.background = new THREE.Color('#7ec8f0');
+s.add(new THREE.HemisphereLight('#ffffff', '#8a7a6a', 1.6)); const key = new THREE.DirectionalLight('#fff1dc', 2.4); key.position.set(3, 5, 6); s.add(key);
+const hero = heroStd(); const girl = realChar({ name: 'menina', body: 'fem', skin: '#f6dcc4', top: { type: 'sweater', color: '#f07aa8' }, bottom: { type: 'pants', color: '#2a3a6a' }, hat: head => { const g = new THREE.Group(); head.add(g); HAIR4.ponytail(g, '#5a3420', null, { tieCol: '#ffd040' }); }, face: { anime: true, lashes: true, eyeColor: '#3a7a3a' } });
+const tan = realChar({ name: 'moreno', body: 'masc', skin: '#8a5a3a', top: { type: 'plain', color: '#2a8a5a' }, bottom: { type: 'pants', color: '#2a2a30' } });
+const cam = new THREE.PerspectiveCamera(26, W / H, 0.1, 100);
+window.SHOW = (who, f) => { for (const c of [hero, girl, tan]) c.root.removeFromParent(); const c = who === 'girl' ? girl : who === 'tan' ? tan : hero; c.reset(); s.add(c.root); c.setFace(f); c.applyFace(); c.root.updateMatrixWorld(true);
+  const hp = c.headMesh.getWorldPosition(new THREE.Vector3()); cam.position.set(hp.x + 0.35, hp.y + 0.35, hp.z + 5.2); cam.lookAt(hp.x, hp.y + 0.15, hp.z); r.render(s, cam); };
+window.READY = 1;
+</script></body></html>
