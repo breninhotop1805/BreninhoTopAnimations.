@@ -556,3 +556,15 @@ Análise completa com números em `roblox_base/ANALISE_REFERENCIAS_v3.md` (1.035
    com sacada e persiana, calçada de pedra, torre do relógio, fonte, castelos com cones e bandeiras, prédios com centenas de janelas
    acesas, estádio lotado) e luz bonita (sol quente + céu com nuvens; noite com lua, postes e janelas), contexto claro no 1º plano.
 10. **Sincronia:** continua a regra medida — corte ~1 quadro antes da palavra (mediana −0,04 s), plano mediano 1,4 s, conferir com áudio.
+
+## Decisões dele no EP04 "Na minha escola" (REGRAS FIXAS)
+- **O protagonista NUNCA muda** (nada de cabelo, roupa ou acessório novo): sempre `heroStd()` original (pele branca, regata vermelha,
+  calça preta, cartola azul). "Só colocar uma roupa em vídeos que fazem sentido" — e só se ele pedir. Se o roteiro fala de algo no corpo
+  dele (cabelo mudando de cor etc.), representar com a PRÓPRIA cartola (ex.: cartola fica verde e brilha = `hatGreen` em roblox_ep04/src/cast.js)
+  ou com efeitos, nunca mudando o modelo. Detalhe de olho (cor) só nos closes do olho, quando a história exigir.
+- **Não pedir aprovação do storyboard**: depois do QA zero (`./chk.sh`), da conferência visual (stills 15/55/90%) e do `colorqa.py`,
+  COMEÇAR A RENDERIZAR na hora; mandar o storyboard junto só como informação. Ele não vai mais repetir regras: ler este arquivo e cumprir tudo.
+- Ferramentas do EP04 que viram padrão: `hairfx.js` (cabelo que muda de cor com varredura/brilho/duas cores/corte sob chapéu),
+  `props4.js` (gorro, boné, buquê, lixeira, mural de suspeitos com fotos renderizadas dos personagens, quadro de apostas, termômetro,
+  placa "PROIBIDO GORRO", raia de piscina, bandeirinhas), `chk.sh` (QA do vídeo inteiro em 3 processos + resumo por cena),
+  `sheet.py` (folhas de storyboard), piscina coberta com água animada e palco com holofotes (roblox_ep04/src/sets.js).
