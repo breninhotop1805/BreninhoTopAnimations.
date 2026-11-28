@@ -171,7 +171,7 @@ class Video:
             if back > 0 and b <= t < b + back: return 1 + (z - 1)*(1 - e_io((t - b)/back))   # volta afastando
         return 1.0
 
-    UP, BACK, ZB = 0.60, 0.26, 0.26
+    UP, BACK, ZB = 0.95, 0.26, 0.26
     def zoom_state(self, t):
         """(zoom, desfoque) da aproximacao no personagem"""
         for (a, b, z, mode) in self.cfg.get("fpush", []):
@@ -283,7 +283,7 @@ class Video:
     def camera(self, f, t):
         zp, bl = self.zoom_state(t)
         if zp != 1.0 or bl > 0:
-            M = cv2.getRotationMatrix2D((W/2, GLASS_Y + 330), 0, zp)
+            M = cv2.getRotationMatrix2D((W/2, GLASS_Y + 560), 0, zp)
             f = cv2.warpAffine(f, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
             if bl > 0.3: f = cv2.GaussianBlur(f, (0, 0), bl)
         z = 1.0
