@@ -106,9 +106,9 @@
 - **Mais transições nos takes** (sem exagero): arrastar pra direita **e pra esquerda**, mais pops; cada animação com som fixo
   (arrastar = whoosh, pop = pop).
 - **Aproximação no personagem (regra atual, substitui as anteriores):** 1 ou 2 vezes por vídeo, **2 a 4 s**, curva **reta**,
-  bem aparente (~1,28–1,30x), indo **em direção ao Foxy** (centro no rosto, não no meio da tela).
-  No instante em que ela começa, o **TAKE sobe e sai pelo topo** (o inverso da entrada da intro, ~0,3 s com desfoque).
+  bem aparente (~1,36–1,38x), indo **em direção ao Foxy, mais pra baixo** (centro entre o peito e o rosto, y ≈ 1315).
+  No instante em que ela começa, o **TAKE sobe e sai pelo topo** (o inverso da entrada da intro, **lento, ~0,6 s**, com desfoque).
   O retorno varia entre:
   1. **Corte seco com som** (clique do Minecraft ou dano): a câmera e o take voltam secos no mesmo frame.
-  2. **Volta rápida de 0,4 s** afastando com leve desfoque, e o take **desce de volta** com a animação da intro, mais rápida (~0,4 s).
+  2. **Volta rápida (~0,26 s)** da tela inteira afastando com leve desfoque, e o take **desce de volta** rápido (~0,26 s).
 - **Tremor da abertura:** só deslocamento (sem escala), começa forte e zera em ~0,2 s com fade-out.

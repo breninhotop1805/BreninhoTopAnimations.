@@ -12,6 +12,7 @@ def clamp(x, a=0.0, b=1.0): return max(a, min(b, x))
 def mix(a, b, u): return a + (b - a)*u
 def e_io(x): x = clamp(x); return 4*x**3 if x < .5 else 1 - (-2*x + 2)**3/2
 def e_out(x): x = clamp(x); return 1 - (1 - x)**3
+def e_in_(x): x = clamp(x); return x**3
 def spring(u, k=320.0, c=16.0):
     if u <= 0: return 0.0
     w0 = math.sqrt(k); z = c/(2*w0); wd = w0*math.sqrt(max(1 - z*z, 1e-6))
@@ -170,6 +171,26 @@ class Video:
             if back > 0 and b <= t < b + back: return 1 + (z - 1)*(1 - e_io((t - b)/back))   # volta afastando
         return 1.0
 
+    UP, BACK, ZB = 0.60, 0.26, 0.26
+    def zoom_state(self, t):
+        """(zoom, desfoque) da aproximacao no personagem"""
+        for (a, b, z, mode) in self.cfg.get("fpush", []):
+            if a <= t < b: return 1 + (z - 1)*(t - a)/(b - a), 0.0
+            if mode == "ease" and b <= t < b + self.ZB:
+                u = (t - b)/self.ZB; return z + (1 - z)*e_out(u), 7*(1 - u)
+        return 1.0, 0.0
+
+    def take_state(self, t):
+        """None = normal; ('off', dy, vblur) = take subindo/escondido/voltando"""
+        hide = -(BOX[1] + BOX[3] + 60)
+        for (a, b, z, mode) in self.cfg.get("fpush", []):
+            if a <= t < a + self.UP:
+                u = (t - a)/self.UP; k = u*u*(3 - 2*u); return (hide*k, 45*k)
+            if a + self.UP <= t < b: return "hidden"
+            if mode == "ease" and b <= t < b + self.BACK:
+                k = e_out((t - b)/self.BACK); return (hide*(1 - k), 55*max(0, 1 - (t - b)/self.BACK))
+        return None
+
     def put_box(self, f, spr, dx=0.0, s=1.0, alpha=1.0, blur=0.0, hblur=0):
         if hblur > 1: spr = cv2.blur(spr, (int(hblur) | 1, 1))
         if blur > 0.3: spr = cv2.GaussianBlur(spr, (0, 0), blur)
@@ -182,6 +203,14 @@ class Video:
         self._t = t
         tk = self.take_frame(t)
         if tk is None: return f
+        st = self.take_state(t)
+        if st == "hidden": return f
+        if st is not None:
+            dy, vb = st; spr = self.box_sprite(tk, t)
+            if vb > 1: spr = cv2.blur(spr, (1, int(vb) | 1))
+            cx, cy = BOX[0] + BOX[2]/2, BOX[1] + BOX[3]/2 + dy
+            blit(f, self.box_shadow, cx, cy + 6); blit(f, spr, cx, cy)
+            return f
         tr = tk.get("tr", "cut"); u = t - tk["a"]
         if tk is self.cfg["takes"][0] and u < 1.0:      # TAKE 1 chegando de cima pra baixo (1 s, com desfoque)
             k = spring(u, 140, 15); vy = 1 - clamp(u/0.55)
@@ -252,7 +281,12 @@ class Video:
 
     # ---- camera (modo B) ----
     def camera(self, f, t):
-        z = self.push(t, "tela")
+        zp, bl = self.zoom_state(t)
+        if zp != 1.0 or bl > 0:
+            M = cv2.getRotationMatrix2D((W/2, GLASS_Y + 330), 0, zp)
+            f = cv2.warpAffine(f, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+            if bl > 0.3: f = cv2.GaussianBlur(f, (0, 0), bl)
+        z = 1.0
         for (a, b, z0, z1) in self.cfg.get("modoB", []):
             if a <= t < b: z *= mix(z0, z1, e_io((t - a)/(b - a)))
         if abs(z - 1) < 1e-3: return f
